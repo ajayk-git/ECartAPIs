@@ -23,8 +23,9 @@ public class AddressDto {
         this.setCity(city);
         this.setState(state);
         this.setCountry(country);
-        this.setCountry(lable);
+        this.setCountry(country);
         this.setZipcode(zipcode);
         this.setId(id);
+        this.setLable(lable);
     }
 }

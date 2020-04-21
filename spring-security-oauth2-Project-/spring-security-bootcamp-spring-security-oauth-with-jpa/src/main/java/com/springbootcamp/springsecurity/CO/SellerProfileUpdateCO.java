@@ -1,15 +1,18 @@
 package com.springbootcamp.springsecurity.CO;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class SellerProfileUpdateCO {
 
-    private String firstName;
-    private String lastName;
-    private String contact;
+     String firstName;
+     String lastName;
+     String contact;
 
 
 }

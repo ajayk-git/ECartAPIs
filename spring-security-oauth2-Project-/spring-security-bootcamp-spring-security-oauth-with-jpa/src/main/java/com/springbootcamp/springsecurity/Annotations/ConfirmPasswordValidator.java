@@ -22,4 +22,5 @@ public class ConfirmPasswordValidator implements ConstraintValidator<ConfirmPass
         UserCO userCO= (UserCO) value;
         return  userCO.getPassword().equals(userCO.getConfirmPassword());
     }
+
 }

@@ -78,13 +78,14 @@ public class Bootstrap {
             Address address=new Address();
             Role role=new Role();
             List<Role> roleList=new ArrayList<>();
+
             PasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
             seller.setFirstName("Aman");
             seller.setLastName("Sharma");
             seller.setDeleted(false);
             seller.setActive(true);
             seller.setCompanyContact("8735279816");
-            seller.setEmail("amansharama@gmail.com");
+            seller.setEmail("amansharma@gmail.com");
             seller.setPassword(passwordEncoder.encode("Aman@1234"));
             seller.setCompanyName("Aman Communications");
             seller.setGst("18AABCT3518Q1ZV");

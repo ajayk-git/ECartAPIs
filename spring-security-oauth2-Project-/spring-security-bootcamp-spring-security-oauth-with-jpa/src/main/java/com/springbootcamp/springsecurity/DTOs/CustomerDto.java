@@ -4,22 +4,25 @@ import com.springbootcamp.springsecurity.Entities.Users.Customer;
 import lombok.Getter;
 import lombok.Setter;
 import com.springbootcamp.springsecurity.dto.UserDto;
+import lombok.extern.slf4j.Slf4j;
 
 
 @Getter
 @Setter
+@Slf4j
 public class CustomerDto extends UserDto {
 
 
     private String contact;
 
-    public CustomerDto(Long id, String email, String firstName, String lastName, String contact) {
+    public CustomerDto(Long id, String email, String firstName, String lastName, String contact,boolean isactive) {
 
         this.setLastName(lastName);
         this.setContact(contact);
         this.setEmail(email);
         this.setFirstName(firstName);
         this.setId(id);
+        this.setActive(isactive);
     }
 
     public CustomerDto(){

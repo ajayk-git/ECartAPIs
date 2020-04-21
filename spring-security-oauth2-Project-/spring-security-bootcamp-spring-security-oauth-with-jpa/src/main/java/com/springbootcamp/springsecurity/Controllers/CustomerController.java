@@ -57,7 +57,7 @@ public class CustomerController {
 
 
 
-    @PatchMapping("updateCustomerPassword")
+    @PatchMapping("/updateCustomerPassword")
     public ResponseEntity<String> updateCustomerPassword(@Valid @RequestBody PasswordUpdateCO passwordUpdateCO,Principal principal){
         return customerService.updateCustomerPassword(passwordUpdateCO,principal.getName());
     }
@@ -70,7 +70,7 @@ public class CustomerController {
     public String registerCustomer(@Valid @RequestBody CustomerCO customerCO) throws AccountAreadyExistException {
        // CustomerDto customerDto1=new CustomerDto();
         Customer customer=customerService.registerCustomer(customerCO);
-        CustomerDto customerDto=new CustomerDto(customer.getId(),customer.getFirstName(),customer.getLastName(),customer.getEmail(),customer.getContact());
+        CustomerDto customerDto=new CustomerDto(customer.getId(),customer.getFirstName(),customer.getLastName(),customer.getEmail(),customer.getContact(),customer.isActive());
         //return customerDto1;
         return "successfully registered, Kindly go to registered mail inbox to get verified your account.";
     }
@@ -123,7 +123,7 @@ public class CustomerController {
 
     //=================================================Update Profile  of Customer Account==================================
 
-    @PatchMapping("updateProfile")
+    @PatchMapping("/updateProfile")
     public ResponseEntity<String> updateCustomerProfile(Principal principal, @RequestBody CustomerProfileUpdateCo customerProfileUpdateCo){
         return customerService.updateCustomerProfile(principal.getName(),customerProfileUpdateCo);
     }

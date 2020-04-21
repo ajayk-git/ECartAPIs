@@ -15,6 +15,7 @@ public class AddressCO {
     private String state;
 
     private String country;
+
     @NotNull
     private String addressLine;
 

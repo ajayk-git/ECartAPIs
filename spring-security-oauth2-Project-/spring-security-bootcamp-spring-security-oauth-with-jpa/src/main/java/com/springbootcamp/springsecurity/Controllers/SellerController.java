@@ -56,7 +56,7 @@ public class SellerController {
                 seller.getAddress().getCountry(),
                 seller.getAddress().getLable()
                 ,seller.getAddress().getZipcode(),
-                seller.getAddress().getState());
+                seller.getAddress().getState(),seller.isActive());
         return "successfully registered, Kindly go to registered mail inbox to get verified your account.";
 
     }
@@ -107,14 +107,14 @@ public class SellerController {
     }
 
     //==================================update seller password===========================================================
-    @PatchMapping("updateSellerPassword")
+    @PatchMapping("/updateSellerPassword")
     public ResponseEntity<String> updateCustomerPassword(@Valid @RequestBody PasswordUpdateCO passwordUpdateCO, Principal principal){
         return sellerService.updateSellerPassword(passwordUpdateCO,principal.getName());
     }
 
     //=================================================Update Profile  of seller Account==================================
 
-    @PatchMapping("updateProfile")
+    @PatchMapping("/updateProfile")
     public ResponseEntity<String> updateCustomerProfile(Principal principal, @RequestBody SellerProfileUpdateCO sellerProfileUpdateCO){
         return sellerService.upadteSellerProfile(principal.getName(),sellerProfileUpdateCO);
     }

@@ -18,17 +18,17 @@ public class AddressController {
     @Autowired
     AddressService addressService;
 
-    @GetMapping("customer/{id}")                   // id=customer id
+    @GetMapping("/customer/{id}")                   // id=customer id
     public List<AddressDto> getAllAddressCustomer(@PathVariable(name = "id") Long id ){
         return addressService.getAddressListCustomer(id);
     }
 
-//    @GetMapping("seller/{id}")                   // id=seller id
-//    public AddressDto getAddressSeller(@PathVariable(name = "id") Long id ){
-//        return addressService.getAddressSeller(id);
-//    }
+    @GetMapping("seller/{id}")                   // id=seller id
+    public AddressDto getAddressSeller(@PathVariable(name = "id") Long id ){
+        return addressService.getAddressSeller(id);
+    }
 
-    @DeleteMapping("delete/{id}")               //id=address id
+    @DeleteMapping("/delete/{id}")               //id=address id
     public ResponseEntity<String> deleteAddressById(@PathVariable(name = "id") Long id, Principal principal) {
            return addressService.deleteAddressById(id,principal.getName());
     }

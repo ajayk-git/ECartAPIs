@@ -83,7 +83,7 @@ public class SellerService {
                 seller.getLastName(),seller.getGst(),seller.getFirstName(),seller.getEmail(),seller.getId(),
                 seller.getAddress().getAddressLine(),seller.getAddress().getCity(),
                 seller.getAddress().getCountry(),seller.getAddress().getLable(),
-                seller.getAddress().getZipcode(),seller.getAddress().getState())));
+                seller.getAddress().getZipcode(),seller.getAddress().getState(),seller.isActive())));
         return sellerDtoList;
     }
 
@@ -198,11 +198,14 @@ public class SellerService {
         else {
             User user=userRepository.findById(id).get();
             if(user.isEnabled()){
+                user.setEnabled(false);
+                user.setActive(false);
                 SimpleMailMessage simpleMailMessage=new SimpleMailMessage();
                 simpleMailMessage.setText("Oppps,Your account has been deactivated by admin registered with mail id :"+user.getEmail());
                 simpleMailMessage.setTo(user.getEmail());
                 simpleMailMessage.setFrom("imcoolajaykumar2010@gmail.com");
                 simpleMailMessage.setSubject("Alert : Account Deactivated by admin");
+                userRepository.save(user);
                 javaMailSender.send(simpleMailMessage);
                 return new ResponseEntity<String>("User is deactivated", HttpStatus.OK);
             }
@@ -218,7 +221,7 @@ public class SellerService {
                 seller.getLastName(),seller.getGst(),seller.getFirstName(),seller.getEmail(),seller.getId(),
                 seller.getAddress().getAddressLine(),seller.getAddress().getCity(),
                 seller.getAddress().getCountry(),seller.getAddress().getLable(),
-                seller.getAddress().getZipcode(),seller.getAddress().getState());
+                seller.getAddress().getZipcode(),seller.getAddress().getState(),seller.isActive());
 
         return sellerDto;
     }

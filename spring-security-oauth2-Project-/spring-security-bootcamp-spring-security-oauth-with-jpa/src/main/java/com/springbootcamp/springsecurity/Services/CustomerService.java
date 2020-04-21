@@ -79,7 +79,7 @@ public class CustomerService {
                   customer.getFirstName(),
                   customer.getLastName(),
                   customer.getContact(),
-                  customer.getEmail())) );
+                  customer.getEmail(),customer.isActive())) );
 
            return customerDtoList;
     }
@@ -134,7 +134,6 @@ public class CustomerService {
     }
 
 
-
     //==============================to reset the password, when a customer forgot his/her password================================
 
 
@@ -186,7 +185,7 @@ public class CustomerService {
             throw new AccountDoesNotExistException("The customer with given id is not registered.");
 
         User user=userRepository.findById(id).get();
-        if(!user.isActive()){
+        if(!user.isEnabled()){
             user.setActive(true);
             user.setEnabled(true);
             user.setAccountNonLocked(true);
@@ -211,6 +210,8 @@ public class CustomerService {
     public ResponseEntity<String> updateCustomerPassword(PasswordUpdateCO passwordUpdateCO,String email) {
         User user=userRepository.findByEmail(email);
         user.setPassword(encoder.encode(passwordUpdateCO.getPassword()));
+        System.out.println("============================================");
+        System.out.println(user.getEmail());
         emailService.sendMailPasswordUpdate(user.getEmail());
         userRepository.save(user);
         return new ResponseEntity<>("Password updated and alert message has been send to registered mail id.",HttpStatus.OK);
@@ -224,12 +225,15 @@ public class CustomerService {
         else {
             User user=userRepository.findById(id).get();
             if(user.isEnabled()){
+                user.setEnabled(false);
+                user.setActive(false);
                 SimpleMailMessage simpleMailMessage=new SimpleMailMessage();
                 simpleMailMessage.setText("Oppps,Your account has been deactivated by admin registered with mail id :"+user.getEmail());
                 simpleMailMessage.setTo(user.getEmail());
                 simpleMailMessage.setFrom("imcoolajaykumar2010@gmail.com");
                 simpleMailMessage.setSubject("Alert : Account Deactivated by admin");
                 javaMailSender.send(simpleMailMessage);
+                userRepository.save(user);
                 return new ResponseEntity<String>("User is deactivated",HttpStatus.OK);
             }
             else return  new ResponseEntity<String>("User is already deactivated",HttpStatus.BAD_REQUEST);
@@ -238,7 +242,7 @@ public class CustomerService {
 
     public CustomerDto viewCustomerProfile(String email) {
         Customer customer=customerRepository.findByEmail(email);
-        CustomerDto customerDto=new CustomerDto(customer.getId(),customer.getEmail(),customer.getFirstName(),customer.getLastName(),customer.getContact());
+        CustomerDto customerDto=new CustomerDto(customer.getId(),customer.getEmail(),customer.getFirstName(),customer.getLastName(),customer.getContact(),customer.isActive());
         return customerDto;
     }
 

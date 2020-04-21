@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.Column;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Getter
@@ -16,7 +17,6 @@ import javax.validation.constraints.NotNull;
 public class UserCO {
 
     @NotNull(message = "Email must be unique")
-    @Column(unique = true)
     @IsValidEmail
     private String email;
 
@@ -26,8 +26,13 @@ public class UserCO {
     @NotNull(message = "Last Name cannot be Null")
     private String lastName;
 
+    @NotNull
+    @NotEmpty(message ="confirmPassword Cant be null" )
     @IsValidPassword
     private String password;
+
+    @NotNull(message = "confirmPassword Cant be null.")
+    @NotEmpty
     @IsValidPassword
     private String confirmPassword;
 

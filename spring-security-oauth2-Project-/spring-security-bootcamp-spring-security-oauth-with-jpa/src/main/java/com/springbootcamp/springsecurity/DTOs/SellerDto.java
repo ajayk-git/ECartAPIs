@@ -35,7 +35,7 @@ public class SellerDto extends com.springbootcamp.springsecurity.dto.UserDto {
 
     }
 
-    public SellerDto(String companyContact, String companyName, String lastName, String gst, String firstName, String email, Long id, String addressLine, String city, String country, String lable, String zipcode, String state) {
+    public SellerDto(String companyContact, String companyName, String lastName, String gst, String firstName, String email, Long id, String addressLine, String city, String country, String lable, String zipcode, String state,boolean isactive) {
 
         this.setCompanyName(companyName);
         this.setCompanyContact(companyContact);
@@ -50,5 +50,6 @@ public class SellerDto extends com.springbootcamp.springsecurity.dto.UserDto {
         this.setLable(lable);
         this.setCountry(country);
         this.setZipcode(zipcode);
+        this.setActive(isactive);
     }
 }

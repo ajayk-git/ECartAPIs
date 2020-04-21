@@ -56,14 +56,15 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                         "/seller/forgotPassword","seller/confirmReset").anonymous()
 
                 .antMatchers("/customer/","/customer/{id}", "/seller/","/seller/{id}",
-                        "/customer/activateAccount/{id}","/seller/activateAccount/{id}",
-                        "customer/deactivateAccount/{id}","seller/deactivateAccount/{id}").hasAnyRole("ADMIN")
+                        "/customer/activateAccount/{id}",
+          //              "/seller/activateAccount/{id}","seller/deactivateAccount/{id}"
+                        "customer/deactivateAccount/{id}").hasAnyRole("ADMIN")
 
-                .antMatchers("/customer/viewProfile","/customer/updateProfile","/customer/updateCustomerPassword",
+                .antMatchers("/customer/viewProfile","/customer/updateCustomerPassword",
                         "/address/delete/{id}","/address/addCustomerAddress",
                         "address/updateCustomerAddress/{id}").hasAnyRole("USER")
 
-                .antMatchers("seller/updateSellerPassword","/seller/viewProfile",
+                .antMatchers("seller/updateSellerPassword","/seller/viewProfile","/address/seller/{id}",
                        "seller/updateProfile", "address/updateSellerAddress/{id}").hasAnyRole("SELLER")
 
                 .antMatchers("/logout/").hasAnyRole("SELLER","ADMIN","USER")
