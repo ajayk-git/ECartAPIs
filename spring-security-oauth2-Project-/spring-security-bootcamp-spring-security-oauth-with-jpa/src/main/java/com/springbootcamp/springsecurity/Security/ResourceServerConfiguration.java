@@ -1,7 +1,6 @@
 package com.springbootcamp.springsecurity.Security;
 
 
-import com.springbootcamp.springsecurity.Security.AppUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -66,6 +65,8 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 
                 .antMatchers("seller/updateSellerPassword","/seller/viewProfile",
                        "seller/updateProfile", "address/updateSellerAddress/{id}").hasAnyRole("SELLER")
+
+                .antMatchers("/logout/").hasAnyRole("SELLER","ADMIN","USER")
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement()
