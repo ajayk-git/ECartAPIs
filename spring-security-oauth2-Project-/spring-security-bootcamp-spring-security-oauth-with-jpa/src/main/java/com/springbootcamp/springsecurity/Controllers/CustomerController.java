@@ -1,10 +1,8 @@
 package com.springbootcamp.springsecurity.Controllers;
 
 
-import com.springbootcamp.springsecurity.CO.CustomerCO;
-import com.springbootcamp.springsecurity.CO.CustomerProfileUpdateCo;
-import com.springbootcamp.springsecurity.CO.EmailCO;
-import com.springbootcamp.springsecurity.CO.PasswordUpdateCO;
+import com.springbootcamp.springsecurity.CO.*;
+import com.springbootcamp.springsecurity.DTOs.AddressDto;
 import com.springbootcamp.springsecurity.DTOs.CustomerDto;
 import com.springbootcamp.springsecurity.Entities.Address;
 import com.springbootcamp.springsecurity.Entities.Users.Customer;
@@ -27,11 +25,6 @@ import java.util.List;
 @RestController
 public class CustomerController {
 
-    @Autowired
-    CustomerRepository customerRepository;
-
-    @Autowired
-    UserRepository userRepository;
 
     @Autowired
     CustomerService customerService;
@@ -39,94 +32,61 @@ public class CustomerController {
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
 
-//=============================================get a customer by id===========================================================================
-    @GetMapping("/{id}")
-    public CustomerDto getCustomer(@PathVariable Integer id) throws AccountDoesNotExistException {
-        return customerService.getCustomerById(id);
-    }
+    //=============================Update Customer's password=====================================================
 
-
-//=============================================get all customers===========================================================================
-
-
-    @GetMapping("/")
-    public List<CustomerDto> getAllCustomer(){
-        return  customerService.getAllCustomers();
-    }
-
-
-
-
-    @PatchMapping("/updateCustomerPassword")
+    @PatchMapping("/update-password")
     public ResponseEntity<String> updateCustomerPassword(@Valid @RequestBody PasswordUpdateCO passwordUpdateCO,Principal principal){
         return customerService.updateCustomerPassword(passwordUpdateCO,principal.getName());
     }
 
 
-//================================================== Customer registration====================================================================
+    //===========================View Profile  of Customer Account==================================================
 
-
-    @PostMapping("/registration")
-    public String registerCustomer(@Valid @RequestBody CustomerCO customerCO) throws AccountAreadyExistException {
-       // CustomerDto customerDto1=new CustomerDto();
-        Customer customer=customerService.registerCustomer(customerCO);
-        CustomerDto customerDto=new CustomerDto(customer.getId(),customer.getFirstName(),customer.getLastName(),customer.getEmail(),customer.getContact(),customer.isActive());
-        //return customerDto1;
-        return "successfully registered, Kindly go to registered mail inbox to get verified your account.";
-    }
-
-//=====================================================Confirmation of Customer registration================================================
-
-
-    @PatchMapping("/registrationConfirm")
-    public String registrationConfirm(@RequestParam("token") String token){
-        return  customerService.registrationConfirmCustomer(token);
-    }
-
-
-//============================================================forgot password=========================================================================
-    @PostMapping("/forgotPassword")
-    public  void  forgotPassword(@RequestBody EmailCO emailCO){
-        customerService.forgotPasswordSendTokenToMail(emailCO.getEmail());
-    }
-
-
-//==================================================reset your forgot passsword=====================================================================
-    @PatchMapping("/confirmReset")
-    public ResponseEntity<String> updateForgotPassword(@RequestParam("token") String token,@Valid @RequestBody PasswordUpdateCO passwordUpdateCO ){
-       return customerService.updateForgotPassword(token,passwordUpdateCO);
-    }
-
-
-//=================================================Activation  of Customer Account=========================================================
-
-    @PatchMapping("/activateAccount/{id}")
-    public ResponseEntity<String> activateCustomerAccountById(@PathVariable("id") Long id)   {
-        return  customerService.activateCustomerAccountById(id);
-    }
-
-
-
-//==============================================Deactivation  of Customer Account============================================================
-
-    @PatchMapping("/deactivateAccount/{id}")
-    public ResponseEntity<String> deactivateCustomerAccountById(@PathVariable("id")Long id) {
-        return  customerService.deactivateCustomerAccountById(id);
-    }
-
-    //=================================================View Profile  of Customer Account==================================
-
-    @GetMapping("/viewProfile")
+    @GetMapping("/profile")
     public CustomerDto viewCustomerProfile(Principal principal){
         return  customerService.viewCustomerProfile(principal.getName());
     }
 
-    //=================================================Update Profile  of Customer Account==================================
+    //============================Update Profile  of Customer Account===============================================
 
-    @PatchMapping("/updateProfile")
+    @PatchMapping("/profile")
     public ResponseEntity<String> updateCustomerProfile(Principal principal, @RequestBody CustomerProfileUpdateCo customerProfileUpdateCo){
         return customerService.updateCustomerProfile(principal.getName(),customerProfileUpdateCo);
     }
+
+
+
+    //============================Get Address list of Customer=======================================================
+
+    @GetMapping("/address")                   // id=customer id
+    public List<AddressDto> getAllAddressCustomer(Principal principal ){
+        return customerService.getAddressListCustomer(principal.getName());
+    }
+
+
+    //=========================Delete a address of Customer=============================================================
+
+    @DeleteMapping("/address/{id}")               //id=address id
+    public ResponseEntity<String> deleteAddressById(@PathVariable(name = "id") Long id, Principal principal) {
+        return customerService.deleteAddressById(id,principal.getName());
+    }
+
+
+    //========================Add a new Address in address list of Customer============================================
+
+    @PostMapping("/address")
+    public ResponseEntity<String> addCustomerNewAddress(@RequestBody AddressCO addressCO, Principal principal){
+        return customerService.addCustomerAddress(addressCO,principal.getName());
+    }
+
+
+    //============================Update a customers address==========================================================
+
+    @PatchMapping("/address/{id}")
+    public ResponseEntity<String> updateCustomerAddress(@PathVariable("id") Long id,@RequestBody AddressCO addressCO,Principal principal){
+        return customerService.updateCustomerAddress(addressCO,id,principal.getName());
+    }
+
 
 }
 
@@ -136,23 +96,3 @@ public class CustomerController {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//
-//    @DeleteMapping("/{id}")
-//    public String deleteCustomer(@PathVariable Long id) {
-//        return customerService.deleteCustomer(id);
-//    }

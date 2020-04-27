@@ -50,22 +50,18 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
     public void configure(final HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/customer/registration","/seller/registration",
-                        "/seller/registrationConfirm", "/customer/registrationConfirm",
-                        "/customer/forgotPassword","/customer/confirmReset",
-                        "/seller/forgotPassword","seller/confirmReset").anonymous()
+                .antMatchers("/register/customer","/register/seller",
+                        "/register/confirm-customer", "/register/confirm-seller",
+                        "/register/forgot-password","/register/confirm-reset").anonymous()
+                .antMatchers("/admin/customer/{id}", "admin/sellers",
+                        "admin/seller/{id}","admin/customers",
+                       "/admin/activate-account/{id}",
+                        "/admin/deactivate-account/{id}",
+                        "/admin/metadata-fields").hasAnyRole("ADMIN")
 
-                .antMatchers("/customer/","/customer/{id}", "/seller/","/seller/{id}",
-                        "/customer/activateAccount/{id}",
-          //              "/seller/activateAccount/{id}","seller/deactivateAccount/{id}"
-                        "customer/deactivateAccount/{id}").hasAnyRole("ADMIN")
+                .antMatchers("/customer/*").hasAnyRole("USER")
 
-                .antMatchers("/customer/viewProfile","/customer/updateCustomerPassword",
-                        "/address/delete/{id}","/address/addCustomerAddress",
-                        "address/updateCustomerAddress/{id}").hasAnyRole("USER")
-
-                .antMatchers("seller/updateSellerPassword","/seller/viewProfile","/address/seller/{id}",
-                       "seller/updateProfile", "address/updateSellerAddress/{id}").hasAnyRole("SELLER")
+                .antMatchers("seller/*").hasAnyRole("SELLER")
 
                 .antMatchers("/logout/").hasAnyRole("SELLER","ADMIN","USER")
                 .anyRequest().authenticated()
@@ -75,3 +71,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .csrf().disable();
     }
 }
+//
+//"/customer/profile","/customer/update-password",
+//        "/customer/address/{id}","/customer/address",
+//        "/customer/address/{id}"

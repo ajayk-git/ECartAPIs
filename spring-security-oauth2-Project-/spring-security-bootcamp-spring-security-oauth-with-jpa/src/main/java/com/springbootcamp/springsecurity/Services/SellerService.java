@@ -1,10 +1,8 @@
 package com.springbootcamp.springsecurity.Services;
 
-import com.springbootcamp.springsecurity.CO.CustomerProfileUpdateCo;
-import com.springbootcamp.springsecurity.CO.PasswordUpdateCO;
-import com.springbootcamp.springsecurity.CO.SellerCO;
-import com.springbootcamp.springsecurity.CO.SellerProfileUpdateCO;
+import com.springbootcamp.springsecurity.CO.*;
 import com.springbootcamp.springsecurity.ConfirmationToken;
+import com.springbootcamp.springsecurity.DTOs.AddressDto;
 import com.springbootcamp.springsecurity.DTOs.SellerDto;
 import com.springbootcamp.springsecurity.Entities.Address;
 import com.springbootcamp.springsecurity.Entities.Users.Customer;
@@ -51,71 +49,24 @@ public class SellerService {
     }
 
 
-//====================================get details of   a given seller===========================================
 
-    public SellerDto getSellerByid(long id) {
-        SellerDto sellerDto = new SellerDto();
-        Seller seller = sellerRepository.findById(id).get();
-        sellerDto.setId(seller.getId());
-        sellerDto.setFirstName(seller.getFirstName());
-        sellerDto.setLastName(seller.getLastName());
-        sellerDto.setCompanyName(seller.getCompanyName());
-        sellerDto.setCompanyContact(seller.getCompanyContact());
-        sellerDto.setGst(seller.getGst());
-        sellerDto.setEmail(seller.getEmail());
-        sellerDto.setAddressLine(seller.getAddress().getAddressLine());
-        sellerDto.setCity(seller.getAddress().getCity());
-        sellerDto.setState(seller.getAddress().getState());
-        sellerDto.setLable(seller.getAddress().getLable());
-        sellerDto.setCountry(seller.getAddress().getCountry());
-        sellerDto.setZipcode(seller.getAddress().getZipcode());
-        return sellerDto;
+    public AddressDto getAddressSeller(String email) {
+       boolean emailFalg=isEmailExists(email);
+        if (emailFalg==false){
+            throw new AccountDoesNotExistException("User's  does not exist");
+        }
+        Seller seller=sellerRepository.findByEmail(email);
+        AddressDto addressDto=new AddressDto(seller.getAddress().getId(),
+                seller.getAddress().getAddressLine(),
+                seller.getAddress().getCity(),
+                seller.getAddress().getState(),
+                seller.getAddress().getZipcode(),
+                seller.getAddress().getLable(),
+                seller.getAddress().getCountry());
+        return addressDto;
+
     }
 
-
-//==============================get all seller details================================
-
-
-    public List<SellerDto> getAllSellers() {
-        List<SellerDto> sellerDtoList = new ArrayList<>();
-        Iterable<Seller> sellerIterable = sellerRepository.findAll();
-        sellerIterable.forEach(seller -> sellerDtoList.add(new SellerDto(seller.getCompanyContact(),seller.getCompanyName(),
-                seller.getLastName(),seller.getGst(),seller.getFirstName(),seller.getEmail(),seller.getId(),
-                seller.getAddress().getAddressLine(),seller.getAddress().getCity(),
-                seller.getAddress().getCountry(),seller.getAddress().getLable(),
-                seller.getAddress().getZipcode(),seller.getAddress().getState(),seller.isActive())));
-        return sellerDtoList;
-    }
-
-    //================================================Sellers registration==========================================================
-    public Seller sellerRegistration(SellerCO sellerCO) throws AccountAreadyExistException {
-        if (isEmailExists(sellerCO.getEmail()))
-            throw new AccountAreadyExistException("Seller Account with " + sellerCO.getEmail() + "already Exist");
-
-        Seller seller = new Seller();
-        Address address=new Address();
-        seller.setFirstName(sellerCO.getFirstName());
-        seller.setLastName(sellerCO.getLastName());
-        seller.setEmail(sellerCO.getEmail());
-        seller.setCompanyName(sellerCO.getCompanyName());
-        seller.setCompanyContact(sellerCO.getCompanyContact());
-        seller.setGst(sellerCO.getGst());
-        address.setAddressLine(sellerCO.getAddressLine());
-        address.setLable(sellerCO.getLable());
-        address.setZipcode(sellerCO.getZipcode());
-        address.setCountry(sellerCO.getCountry());
-        address.setState(sellerCO.getState());
-        seller.setAddress(address);
-        seller.setPassword(encoder.encode(sellerCO.getPassword()));
-        sellerRepository.save(seller);
-
-        ConfirmationToken confirmationToken = new ConfirmationToken(seller);
-        confirmationTokenRepository.save(confirmationToken);
-
-        emailService.sendEmail(seller.getEmail(), confirmationToken.getConfirmationToken());
-
-        return seller;
-    }
 
 
 //=============================Confirmation of Sellers registration==================================
@@ -269,6 +220,37 @@ public class SellerService {
 
 
     }
+
+    public ResponseEntity<String> updateSellerAddress(AddressCO addressCO, Long id, String email) {
+        Seller seller=sellerRepository.findByEmail(email);
+        Address address=seller.getAddress();
+        if(address.getId()==id){
+            if(addressCO.getAddressLine()!=null)
+                address.setAddressLine(addressCO.getAddressLine());
+            if(addressCO.getLable()!=null)
+                address.setLable(addressCO.getLable());
+            if(addressCO.getCity()!=null)
+                address.setCity(addressCO.getCity());
+            if(addressCO.getState()!=null)
+                address.setState(addressCO.getState());
+            if(addressCO.getCountry()!=null)
+                address.setCountry(addressCO.getCountry());
+            if(addressCO.getZipcode()!=null)
+                address.setZipcode(addressCO.getZipcode());
+            sellerRepository.save(seller);
+            return new ResponseEntity<>("Seller Address has been updated successfully.",HttpStatus.OK);
+
+        }
+        throw new ResourceNotFoundException("No address found with id : " + id + ", associated with your account");
+
+    }
+
+
+
+
+
+
+
 }
 
 
@@ -281,6 +263,44 @@ public class SellerService {
 
 
 
+
+
+
+////====================================get details of   a given seller===========================================
+//
+//    public SellerDto getSellerByid(long id) {
+//        SellerDto sellerDto = new SellerDto();
+//        Seller seller = sellerRepository.findById(id).get();
+//        sellerDto.setId(seller.getId());
+//        sellerDto.setFirstName(seller.getFirstName());
+//        sellerDto.setLastName(seller.getLastName());
+//        sellerDto.setCompanyName(seller.getCompanyName());
+//        sellerDto.setCompanyContact(seller.getCompanyContact());
+//        sellerDto.setGst(seller.getGst());
+//        sellerDto.setEmail(seller.getEmail());
+//        sellerDto.setAddressLine(seller.getAddress().getAddressLine());
+//        sellerDto.setCity(seller.getAddress().getCity());
+//        sellerDto.setState(seller.getAddress().getState());
+//        sellerDto.setLable(seller.getAddress().getLable());
+//        sellerDto.setCountry(seller.getAddress().getCountry());
+//        sellerDto.setZipcode(seller.getAddress().getZipcode());
+//        return sellerDto;
+//    }
+//
+//
+////==============================get all seller details================================
+//
+//
+//    public List<SellerDto> getAllSellers() {
+//        List<SellerDto> sellerDtoList = new ArrayList<>();
+//        Iterable<Seller> sellerIterable = sellerRepository.findAll();
+//        sellerIterable.forEach(seller -> sellerDtoList.add(new SellerDto(seller.getCompanyContact(),seller.getCompanyName(),
+//                seller.getLastName(),seller.getGst(),seller.getFirstName(),seller.getEmail(),seller.getId(),
+//                seller.getAddress().getAddressLine(),seller.getAddress().getCity(),
+//                seller.getAddress().getCountry(),seller.getAddress().getLable(),
+//                seller.getAddress().getZipcode(),seller.getAddress().getState(),seller.isActive())));
+//        return sellerDtoList;
+//    }
 
 
 

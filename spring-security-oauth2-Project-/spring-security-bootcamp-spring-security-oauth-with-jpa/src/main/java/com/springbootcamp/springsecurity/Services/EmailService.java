@@ -12,14 +12,24 @@ public class EmailService {
     @Autowired
     JavaMailSender mailSender;
     @Async
-    public  void sendEmail(String email ,String token){
+    public  void sendEmailToCustomer(String email ,String token){
 
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setTo(email);
         mail.setFrom("imcoolajaykumar2010@gmail.com");
         mail.setSubject("Account registration confirmation mail");
         mail.setText("To get your registration complete click here : "
-                +"localhost:8080/customer/registrationConfirm?token="+token);
+                +"localhost:8080/register/confirm-customer?token="+token);
+        mailSender.send(mail);
+    }
+    public  void sendEmailToSeller(String email ,String token){
+
+        SimpleMailMessage mail = new SimpleMailMessage();
+        mail.setTo(email);
+        mail.setFrom("imcoolajaykumar2010@gmail.com");
+        mail.setSubject("Account registration confirmation mail");
+        mail.setText("To get your registration complete click here : "
+                +"localhost:8080/register/confirm-seller?token="+token);
         mailSender.send(mail);
     }
 

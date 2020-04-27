@@ -26,6 +26,8 @@ public class ProductVariation {
     private int quantityAvailable;
 
     private float price;
+
+    private  boolean isActive;
  //   @Column(name="METADATA")
 //    JSONObject metadata=new JSONObject();
 

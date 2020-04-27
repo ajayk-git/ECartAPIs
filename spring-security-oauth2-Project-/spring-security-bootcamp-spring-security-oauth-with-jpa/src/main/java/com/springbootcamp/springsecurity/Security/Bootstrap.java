@@ -1,15 +1,12 @@
 package com.springbootcamp.springsecurity.Security;
 
 
-import com.springbootcamp.springsecurity.Entities.Address;
-import com.springbootcamp.springsecurity.Entities.Addresscopy;
-import com.springbootcamp.springsecurity.Entities.Cart;
+import com.springbootcamp.springsecurity.Entities.*;
 import com.springbootcamp.springsecurity.Entities.Order.Order;
 import com.springbootcamp.springsecurity.Entities.Product.Category;
 import com.springbootcamp.springsecurity.Entities.Product.Product;
 import com.springbootcamp.springsecurity.Entities.Product.ProductVariation;
 import com.springbootcamp.springsecurity.Entities.Product.ProductReview;
-import com.springbootcamp.springsecurity.Entities.Role;
 import com.springbootcamp.springsecurity.Entities.Users.Customer;
 import com.springbootcamp.springsecurity.Entities.Users.Seller;
 import com.springbootcamp.springsecurity.Entities.Users.User;
@@ -42,6 +39,8 @@ public class Bootstrap {
     ProductVariationRepository productVariationRepository;
     @Autowired
     OrderRepository orderRepository;
+    @Autowired
+    CategoryMetaDataFieldRepository categoryMetaDataFieldRepository;
 
 
 
@@ -216,6 +215,20 @@ public class Bootstrap {
             Addresscopy addresscopy=new Addresscopy(address);
             order.setAddresscopy(addresscopy);
             orderRepository.save(order);
+        }
+
+        if(categoryMetaDataFieldRepository.count()<3){
+            CategoryMetaDataField categoryMetaDataField=new CategoryMetaDataField();
+            CategoryMetaDataField categoryMetaDataField1=new CategoryMetaDataField();
+            CategoryMetaDataField categoryMetaDataField2=new CategoryMetaDataField();
+
+
+            categoryMetaDataField.setFieldName("Size");
+            categoryMetaDataField1.setFieldName("Color");
+            categoryMetaDataField2.setFieldName("Fabric");
+            categoryMetaDataFieldRepository.save(categoryMetaDataField);
+            categoryMetaDataFieldRepository.save(categoryMetaDataField1);
+            categoryMetaDataFieldRepository.save(categoryMetaDataField2);
         }
 
 
