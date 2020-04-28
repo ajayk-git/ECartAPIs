@@ -7,8 +7,10 @@ import com.springbootcamp.springsecurity.dtos.CategoryDTO;
 import com.springbootcamp.springsecurity.dtos.CategoryMetaDataFieldDTO;
 import com.springbootcamp.springsecurity.dtos.CustomerDto;
 import com.springbootcamp.springsecurity.dtos.SellerDto;
+import com.springbootcamp.springsecurity.entities.product.Category;
 import com.springbootcamp.springsecurity.exceptions.AccountDoesNotExistException;
 import com.springbootcamp.springsecurity.services.AdminService;
+import com.springbootcamp.springsecurity.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,8 @@ public class AdminController {
 
     @Autowired
     AdminService adminService;
+    @Autowired
+    CategoryService categoryService;
 
 
     //=============================================get all customers ===========================================================================
@@ -77,25 +81,29 @@ public class AdminController {
     @PostMapping("/metadata-fields")
     public ResponseEntity addMetaDataFields(@RequestBody MetaDataFieldCO metaDataFieldCO){
         String fieldName=metaDataFieldCO.getFieldName();
-        return  adminService.addMetaDataField(fieldName);
+        return  categoryService.addMetaDataField(fieldName);
     }
 
     @GetMapping("/metadata-fields")
     public List<CategoryMetaDataFieldDTO>getAllMetaDataFieldList(){
 
-        return adminService.getAllMetaDataFieldList();
+        return categoryService.getAllMetaDataFieldList();
     }
 
 
     @PostMapping("/categories")
     public ResponseEntity addNewCategory(@Valid @RequestBody CategoryCO categoryCO){
-        return adminService.addNewCategory(categoryCO);
+        return categoryService.addNewCategory(categoryCO);
     }
 
     @GetMapping("/categories")
     public List<CategoryDTO> getAllCategories(){
-         return adminService.getAllCategories();
+         return categoryService.getAllCategories();
     }
 
 
+    @GetMapping("/category/{id}")
+    public List<CategoryDTO> getCategory(@PathVariable(name = "id") Long id){
+        return categoryService.getCategory(id);
+    }
 }
