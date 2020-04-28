@@ -1,11 +1,10 @@
 package com.springbootcamp.springsecurity;
 
-import com.springbootcamp.springsecurity.Security.Bootstrap;
+import com.springbootcamp.springsecurity.security.Bootstrap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.web.bind.annotation.GetMapping;

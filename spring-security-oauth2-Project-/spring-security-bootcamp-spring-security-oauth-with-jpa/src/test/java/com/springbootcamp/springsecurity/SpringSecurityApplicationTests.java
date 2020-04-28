@@ -1,14 +1,11 @@
 package com.springbootcamp.springsecurity;
 
-import com.springbootcamp.springsecurity.Entities.Address;
-import com.springbootcamp.springsecurity.Entities.Product.Category;
-import com.springbootcamp.springsecurity.Entities.Product.Product;
-import com.springbootcamp.springsecurity.Entities.Product.ProductVariation;
-import com.springbootcamp.springsecurity.Entities.Role;
-import com.springbootcamp.springsecurity.Entities.Users.Customer;
-import com.springbootcamp.springsecurity.Entities.Users.Seller;
-import com.springbootcamp.springsecurity.Entities.Users.User;
-import com.springbootcamp.springsecurity.Repositories.*;
+import com.springbootcamp.springsecurity.entities.Address;
+import com.springbootcamp.springsecurity.entities.product.Category;
+import com.springbootcamp.springsecurity.entities.Role;
+import com.springbootcamp.springsecurity.entities.users.Customer;
+import com.springbootcamp.springsecurity.entities.users.Seller;
+import com.springbootcamp.springsecurity.repositories.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,6 +33,8 @@ class SpringSecurityApplicationTests {
 	ProductReviewRepository productReviewRepository;
 	@Autowired
 	CartRepository cartRepository;
+	@Autowired
+	CategoryRepository categoryRepository;
 	@Test
 	void contextLoads() {
 	}
@@ -109,7 +108,16 @@ class SpringSecurityApplicationTests {
 		sellerRepository.save(seller);
 	}
 
-//	@Test
+	@Test
+	void test(){
+		Category category = new Category();
+		Category parent = categoryRepository.findById(1L).get();
+		category.setParentCategory(parent);
+		category.setName("Shoes");
+		categoryRepository.save(category);
+
+	}
+//	@Tes
 //	void addProduct(){
 //
 //		Product product=new Product();

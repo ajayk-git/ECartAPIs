@@ -1,11 +1,10 @@
 package com.springbootcamp.springsecurity;
 
-import com.springbootcamp.springsecurity.Entities.Users.User;
+import com.springbootcamp.springsecurity.entities.users.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
