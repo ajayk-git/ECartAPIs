@@ -4,6 +4,8 @@ package com.springbootcamp.springsecurity.security;
 import com.springbootcamp.springsecurity.entities.*;
 import com.springbootcamp.springsecurity.entities.order.Order;
 import com.springbootcamp.springsecurity.entities.product.Category;
+import com.springbootcamp.springsecurity.entities.product.Product;
+import com.springbootcamp.springsecurity.entities.product.ProductVariation;
 import com.springbootcamp.springsecurity.entities.users.Customer;
 import com.springbootcamp.springsecurity.entities.users.Seller;
 import com.springbootcamp.springsecurity.entities.users.User;
@@ -68,7 +70,7 @@ public class Bootstrap {
 
         }
 
-        if (sellerRepository.count() < 1) {
+        if (sellerRepository.count() <2) {
 
             Seller seller = new Seller();
             Address address = new Address();
@@ -99,7 +101,6 @@ public class Bootstrap {
             seller.setEnabled(true);
             seller.setActive(true);
             address.setUser(seller);
-            ;
             seller.setRoleList(roleList);
             seller.setAddress(address);
             sellerRepository.save(seller);
@@ -179,7 +180,7 @@ public class Bootstrap {
             electronicsCategory3.setParentCategory(parentCategory2);
 
             Category electronicsCategory4 = new Category();
-            electronicsCategory4.setName("Mobiles And Tablets");
+            electronicsCategory4.setName("Mobile Phones");
             electronicsCategory4.setParentCategory(parentCategory2);
 
             List<Category> subCategories1 = new ArrayList<>();
@@ -231,48 +232,20 @@ public class Bootstrap {
             metaDataFieldValuesRepository.save(categoryMetadataFieldValues1);
         }
 
-//
-//        if(productRepository.count() < 1){
-//
-//            Product product = new Product();
-//            product.setName("One Plus 7");
-//            product.setDescription("Smart Phone");
-//
-//            product.setCategory(categoryRepository.findByName("Mobile Phones"));
-//            product.setSeller( sellerRepository.findByEmail("amansharama@gmail.com"));
-//            product.setCancelable(true);
-//            product.setReturnable(true);
-//            product.setBrand("OnePlus");
-//            product.setActive(true);
-//
-//            List<ProductVariation> productVariations = new ArrayList<>();
-//            ProductVariation variation1 = new ProductVariation(8,15000,"firstImage","first metadata");
-//            productVariations.add(variation1);
-//            variation1.setProduct(product);
-//            ProductVariation variation2 = new ProductVariation(10,10000,"Second Image","Second Metadata");
-//            variation2.setProduct(product);
-//            productVariations.add(variation2);
-//            product.setProductVariationList(productVariations);
-//
-//
-//
-//            List<ProductReview> productReviewsList = new ArrayList<>();
-//            ProductReview review1 = new ProductReview();
-//            review1.setReview("Nice Camera,Nice Performance");
-//            review1.setRating(4.8f);
-//            review1.setProduct(product);
-//            review1.setCustomer(customerRepository.findByEmail("ajay.mca17.du@gmail.com"));
-//            productReviewsList.add(review1);
-//
-//            ProductReview review2 = new ProductReview();
-//            review2.setReview("Good Battery Backup,PUB-G runs smoothly");
-//            review2.setRating(4.7f);
-//            review2.setProduct(product);
-//            review2.setCustomer(customerRepository.findByEmail("ajay.mca17.du@gmail.com"));
-//            productReviewsList.add(review2);
-//            product.setProductReviewList(productReviewsList);
-//            productRepository.save(product);
-//        }
+
+        if(productRepository.count() < 1){
+
+            Product product = new Product();
+            product.setName("One Plus 7");
+            product.setSeller( sellerRepository.findByEmail("amansharma@gmail.com"));
+            product.setDescription("India's smartest mobile phone....");
+            product.setCategory(categoryRepository.findByName("Mobile Phones").get());
+            product.setCancelable(false);
+            product.setReturnable(false);
+            product.setBrand("OnePlus");
+            product.setActive(true);
+            productRepository.save(product);
+        }
 
 //
 //        if (cartRepository.count() < 1){
@@ -303,3 +276,32 @@ public class Bootstrap {
 
     }
 }
+
+
+
+//            List<ProductVariation> productVariations = new ArrayList<>();
+//            ProductVariation variation1 = new ProductVariation(8,15000,"firstImage","first metadata");
+//            productVariations.add(variation1);
+//            variation1.setProduct(product);
+//            ProductVariation variation2 = new ProductVariation(10,10000,"Second Image","Second Metadata");
+//            variation2.setProduct(product);
+//            productVariations.add(variation2);
+//            product.setProductVariationList(productVariations);
+//
+//
+//
+//            List<ProductReview> productReviewsList = new ArrayList<>();
+//            ProductReview review1 = new ProductReview();
+//            review1.setReview("Nice Camera,Nice Performance");
+//            review1.setRating(4.8f);
+//            review1.setProduct(product);
+//            review1.setCustomer(customerRepository.findByEmail("ajay.mca17.du@gmail.com"));
+//            productReviewsList.add(review1);
+//
+//            ProductReview review2 = new ProductReview();
+//            review2.setReview("Good Battery Backup,PUB-G runs smoothly");
+//            review2.setRating(4.7f);
+//            review2.setProduct(product);
+//            review2.setCustomer(customerRepository.findByEmail("ajay.mca17.du@gmail.com"));
+//            productReviewsList.add(review2);
+//            product.setProductReviewList(productReviewsList);
