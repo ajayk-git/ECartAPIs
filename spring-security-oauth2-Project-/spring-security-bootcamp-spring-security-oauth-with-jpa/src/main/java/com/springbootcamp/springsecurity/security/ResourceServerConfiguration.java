@@ -65,14 +65,11 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .antMatchers("seller/*").hasAnyRole("SELLER")
 
                 .antMatchers("/logout/").hasAnyRole("SELLER","ADMIN","USER")
-                .anyRequest().authenticated()
+                .anyRequest()
+                .authenticated()
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .csrf().disable();
     }
 }
-//
-//"/customer/profile","/customer/update-password",
-//        "/customer/address/{id}","/customer/address",
-//        "/customer/address/{id}"

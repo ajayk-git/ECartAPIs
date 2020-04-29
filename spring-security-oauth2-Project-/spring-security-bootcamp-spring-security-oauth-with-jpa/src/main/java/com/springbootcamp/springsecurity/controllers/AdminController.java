@@ -2,6 +2,7 @@ package com.springbootcamp.springsecurity.controllers;
 
 
 import com.springbootcamp.springsecurity.co.CategoryCO;
+import com.springbootcamp.springsecurity.co.CategoryUpdateCO;
 import com.springbootcamp.springsecurity.co.MetaDataFieldCO;
 import com.springbootcamp.springsecurity.dtos.CategoryDTO;
 import com.springbootcamp.springsecurity.dtos.CategoryMetaDataFieldDTO;
@@ -105,5 +106,10 @@ public class AdminController {
     @GetMapping("/category/{id}")
     public List<CategoryDTO> getCategory(@PathVariable(name = "id") Long id){
         return categoryService.getCategory(id);
+    }
+
+    @PatchMapping("/category/{id}")
+    public ResponseEntity updateCategory(@PathVariable(name = "id") Long id, @Valid @RequestBody CategoryUpdateCO categoryUpdateCO){
+        return categoryService.updateCategory(id,categoryUpdateCO);
     }
 }

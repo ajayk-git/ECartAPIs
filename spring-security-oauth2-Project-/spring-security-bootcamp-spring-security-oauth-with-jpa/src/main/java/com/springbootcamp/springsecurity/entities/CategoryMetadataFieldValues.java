@@ -25,7 +25,6 @@ public class CategoryMetadataFieldValues {
     @MapsId("categoryMetadataFieldId")
     CategoryMetaDataField categoryMetaDataField;
 
-
     String fieldValues;
 
 }
