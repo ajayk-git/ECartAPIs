@@ -1,19 +1,11 @@
 package com.springbootcamp.springsecurity.services;
 
-import com.springbootcamp.springsecurity.co.CategoryCO;
-import com.springbootcamp.springsecurity.dtos.CategoryDTO;
-import com.springbootcamp.springsecurity.dtos.CategoryMetaDataFieldDTO;
 import com.springbootcamp.springsecurity.dtos.CustomerDto;
 import com.springbootcamp.springsecurity.dtos.SellerDto;
-import com.springbootcamp.springsecurity.entities.CategoryMetaDataField;
-import com.springbootcamp.springsecurity.entities.product.Category;
 import com.springbootcamp.springsecurity.entities.users.Customer;
 import com.springbootcamp.springsecurity.entities.users.Seller;
 import com.springbootcamp.springsecurity.entities.users.User;
 import com.springbootcamp.springsecurity.exceptions.AccountDoesNotExistException;
-import com.springbootcamp.springsecurity.exceptions.MetaDatafieldAlreadyExistException;
-import com.springbootcamp.springsecurity.exceptions.ResourceAlreadyExistException;
-import com.springbootcamp.springsecurity.exceptions.ResourceNotFoundException;
 import com.springbootcamp.springsecurity.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 @Service
@@ -41,7 +32,7 @@ public class AdminService {
     @Autowired
     SellerRepository sellerRepository;
     @Autowired
-    CategoryMetaDataFieldRepository categoryMetaDataFieldRepository;
+    MetaDataFieldRepository categoryMetaDataFieldRepository;
     @Autowired
     CategoryRepository categoryRepository;
 

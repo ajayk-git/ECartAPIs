@@ -20,6 +20,7 @@ import java.util.List;
 @Component
 public class Bootstrap {
 
+
     @Autowired
     UserRepository userRepository;
     @Autowired
@@ -37,15 +38,14 @@ public class Bootstrap {
     @Autowired
     OrderRepository orderRepository;
     @Autowired
-    CategoryMetaDataFieldRepository categoryMetaDataFieldRepository;
+    MetaDataFieldRepository categoryMetaDataFieldRepository;
+    @Autowired
+    MetaDataFieldValuesRepository metaDataFieldValuesRepository;
 
 
+    public void initialize() {
 
-
-
-    public void initialize()  {
-
-        if(userRepository.count()<2){
+        if (userRepository.count() < 2) {
             PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             User user1 = new User();
             user1.setFirstName("ADMIN");
@@ -54,8 +54,8 @@ public class Bootstrap {
             user1.setActive(true);
             user1.setDeleted(false);
             user1.setPassword(passwordEncoder.encode("admin"));
-            List<Role> roleList=new ArrayList<>();
-            Role role=new Role();
+            List<Role> roleList = new ArrayList<>();
+            Role role = new Role();
             role.setAuthority("ROLE_ADMIN");
             roleList.add(role);
             user1.setAccountNonLocked(true);
@@ -64,18 +64,18 @@ public class Bootstrap {
             user1.setCredentialsNonExpired(true);
             user1.setRoleList(roleList);
             userRepository.save(user1);
-            System.out.println("Total users saved::"+userRepository.count());
+            System.out.println("Total users saved::" + userRepository.count());
 
         }
 
-        if(sellerRepository.count()<1){
+        if (sellerRepository.count() < 1) {
 
-            Seller seller =new Seller();
-            Address address=new Address();
-            Role role=new Role();
-            List<Role> roleList=new ArrayList<>();
+            Seller seller = new Seller();
+            Address address = new Address();
+            Role role = new Role();
+            List<Role> roleList = new ArrayList<>();
 
-            PasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
+            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             seller.setFirstName("Aman");
             seller.setLastName("Sharma");
             seller.setDeleted(false);
@@ -98,21 +98,22 @@ public class Bootstrap {
             seller.setAccountNotExpired(true);
             seller.setEnabled(true);
             seller.setActive(true);
-            address.setUser(seller);;
+            address.setUser(seller);
+            ;
             seller.setRoleList(roleList);
             seller.setAddress(address);
             sellerRepository.save(seller);
-            System.out.println("Total users saved::"+sellerRepository.count());
+            System.out.println("Total users saved::" + sellerRepository.count());
 
         }
 
-        if (customerRepository.count()<1){
-            Customer user =new Customer();
-            Address address=new Address();
-            Role role=new Role();
-            List<Address> addressList=new ArrayList<>();
-            List<Role> roleList=new ArrayList<>();
-            PasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
+        if (customerRepository.count() < 1) {
+            Customer user = new Customer();
+            Address address = new Address();
+            Role role = new Role();
+            List<Address> addressList = new ArrayList<>();
+            List<Role> roleList = new ArrayList<>();
+            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             user.setFirstName("Ajay");
             user.setLastName("Kumar");
             user.setDeleted(false);
@@ -140,24 +141,31 @@ public class Bootstrap {
             customerRepository.save(user);
         }
 
-        if(categoryRepository.count() < 8){
+        if (categoryRepository.count() < 8) {
             Category parentCategory1 = new Category();
             parentCategory1.setName("Fashion");
             parentCategory1.setParentCategory(null);
 
-            List<Category> subCategories=new ArrayList<>();
+            List<Category> subCategories = new ArrayList<>();
 
-            Category fashionCategory1=new Category();
+            Category fashionCategory1 = new Category();
             fashionCategory1.setName("T-Shirt");
             fashionCategory1.setParentCategory(parentCategory1);
 
 
-            Category fashionCategory2=new Category();
+            Category fashionCategory2 = new Category();
             fashionCategory2.setName("Jeans");
             fashionCategory2.setParentCategory(parentCategory1);
 
+
+            Category fashionCategory6 = new Category();
+            fashionCategory6.setName("Shoes");
+            fashionCategory6.setParentCategory(parentCategory1);
+
             subCategories.add(fashionCategory1);
             subCategories.add(fashionCategory2);
+            subCategories.add(fashionCategory6);
+
 
             parentCategory1.setSubCategory(subCategories);
 
@@ -166,15 +174,15 @@ public class Bootstrap {
             parentCategory2.setName("Electronics");
             parentCategory2.setParentCategory(null);
 
-            Category electronicsCategory3=new Category();
+            Category electronicsCategory3 = new Category();
             electronicsCategory3.setName("Home Appliances");
             electronicsCategory3.setParentCategory(parentCategory2);
 
-            Category electronicsCategory4=new Category();
+            Category electronicsCategory4 = new Category();
             electronicsCategory4.setName("Mobiles And Tablets");
             electronicsCategory4.setParentCategory(parentCategory2);
 
-            List<Category> subCategories1=new ArrayList<>();
+            List<Category> subCategories1 = new ArrayList<>();
 
             subCategories1.add(electronicsCategory3);
             subCategories1.add(electronicsCategory4);
@@ -183,6 +191,44 @@ public class Bootstrap {
             categoryRepository.save(parentCategory1);
             categoryRepository.save(parentCategory2);
 
+        }
+
+        if (categoryMetaDataFieldRepository.count() < 3) {
+            CategoryMetaDataField categoryMetaDataField = new CategoryMetaDataField();
+            CategoryMetaDataField categoryMetaDataField1 = new CategoryMetaDataField();
+            CategoryMetaDataField categoryMetaDataField2 = new CategoryMetaDataField();
+
+
+            categoryMetaDataField.setFieldName("Size");
+            categoryMetaDataField1.setFieldName("Color");
+            categoryMetaDataField2.setFieldName("Fabric");
+
+            categoryMetaDataFieldRepository.save(categoryMetaDataField);
+            categoryMetaDataFieldRepository.save(categoryMetaDataField1);
+            categoryMetaDataFieldRepository.save(categoryMetaDataField2);
+        }
+
+
+        if (metaDataFieldValuesRepository.count() < 5) {
+
+            CategoryMetadataFieldValues categoryMetadataFieldValues = new CategoryMetadataFieldValues();
+            CategoryMetadataFieldValues categoryMetadataFieldValues1 = new CategoryMetadataFieldValues();
+
+
+            Category category = categoryRepository.findById(2L).get();
+            CategoryMetaDataField metaDataField = categoryMetaDataFieldRepository.findById(1L).get();
+
+            categoryMetadataFieldValues.setCategory(category);
+            categoryMetadataFieldValues.setCategoryMetaDataField(metaDataField);
+            categoryMetadataFieldValues.setFieldValues("S,M,L,XL");
+
+            CategoryMetaDataField metaDataField1 = categoryMetaDataFieldRepository.findById(2L).get();
+            categoryMetadataFieldValues1.setCategory(category);
+            categoryMetadataFieldValues1.setCategoryMetaDataField(metaDataField1);
+            categoryMetadataFieldValues1.setFieldValues("Yellow,Red,Black");
+
+            metaDataFieldValuesRepository.save(categoryMetadataFieldValues);
+            metaDataFieldValuesRepository.save(categoryMetadataFieldValues1);
         }
 
 //
@@ -239,7 +285,7 @@ public class Bootstrap {
 //        }
 
 
-        if (orderRepository .count() < 1){
+        if (orderRepository.count() < 1) {
             Order order = new Order();
             order.setAmountPaid(10000);
 
@@ -247,25 +293,12 @@ public class Bootstrap {
             order.setDateCreated(date);
             order.setPaymentMethod("Debit card");
             order.setCustomer(customerRepository.findByEmail("ajay.mca17.du@gmail.com"));
-            Address address=new Address("Alwar","Rajasthan","India","Home","Near Income Tax Office","301701");
-            Addresscopy addresscopy=new Addresscopy(address);
+            Address address = new Address("Alwar", "Rajasthan", "India", "Home", "Near Income Tax Office", "301701");
+            Addresscopy addresscopy = new Addresscopy(address);
             order.setAddresscopy(addresscopy);
             orderRepository.save(order);
         }
 
-        if(categoryMetaDataFieldRepository.count()<3){
-            CategoryMetaDataField categoryMetaDataField=new CategoryMetaDataField();
-            CategoryMetaDataField categoryMetaDataField1=new CategoryMetaDataField();
-            CategoryMetaDataField categoryMetaDataField2=new CategoryMetaDataField();
-
-
-            categoryMetaDataField.setFieldName("Size");
-            categoryMetaDataField1.setFieldName("Color");
-            categoryMetaDataField2.setFieldName("Fabric");
-            categoryMetaDataFieldRepository.save(categoryMetaDataField);
-            categoryMetaDataFieldRepository.save(categoryMetaDataField1);
-            categoryMetaDataFieldRepository.save(categoryMetaDataField2);
-        }
 
 
     }

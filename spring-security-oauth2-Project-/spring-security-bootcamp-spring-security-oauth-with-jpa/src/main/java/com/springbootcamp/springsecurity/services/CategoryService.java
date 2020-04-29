@@ -1,36 +1,40 @@
 package com.springbootcamp.springsecurity.services;
-
 import com.springbootcamp.springsecurity.co.CategoryCO;
 import com.springbootcamp.springsecurity.co.CategoryUpdateCO;
+import com.springbootcamp.springsecurity.co.MetaDataFieldValueCo;
 import com.springbootcamp.springsecurity.dtos.CategoryDTO;
 import com.springbootcamp.springsecurity.dtos.CategoryMetaDataFieldDTO;
 import com.springbootcamp.springsecurity.entities.CategoryMetaDataField;
+import com.springbootcamp.springsecurity.entities.CategoryMetadataCompositeKey;
+import com.springbootcamp.springsecurity.entities.CategoryMetadataFieldValues;
 import com.springbootcamp.springsecurity.entities.product.Category;
 import com.springbootcamp.springsecurity.exceptions.MetaDatafieldAlreadyExistException;
 import com.springbootcamp.springsecurity.exceptions.ResourceAlreadyExistException;
 import com.springbootcamp.springsecurity.exceptions.ResourceNotFoundException;
-import com.springbootcamp.springsecurity.repositories.CategoryMetaDataFieldRepository;
+import com.springbootcamp.springsecurity.repositories.MetaDataFieldRepository;
 import com.springbootcamp.springsecurity.repositories.CategoryRepository;
+import com.springbootcamp.springsecurity.repositories.MetaDataFieldValuesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class CategoryService {
 
     @Autowired
-    CategoryMetaDataFieldRepository categoryMetaDataFieldRepository;
+    MetaDataFieldRepository categoryMetaDataFieldRepository;
     @Autowired
     CategoryRepository categoryRepository;
+    @Autowired
+    MetaDataFieldValuesRepository metaDataFieldValuesRepository;
+
+
 
     @Secured("ROLE_ADMIN")
     public ResponseEntity<String> addMetaDataField(String fieldName) {
@@ -44,7 +48,6 @@ public class CategoryService {
 
 
     //===============================================To get a metadata field list======================================================================
-
 
 
     @Secured("ROLE_ADMIN")
@@ -157,7 +160,7 @@ public class CategoryService {
     }
 
 
-   //===============================================To update a category======================================================================
+    //===============================================To update a category======================================================================
 
     public ResponseEntity updateCategory(Long id, CategoryUpdateCO categoryUpdateCO) {
 
@@ -170,15 +173,41 @@ public class CategoryService {
 
             if (category.isPresent()) {
                 throw new ResourceAlreadyExistException("Category with given name is already exist kindly retry with another category name.");
-            }
-
-            else{
-                Category category1=categoryRepository.findById(id).get();
+            } else {
+                Category category1 = categoryRepository.findById(id).get();
                 category1.setName(categoryName);
-            categoryRepository.save(category1);
+                categoryRepository.save(category1);
             }
         }
         return new ResponseEntity("Category details updated Successfully.", HttpStatus.OK);
 
+    }
+
+    public ResponseEntity addMetaDataValues( MetaDataFieldValueCo metaDataFieldValueCo) {
+
+        Long categoryId= metaDataFieldValueCo.getCategoryId();
+        Long metaDataFieldId= metaDataFieldValueCo.getFieldId();
+        if (categoryRepository.findById(categoryId).isPresent() && categoryMetaDataFieldRepository.findById(metaDataFieldId).isPresent()) {
+
+            Category category=categoryRepository.findById(categoryId).get();
+
+            CategoryMetaDataField metaDataField=categoryMetaDataFieldRepository.findById(metaDataFieldId).get();
+            CategoryMetadataCompositeKey  compositeKey=new CategoryMetadataCompositeKey(categoryId,metaDataFieldId);
+            CategoryMetadataFieldValues metadataFieldValues=new CategoryMetadataFieldValues();
+
+
+            String fieldValues=metaDataFieldValueCo.getFieldValues();
+
+            metadataFieldValues.setFieldValues(fieldValues);
+            metadataFieldValues.setCompositeKey(compositeKey);
+            metadataFieldValues.setCategory(category);
+            metadataFieldValues.setCategoryMetaDataField(metaDataField);
+
+            metaDataFieldValuesRepository.save(metadataFieldValues);
+            return new ResponseEntity("MetaData Field Values are successfully added.",HttpStatus.CREATED);
+        }
+
+        else
+            throw  new ResourceNotFoundException("Please enter a valid Combination of CategoryId and MetaData FieldId.");
     }
 }

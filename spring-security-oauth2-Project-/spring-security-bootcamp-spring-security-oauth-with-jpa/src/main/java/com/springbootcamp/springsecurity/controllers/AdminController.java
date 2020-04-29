@@ -4,6 +4,7 @@ package com.springbootcamp.springsecurity.controllers;
 import com.springbootcamp.springsecurity.co.CategoryCO;
 import com.springbootcamp.springsecurity.co.CategoryUpdateCO;
 import com.springbootcamp.springsecurity.co.MetaDataFieldCO;
+import com.springbootcamp.springsecurity.co.MetaDataFieldValueCo;
 import com.springbootcamp.springsecurity.dtos.CategoryDTO;
 import com.springbootcamp.springsecurity.dtos.CategoryMetaDataFieldDTO;
 import com.springbootcamp.springsecurity.dtos.CustomerDto;
@@ -112,4 +113,10 @@ public class AdminController {
     public ResponseEntity updateCategory(@PathVariable(name = "id") Long id, @Valid @RequestBody CategoryUpdateCO categoryUpdateCO){
         return categoryService.updateCategory(id,categoryUpdateCO);
     }
+
+    @PostMapping("metadata-value")
+    public  ResponseEntity addMetaDataValues(@Valid @RequestBody MetaDataFieldValueCo metaDataFieldValueCo){
+        return categoryService.addMetaDataValues(metaDataFieldValueCo);
+    }
+
 }
