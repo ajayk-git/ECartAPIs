@@ -36,6 +36,18 @@ public class CategoryService {
 
 
 
+    public String setToStringConverter(Set<String> inputSet){
+        String resultString=String.join(",",inputSet);
+        return resultString;
+    }
+    public Set<String> stringToSetConverter(String inputString){
+        Set<String> stringSet=new HashSet<String>(Arrays.asList(inputString.split(",")));
+        return stringSet;
+    }
+
+
+
+
     @Secured("ROLE_ADMIN")
     public ResponseEntity<String> addMetaDataField(String fieldName) {
         if (!(categoryMetaDataFieldRepository.findByFieldName(fieldName) == null))
@@ -197,8 +209,10 @@ public class CategoryService {
 
 
             String fieldValues=metaDataFieldValueCo.getFieldValues();
+            Set<String> stringSet=stringToSetConverter(fieldValues);
+            String filteredValues=setToStringConverter(stringSet);
 
-            metadataFieldValues.setFieldValues(fieldValues);
+            metadataFieldValues.setFieldValues(filteredValues);
             metadataFieldValues.setCompositeKey(compositeKey);
             metadataFieldValues.setCategory(category);
             metadataFieldValues.setCategoryMetaDataField(metaDataField);
