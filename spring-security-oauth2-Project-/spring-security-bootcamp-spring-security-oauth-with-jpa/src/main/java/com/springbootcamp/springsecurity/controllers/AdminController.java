@@ -114,9 +114,10 @@ public class AdminController {
         return categoryService.updateCategory(id,categoryUpdateCO);
     }
 
-    @PostMapping("metadata-value")
+    @PostMapping("/metadata-value")
     public  ResponseEntity addMetaDataValues(@Valid @RequestBody MetaDataFieldValueCo metaDataFieldValueCo){
         return categoryService.addMetaDataValues(metaDataFieldValueCo);
     }
+
 
 }

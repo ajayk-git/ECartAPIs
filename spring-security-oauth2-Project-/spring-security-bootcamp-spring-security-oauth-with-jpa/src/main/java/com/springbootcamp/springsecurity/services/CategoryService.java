@@ -8,6 +8,7 @@ import com.springbootcamp.springsecurity.entities.CategoryMetaDataField;
 import com.springbootcamp.springsecurity.entities.CategoryMetadataCompositeKey;
 import com.springbootcamp.springsecurity.entities.CategoryMetadataFieldValues;
 import com.springbootcamp.springsecurity.entities.product.Category;
+import com.springbootcamp.springsecurity.exceptions.DuplicateValueException;
 import com.springbootcamp.springsecurity.exceptions.MetaDatafieldAlreadyExistException;
 import com.springbootcamp.springsecurity.exceptions.ResourceAlreadyExistException;
 import com.springbootcamp.springsecurity.exceptions.ResourceNotFoundException;
@@ -209,8 +210,11 @@ public class CategoryService {
 
 
             String fieldValues=metaDataFieldValueCo.getFieldValues();
+            List<String> stringList=new ArrayList<>(Arrays.asList(fieldValues.split(",")));
             Set<String> stringSet=stringToSetConverter(fieldValues);
             String filteredValues=setToStringConverter(stringSet);
+            if (stringSet.size()!=stringList.size())
+                throw new DuplicateValueException("Duplicate values exist in Metadata field Values.");
 
             metadataFieldValues.setFieldValues(filteredValues);
             metadataFieldValues.setCompositeKey(compositeKey);
@@ -224,4 +228,6 @@ public class CategoryService {
         else
             throw  new ResourceNotFoundException("Please enter a valid Combination of CategoryId and MetaData FieldId.");
     }
+
+
 }
