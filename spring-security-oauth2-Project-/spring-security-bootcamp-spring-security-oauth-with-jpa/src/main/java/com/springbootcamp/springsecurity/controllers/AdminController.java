@@ -72,7 +72,6 @@ public class AdminController {
     }
 
 
-
     //==============================================Deactivation  of User Account============================================================
 
     @PatchMapping("/deactivate-account/{id}")
@@ -88,7 +87,6 @@ public class AdminController {
 
     @GetMapping("/metadata-fields")
     public List<CategoryMetaDataFieldDTO>getAllMetaDataFieldList(){
-
         return categoryService.getAllMetaDataFieldList();
     }
 
@@ -100,7 +98,7 @@ public class AdminController {
 
     @GetMapping("/categories")
     public List<CategoryDTO> getAllCategories(){
-         return categoryService.getAllCategories();
+        return categoryService.getAllCategories();
     }
 
 
@@ -122,6 +120,12 @@ public class AdminController {
     @PatchMapping("/metadata-value")
     public ResponseEntity updateMetaDataValues(@Valid @RequestBody MetaDataFieldValueCo metaDataFieldValueCo){
         return categoryService.updateMetaDataValues(metaDataFieldValueCo);
+    }
+
+    //===========================================to activate product ===========================================================
+    @PutMapping("/product-activate/{id}")
+    public ResponseEntity activateProduct(@PathVariable(name = "id") Long productId){
+        return productService.activateProduct(productId);
     }
 
 

@@ -270,21 +270,3 @@ public class CategoryService {
 
 
 }
-// while (iterator.hasNext()) {
-//
-//         Category currentCategory = iterator.next();
-//
-//         CategoryDTO categoryDTO = new CategoryDTO();
-//
-//         categoryDTO.setCategoryName(currentCategory.getName());
-//
-//         categoryDTO.setParentCategoryName(currentCategory.getName());
-//         categoryDTO.setCategoryId(currentCategory.getId());
-//
-//         if (currentCategory.getParentCategory() == null) {
-//         categoryDTO.setParentId(null);
-//         } else
-//         categoryDTO.setParentId(currentCategory.getParentCategory().getId());
-
-//         categoryDTOList.add(categoryDTO);
-//         }

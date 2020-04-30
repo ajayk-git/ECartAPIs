@@ -99,4 +99,28 @@ public class ProductService {
         return new ResponseEntity("Product added successfully.Product will  be activated  soon by admin,", HttpStatus.CREATED);
 
     }
+
+    //===========================================to activate product ===========================================================
+
+
+    public ResponseEntity activateProduct(Long productId) {
+        if(!productRepository.findById(productId).isPresent()){
+            throw new ResourceNotFoundException("Product is not found with mentioned productId.Please enter existing productId.");
+        }
+
+        else {
+            Product product = productRepository.findById(productId).get();
+            if (product.isActive())
+                throw new RuntimeException("Product with mentioned id is already activated.");
+
+            product.setActive(true);
+            String email=product.getSeller().getEmail();
+            emailService.mailNotificationSellerProductActivate(email,product);
+            productRepository.save(product);
+
+        }
+        return new ResponseEntity("Product is activated successfully.Email is triggered to seller.",HttpStatus.OK);
+    }
+
+
 }
