@@ -129,4 +129,13 @@ public class AdminController {
     }
 
 
+    //===========================================to deactivate product ===========================================================
+
+    @PutMapping("/product-deactivate/{id}")
+    public ResponseEntity deactivateProduct(@PathVariable(name = "id") Long productId){
+        return productService.deactivateProduct(productId);
+    }
+
+
+
 }

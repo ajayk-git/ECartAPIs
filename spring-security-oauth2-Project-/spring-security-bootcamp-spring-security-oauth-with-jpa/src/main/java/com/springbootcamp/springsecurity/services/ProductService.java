@@ -102,7 +102,6 @@ public class ProductService {
 
     //===========================================to activate product ===========================================================
 
-
     public ResponseEntity activateProduct(Long productId) {
         if(!productRepository.findById(productId).isPresent()){
             throw new ResourceNotFoundException("Product is not found with mentioned productId.Please enter existing productId.");
@@ -120,6 +119,24 @@ public class ProductService {
 
         }
         return new ResponseEntity("Product is activated successfully.Email is triggered to seller.",HttpStatus.OK);
+    }
+
+    //===========================================to deactivate product ===========================================================
+
+    public ResponseEntity deactivateProduct(Long productId) {
+        if(!productRepository.findById(productId).isPresent()){
+            throw new ResourceNotFoundException("Product is not found with mentioned productId.Please enter existing productId.");
+        }
+        else {
+            Product product = productRepository.findById(productId).get();
+            if (!product.isActive())
+                throw new RuntimeException("Product with mentioned id is already deactivated.");
+            product.setActive(false);
+            String email=product.getSeller().getEmail();
+            emailService.mailNotificationSellerProductDeactivate(email,product);
+            productRepository.save(product);
+        }
+        return new ResponseEntity("Product is deactivated successfully.Email is triggered to seller.",HttpStatus.OK);
     }
 
 

@@ -60,7 +60,8 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                         "/admin/metadata-fields","/admin/categories",
                         "/admin/category/{id}",
                         "/admin/metadata-value",
-                        "admin/product-activate/{id}").hasAnyRole("ADMIN")
+                        "admin/product-activate/{id}",
+                        "admin/product-deactivate/{id}").hasAnyRole("ADMIN")
 
                 .antMatchers("/customer/*").hasAnyRole("USER")
 

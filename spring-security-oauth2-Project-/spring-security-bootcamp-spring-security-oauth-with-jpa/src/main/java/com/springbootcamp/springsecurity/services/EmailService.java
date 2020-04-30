@@ -71,5 +71,16 @@ public class EmailService {
         mailSender.send(mailMessage);
     }
 
+    //==================send email to inform seller regarding product deactivation===================================
+
+    @Async
+    public void mailNotificationSellerProductDeactivate(String email, Product product) {
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setText("Your Product is deactivated by admin.Product id : " + product.getId() + " Product Name : " + product.getName());
+        mailMessage.setTo(email);
+        mailMessage.setFrom("imcoolajaykumar2010@gmail.com");
+        mailMessage.setSubject("Alert : Product Deactivation");
+        mailSender.send(mailMessage);
+    }
 
 }
