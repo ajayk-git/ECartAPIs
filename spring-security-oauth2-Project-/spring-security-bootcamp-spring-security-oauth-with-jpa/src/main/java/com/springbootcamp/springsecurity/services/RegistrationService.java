@@ -5,6 +5,7 @@ import com.springbootcamp.springsecurity.co.PasswordUpdateCO;
 import com.springbootcamp.springsecurity.co.SellerCO;
 import com.springbootcamp.springsecurity.ConfirmationToken;
 import com.springbootcamp.springsecurity.entities.Address;
+import com.springbootcamp.springsecurity.entities.Role;
 import com.springbootcamp.springsecurity.entities.users.Customer;
 import com.springbootcamp.springsecurity.entities.users.Seller;
 import com.springbootcamp.springsecurity.entities.users.User;
@@ -22,7 +23,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 @Service
 public class RegistrationService {
@@ -85,7 +88,12 @@ public class RegistrationService {
         address.setZipcode(sellerCO.getZipcode());
         address.setCountry(sellerCO.getCountry());
         address.setState(sellerCO.getState());
+        Role role=new Role();
+        role.setAuthority("ROLE_SELLER");
+        List<Role>roleList=new ArrayList<>();
+        roleList.add(role);
         seller.setAddress(address);
+        seller.setRoleList(roleList);
         seller.setPassword(encoder.encode(sellerCO.getPassword()));
         sellerRepository.save(seller);
 

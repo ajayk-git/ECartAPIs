@@ -2,16 +2,20 @@ package com.springbootcamp.springsecurity.controllers;
 
 import com.springbootcamp.springsecurity.co.*;
 import com.springbootcamp.springsecurity.dtos.AddressDto;
+import com.springbootcamp.springsecurity.dtos.CategorySellerDto;
 import com.springbootcamp.springsecurity.dtos.SellerDto;
 import com.springbootcamp.springsecurity.repositories.SellerRepository;
+import com.springbootcamp.springsecurity.services.CategoryService;
 import com.springbootcamp.springsecurity.services.ProductService;
 import com.springbootcamp.springsecurity.services.SellerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/seller")
@@ -23,7 +27,8 @@ public class SellerController {
     SellerService sellerService;
     @Autowired
     ProductService productService;
-
+    @Autowired
+    CategoryService categoryService;
     @GetMapping("/profile")
     public SellerDto viewSellerProfile(Principal principal){
         return  sellerService.viewSellerProfile(principal.getName());
@@ -60,5 +65,6 @@ public class SellerController {
         return productService.addNewProduct(productCo,principal);
     }
 
+  
 
 }

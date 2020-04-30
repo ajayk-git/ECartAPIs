@@ -4,6 +4,7 @@ import com.springbootcamp.springsecurity.co.CategoryUpdateCO;
 import com.springbootcamp.springsecurity.co.MetaDataFieldValueCo;
 import com.springbootcamp.springsecurity.dtos.CategoryDTO;
 import com.springbootcamp.springsecurity.dtos.CategoryMetaDataFieldDTO;
+import com.springbootcamp.springsecurity.dtos.CategorySellerDto;
 import com.springbootcamp.springsecurity.entities.CategoryMetaDataField;
 import com.springbootcamp.springsecurity.entities.CategoryMetadataCompositeKey;
 import com.springbootcamp.springsecurity.entities.CategoryMetadataFieldValues;
@@ -263,10 +264,27 @@ public class CategoryService {
         }
         return new ResponseEntity("MetaData Field Values are updated Successfully.",HttpStatus.OK);
 
-
     }
 
 
 
 
 }
+// while (iterator.hasNext()) {
+//
+//         Category currentCategory = iterator.next();
+//
+//         CategoryDTO categoryDTO = new CategoryDTO();
+//
+//         categoryDTO.setCategoryName(currentCategory.getName());
+//
+//         categoryDTO.setParentCategoryName(currentCategory.getName());
+//         categoryDTO.setCategoryId(currentCategory.getId());
+//
+//         if (currentCategory.getParentCategory() == null) {
+//         categoryDTO.setParentId(null);
+//         } else
+//         categoryDTO.setParentId(currentCategory.getParentCategory().getId());
+
+//         categoryDTOList.add(categoryDTO);
+//         }

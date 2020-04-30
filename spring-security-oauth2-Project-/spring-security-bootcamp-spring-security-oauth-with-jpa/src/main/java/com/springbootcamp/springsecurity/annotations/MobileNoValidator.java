@@ -10,7 +10,7 @@ public class MobileNoValidator implements ConstraintValidator<IsValidMobileNo,St
     Pattern pattern;
     Matcher matcher;
 
-    private  static final  String MOBILE_PATTERN= "\"^[789]\\\\d{9}$\""; //Indian mobile number Pattern
+    private  static final  String MOBILE_PATTERN= "^[789]\\d{9}$"; //Indian mobile number Pattern
 
     @Override
     public void initialize(IsValidMobileNo constraintAnnotation) {

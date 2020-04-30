@@ -13,25 +13,27 @@ import javax.validation.constraints.Pattern;
 @Getter
 @Setter
 public class  SellerCO  extends UserCO{
-    @NotEmpty
+    @NotNull
     @IsValidGST
     private String gst;
-    @NotEmpty
+    @NotNull
     private String companyName;
     @NotEmpty
     @IsValidMobileNo
     private String companyContact;
 
+    @NotNull
     private String city;
-
+    @NotNull
     private String state;
 
+    @NotNull
     private String country;
     @NotNull
     private String addressLine;
 
     private String lable;
     @NotNull
-    @Pattern(regexp = "[1-9]{6}")
+    @Pattern(regexp = "^[1-9][0-9]{5}$")
     private String zipcode;
 }
