@@ -59,6 +59,10 @@ public class RegistrationService {
         customer.setEmail(customerCO.getEmail());
         customer.setContact(customerCO.getContact());
         customer.setPassword(encoder.encode(customerCO.getPassword()));
+        Role role=new Role();
+        role.setAuthority("ROLE_USER");
+        List<Role>roleList=new ArrayList<>();
+        roleList.add(role);
         customerRepository.save(customer);
 
         ConfirmationToken confirmationToken = new ConfirmationToken(customer);
