@@ -52,7 +52,7 @@ public class Bootstrap {
             User user1 = new User();
             user1.setFirstName("ADMIN");
             user1.setLastName("ADMIN");
-            user1.setEmail("admin@tothenew.com");
+            user1.setEmail("ajay.kumar1@tothenew.com");
             user1.setActive(true);
             user1.setDeleted(false);
             user1.setPassword(passwordEncoder.encode("admin"));

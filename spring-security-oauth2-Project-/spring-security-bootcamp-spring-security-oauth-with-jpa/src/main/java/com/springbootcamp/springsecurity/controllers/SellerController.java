@@ -4,6 +4,7 @@ import com.springbootcamp.springsecurity.co.*;
 import com.springbootcamp.springsecurity.dtos.AddressDto;
 import com.springbootcamp.springsecurity.dtos.SellerDto;
 import com.springbootcamp.springsecurity.repositories.SellerRepository;
+import com.springbootcamp.springsecurity.services.ProductService;
 import com.springbootcamp.springsecurity.services.SellerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,8 @@ public class SellerController {
     SellerRepository sellerRepository;
     @Autowired
     SellerService sellerService;
+    @Autowired
+    ProductService productService;
 
     @GetMapping("/profile")
     public SellerDto viewSellerProfile(Principal principal){
@@ -50,5 +53,12 @@ public class SellerController {
     public ResponseEntity<String> updateSellerAddress(@PathVariable("id") Long id,@RequestBody  AddressCO addressCO,Principal principal){
         return sellerService.updateSellerAddress(addressCO,id,principal.getName());
     }
+
+
+    @PostMapping("/product")
+    public ResponseEntity addNewProduct(@Valid @RequestBody ProductCo productCo,Principal principal){
+        return productService.addNewProduct(productCo,principal);
+    }
+
 
 }

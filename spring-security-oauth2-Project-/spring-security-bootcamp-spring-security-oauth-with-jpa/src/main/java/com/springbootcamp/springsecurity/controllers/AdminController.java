@@ -1,10 +1,7 @@
 package com.springbootcamp.springsecurity.controllers;
 
 
-import com.springbootcamp.springsecurity.co.CategoryCO;
-import com.springbootcamp.springsecurity.co.CategoryUpdateCO;
-import com.springbootcamp.springsecurity.co.MetaDataFieldCO;
-import com.springbootcamp.springsecurity.co.MetaDataFieldValueCo;
+import com.springbootcamp.springsecurity.co.*;
 import com.springbootcamp.springsecurity.dtos.CategoryDTO;
 import com.springbootcamp.springsecurity.dtos.CategoryMetaDataFieldDTO;
 import com.springbootcamp.springsecurity.dtos.CustomerDto;
@@ -13,6 +10,7 @@ import com.springbootcamp.springsecurity.entities.product.Category;
 import com.springbootcamp.springsecurity.exceptions.AccountDoesNotExistException;
 import com.springbootcamp.springsecurity.services.AdminService;
 import com.springbootcamp.springsecurity.services.CategoryService;
+import com.springbootcamp.springsecurity.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +26,8 @@ public class AdminController {
     AdminService adminService;
     @Autowired
     CategoryService categoryService;
+    @Autowired
+    ProductService productService;
 
 
     //=============================================get all customers ===========================================================================

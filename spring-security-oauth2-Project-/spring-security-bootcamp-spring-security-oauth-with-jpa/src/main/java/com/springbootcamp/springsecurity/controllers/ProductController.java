@@ -25,10 +25,6 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
-    @PostMapping("add")
-    public ProductDto addProduct(@RequestBody ProductDto productDto){
-        return productService.addProduct(productDto);
-    }
 
 
 }
