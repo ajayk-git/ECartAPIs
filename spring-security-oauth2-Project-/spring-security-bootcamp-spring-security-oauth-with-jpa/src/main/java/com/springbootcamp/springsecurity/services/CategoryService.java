@@ -230,4 +230,43 @@ public class CategoryService {
     }
 
 
+
+
+    public ResponseEntity updateMetaDataValues(MetaDataFieldValueCo metaDataFieldValueCo) {
+
+        Long categoryId=metaDataFieldValueCo.getCategoryId();
+        Long metaDataFieldId=metaDataFieldValueCo.getFieldId();
+        CategoryMetadataCompositeKey compositeKey=new CategoryMetadataCompositeKey(categoryId,metaDataFieldId);
+
+//        CategoryMetadataFieldValues categoryMetaDataFieldValues= metaDataFieldValuesRepository.findById(compositeKey).get();
+
+        if(!metaDataFieldValuesRepository.findById(compositeKey).isPresent())
+            throw new ResourceNotFoundException("Please enter a valid Combination of CategoryId and MetaData FieldId.");
+
+        else {
+            CategoryMetadataFieldValues categoryMetaDataFieldValues= metaDataFieldValuesRepository.findById(compositeKey).get();
+
+            String metaDataFieldValueCO=metaDataFieldValueCo.getFieldValues();
+           String fieldValues= categoryMetaDataFieldValues.getFieldValues();
+           String appendResult=metaDataFieldValueCO.concat(fieldValues);
+
+            List<String> stringList=new ArrayList<>(Arrays.asList(appendResult.split(",")));
+
+            Set<String> stringSet=stringToSetConverter(appendResult);
+            String filteredValues=setToStringConverter(stringSet);
+            if (stringList.size()!=stringSet.size())
+                throw new DuplicateValueException("Duplicate values exist in Metadata field Values existing values and present values after addition.");
+
+            categoryMetaDataFieldValues.setFieldValues(filteredValues);
+            metaDataFieldValuesRepository.save(categoryMetaDataFieldValues);
+
+        }
+        return new ResponseEntity("MetaData Field Values are updated Successfully.",HttpStatus.OK);
+
+
+    }
+
+
+
+
 }
