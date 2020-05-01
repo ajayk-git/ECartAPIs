@@ -1,9 +1,12 @@
 package com.springbootcamp.springsecurity.entities.product;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.springbootcamp.springsecurity.entities.CategoryMetadataFieldValues;
 import lombok.Getter;
 import lombok.Setter;
+import org.codehaus.jackson.annotate.JsonBackReference;
+import org.codehaus.jackson.annotate.JsonManagedReference;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -16,7 +19,7 @@ import java.util.List;
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "CATEGORY_ID")
+    @Column(name = "categoryId")
     private  Long id;
 
     @Column(name = "NAME")
@@ -24,6 +27,7 @@ public class Category {
 
     @OneToMany(mappedBy = "parentCategory",cascade = CascadeType.ALL)
     private List<Category> subCategory;
+
 
     @ManyToOne
     @JoinColumn(name = "parent_Id")

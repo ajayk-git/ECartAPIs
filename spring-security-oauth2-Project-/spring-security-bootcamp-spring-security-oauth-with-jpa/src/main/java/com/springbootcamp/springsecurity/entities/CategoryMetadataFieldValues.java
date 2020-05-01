@@ -17,11 +17,13 @@ public class CategoryMetadataFieldValues {
     @EmbeddedId
     CategoryMetadataCompositeKey compositeKey=new CategoryMetadataCompositeKey();
 
-     @ManyToOne(fetch = FetchType.EAGER)
-     @MapsId("categoryId")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "categoryId")
+    @MapsId("categoryId")
      Category category;
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "fieldId")
     @MapsId("categoryMetadataFieldId")
     CategoryMetaDataField categoryMetaDataField;
 

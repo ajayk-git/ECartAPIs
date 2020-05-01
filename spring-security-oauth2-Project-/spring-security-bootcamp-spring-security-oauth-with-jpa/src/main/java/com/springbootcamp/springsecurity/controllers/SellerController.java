@@ -30,10 +30,9 @@ public class SellerController {
     @Autowired
     CategoryService categoryService;
     @GetMapping("/profile")
-    public SellerDto viewSellerProfile(Principal principal){
-        return  sellerService.viewSellerProfile(principal.getName());
+    public SellerDto viewSellerProfile(Principal principal) {
+        return sellerService.viewSellerProfile(principal.getName());
     }
-
 
     @GetMapping("/address")
     public AddressDto getAddressSeller(Principal principal){
@@ -65,6 +64,13 @@ public class SellerController {
         return productService.addNewProduct(productCo,principal);
     }
 
-  
+
+    @GetMapping("/categories")
+    public List<CategorySellerDto> viewAllCategoriesBySeller(){
+        return categoryService.viewAllCategoriesBySeller();
+    }
+
+
+
 
 }
