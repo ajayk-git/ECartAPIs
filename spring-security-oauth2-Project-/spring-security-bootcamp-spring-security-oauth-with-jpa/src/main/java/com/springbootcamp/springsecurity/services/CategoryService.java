@@ -294,5 +294,30 @@ public class CategoryService {
         return sellerDtoList;
     }
 
+    @Secured("ROLE_USER")
+    public List<CategoryDTO> getCategoriesByCustomer(Long categoryId) {
+
+        List<CategoryDTO> categoryDTOList = new ArrayList<>();
+
+        if (categoryId!=null){
+
+            if (!categoryRepository.findById(categoryId).isPresent())
+                throw  new ResourceNotFoundException("Category does not exist with Mentioned categoryId. ");
+
+            Category category=categoryRepository.findById(categoryId).get();
+            List<Category> subCategories = category.getSubCategory();
+            if (subCategories.isEmpty())
+                throw new ResourceNotFoundException("Since mentioned categoryId is leaf category so no subcategories.");
+            subCategories.forEach(category1-> categoryDTOList
+                           .add(new CategoryDTO(category1.getName(), category1.getId(),categoryId, category1.getParentCategory().getName())));
+            return categoryDTOList;
+        }
+        List<Category>  parentCategories=categoryRepository.findByRootCategory();
+        parentCategories.forEach(category -> categoryDTOList.add(new CategoryDTO(category.getName(),category.getId())));
+
+        return categoryDTOList;
+
+    }
 
 }
+

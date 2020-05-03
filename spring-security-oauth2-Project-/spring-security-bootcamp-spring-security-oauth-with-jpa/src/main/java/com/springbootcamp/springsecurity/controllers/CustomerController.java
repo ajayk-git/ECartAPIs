@@ -3,7 +3,10 @@ package com.springbootcamp.springsecurity.controllers;
 
 import com.springbootcamp.springsecurity.co.*;
 import com.springbootcamp.springsecurity.dtos.AddressDto;
+import com.springbootcamp.springsecurity.dtos.CategoryDTO;
 import com.springbootcamp.springsecurity.dtos.CustomerDto;
+import com.springbootcamp.springsecurity.entities.product.Category;
+import com.springbootcamp.springsecurity.services.CategoryService;
 import com.springbootcamp.springsecurity.services.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +24,8 @@ public class CustomerController {
 
     @Autowired
     CustomerService customerService;
+    @Autowired
+    CategoryService categoryService;
 
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -80,6 +85,10 @@ public class CustomerController {
         return customerService.updateCustomerAddress(addressCO,id,principal.getName());
     }
 
+    @GetMapping("/categories")
+    public List<CategoryDTO> getCategoriesByCustomer(@RequestParam(value = "id",required = false) Long categoryId){
+        return categoryService.getCategoriesByCustomer(categoryId);
+    }
 
 }
 

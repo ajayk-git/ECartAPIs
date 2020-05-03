@@ -23,6 +23,7 @@ public class CategoryDTO {
     public CategoryDTO(String name, Long id) {
         this.setCategoryId(id);
         this.setCategoryName(name);
+        this.setParentCategoryName("Root Category");
     }
 
     public CategoryDTO() {
@@ -34,5 +35,11 @@ public class CategoryDTO {
         this.setCategoryName(categoryName);
         this.setParentId(parentId);
         this.setParentCategoryName(parentCategoryName1);
+    }
+
+    public CategoryDTO(String name, Long id, String name1) {
+        this.setParentCategoryName(name);
+        this.setCategoryId(id);
+        this.setParentCategoryName(name1);
     }
 }
