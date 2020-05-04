@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 @Component
@@ -78,14 +79,14 @@ public class Bootstrap {
             List<Role> roleList = new ArrayList<>();
 
             PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-            seller.setFirstName("Aman");
+            seller.setFirstName("Vijay");
             seller.setLastName("Sharma");
             seller.setDeleted(false);
             seller.setActive(true);
             seller.setCompanyContact("8735279816");
-            seller.setEmail("amansharma@gmail.com");
+            seller.setEmail("vijaysharma@gmail.com");
             seller.setPassword(passwordEncoder.encode("Aman@1234"));
-            seller.setCompanyName("Aman Communications");
+            seller.setCompanyName("Vijay Multi Store");
             seller.setGst("18AABCT3518Q1ZV");
             role.setAuthority("ROLE_SELLER");
             roleList.add(role);
@@ -233,18 +234,31 @@ public class Bootstrap {
         }
 
 
-        if(productRepository.count() < 1){
+        if(productRepository.count() < 2){
 
             Product product = new Product();
             product.setName("One Plus 7");
-            product.setSeller( sellerRepository.findByEmail("amansharma@gmail.com"));
+            product.setSeller( sellerRepository.findByEmail("vijaysharma@gmail.com"));
             product.setDescription("India's smartest mobile phone....");
             product.setCategory(categoryRepository.findByName("Mobile Phones").get());
             product.setCancelable(false);
             product.setReturnable(false);
             product.setBrand("OnePlus");
             product.setActive(true);
+
+
+            Product product1 = new Product();
+            product1.setName("Dri-Fit TShirts");
+            product1.setSeller( sellerRepository.findByEmail("vijaysharma@gmail.com"));
+            product1.setDescription("First choice of every Sportsman.");
+            product1.setCategory(categoryRepository.findByName("T-Shirt").get());
+            product1.setCancelable(false);
+            product1.setReturnable(false);
+            product1.setBrand("Nike");
+            product1.setActive(true);
             productRepository.save(product);
+            productRepository.save(product1);
+
         }
 
 //
@@ -273,6 +287,24 @@ public class Bootstrap {
         }
 
 
+        if (productVariationRepository.count()<5){
+
+            Product product=productRepository.findById(2L).get();
+            ProductVariation productVariation=new ProductVariation();
+
+            HashMap<String,String> metaDataValues =new HashMap<>();
+            metaDataValues.put("size","L");
+            metaDataValues.put("Color","Black");
+            metaDataValues.put("fabric","Dri-Fit");
+            productVariation.setMetaData(metaDataValues);
+            productVariation.setActive(true);
+            productVariation.setPrice(250f);
+            productVariation.setQuantityAvailable(25);
+            productVariation.setProduct(product);
+            productVariation.setPrimaryImage_Name("product/2/1");
+            productVariationRepository.save(productVariation);
+
+        }
 
     }
 }

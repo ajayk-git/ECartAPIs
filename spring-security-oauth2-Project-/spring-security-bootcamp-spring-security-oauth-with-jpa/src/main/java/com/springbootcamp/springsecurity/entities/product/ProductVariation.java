@@ -9,6 +9,7 @@ import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -26,10 +27,9 @@ public class ProductVariation {
     private float price;
 
     private  boolean isActive;
- //   @Column(name="METADATA")
-//    JSONObject metadata=new JSONObject();
 
-    private  String metadata;
+    @ElementCollection(targetClass=String.class)
+    private Map<String,String> metaData;
 
     @ManyToOne
     //@JoinColumn(name = "product_id")
@@ -48,12 +48,14 @@ public class ProductVariation {
 
     }
 
-    public ProductVariation(int quantity, float price, String second_image_name, String second_meta_data) {
-        this.setMetadata(second_meta_data);
-        this.setPrimaryImage_Name(second_image_name);
-        this.setPrice(price);
-        this.setQuantityAvailable(quantity);
+    public ProductVariation(String primaryImage_Name, int quantityAvailable, float price, boolean isActive, Map<String, String> metadata) {
+        this.primaryImage_Name = primaryImage_Name;
+        this.quantityAvailable = quantityAvailable;
+        this.price = price;
+        this.isActive = isActive;
+        this.setMetaData(metadata);
     }
+}
 //    @OneToMany(mappedBy ="productVariationSet",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
 //    private Set<Cart> cartSet;
 
@@ -68,4 +70,4 @@ public class ProductVariation {
 //            (All variations of same category will have a fixed similar JSON structure)"
 //    PRIMARY_IMAGE_NAME
 
-}
+
