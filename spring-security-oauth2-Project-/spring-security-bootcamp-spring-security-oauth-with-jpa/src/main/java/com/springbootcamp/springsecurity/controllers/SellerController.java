@@ -3,6 +3,7 @@ package com.springbootcamp.springsecurity.controllers;
 import com.springbootcamp.springsecurity.co.*;
 import com.springbootcamp.springsecurity.dtos.AddressDto;
 import com.springbootcamp.springsecurity.dtos.CategorySellerDto;
+import com.springbootcamp.springsecurity.dtos.ProductVariantDto;
 import com.springbootcamp.springsecurity.dtos.SellerDto;
 import com.springbootcamp.springsecurity.repositories.SellerRepository;
 import com.springbootcamp.springsecurity.services.CategoryService;
@@ -52,25 +53,32 @@ public class SellerController {
         return sellerService.upadteSellerProfile(principal.getName(),sellerProfileUpdateCO);
     }
 
+    //=================================================Update Address  of seller Account==================================
 
     @PatchMapping("/address/{id}")
     public ResponseEntity<String> updateSellerAddress(@PathVariable("id") Long id,@RequestBody  AddressCO addressCO,Principal principal){
         return sellerService.updateSellerAddress(addressCO,id,principal.getName());
     }
 
+    //=================================================Add a new Product By seller Account==================================
 
     @PostMapping("/product")
     public ResponseEntity addNewProduct(@Valid @RequestBody ProductCo productCo,Principal principal){
         return productService.addNewProduct(productCo,principal);
     }
 
+    //=================================================View Category(ies) by seller==================================
 
     @GetMapping("/categories")
     public List<CategorySellerDto> viewAllCategoriesBySeller(){
         return categoryService.viewAllCategoriesBySeller();
     }
 
+    //=================================================View  Product-Variant By seller Account==================================
 
-
+    @GetMapping("/product/variation/{id}")
+    public ProductVariantDto viewProductVariant(@PathVariable(name = "id") Long productVariantId){
+        return productService.getProductVariant(productVariantId);
+    }
 
 }

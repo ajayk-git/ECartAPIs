@@ -1,15 +1,19 @@
 package com.springbootcamp.springsecurity.services;
 
 import com.springbootcamp.springsecurity.co.ProductCo;
+import com.springbootcamp.springsecurity.co.ProductVariationCo;
 import com.springbootcamp.springsecurity.dtos.ProductDto;
+import com.springbootcamp.springsecurity.dtos.ProductVariantDto;
 import com.springbootcamp.springsecurity.entities.product.Category;
 import com.springbootcamp.springsecurity.entities.product.Product;
+import com.springbootcamp.springsecurity.entities.product.ProductVariation;
 import com.springbootcamp.springsecurity.entities.users.Seller;
 import com.springbootcamp.springsecurity.exceptions.ProductDoesNotExistException;
 import com.springbootcamp.springsecurity.exceptions.ResourceAlreadyExistException;
 import com.springbootcamp.springsecurity.exceptions.ResourceNotFoundException;
 import com.springbootcamp.springsecurity.repositories.CategoryRepository;
 import com.springbootcamp.springsecurity.repositories.ProductRepository;
+import com.springbootcamp.springsecurity.repositories.ProductVariationRepository;
 import com.springbootcamp.springsecurity.repositories.SellerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,6 +36,8 @@ public class ProductService {
     CategoryRepository categoryRepository;
     @Autowired
     SellerRepository sellerRepository;
+    @Autowired
+    ProductVariationRepository variationRepository;
     @Autowired
     EmailService emailService;
 
@@ -91,6 +97,7 @@ public class ProductService {
         product.setReturnable(false);
         product.setCancelable(false);
         product.setActive(false);
+        product.setDeleted(false);
         product.setSeller(seller);
 
 
@@ -123,6 +130,7 @@ public class ProductService {
 
     //===========================================to deactivate product ===========================================================
 
+
     public ResponseEntity deactivateProduct(Long productId) {
         if(!productRepository.findById(productId).isPresent()){
             throw new ResourceNotFoundException("Product is not found with mentioned productId.Please enter existing productId.");
@@ -139,5 +147,30 @@ public class ProductService {
         return new ResponseEntity("Product is deactivated successfully.Email is triggered to seller.",HttpStatus.OK);
     }
 
+
+    //=================================================View  Product-Variant By seller Account==================================
+
+
+    public ProductVariantDto getProductVariant(Long productVariantId) {
+
+        if(!variationRepository.findById(productVariantId).isPresent())
+            throw  new ResourceNotFoundException("Product Variant is not found with mentioned productVariantId.Please enter existing productVariantId.");
+        ProductVariation productVariation=variationRepository.findById(productVariantId).get();
+
+        ProductVariantDto productVariantDto=new ProductVariantDto();
+        productVariantDto.setProductVariantId(productVariation.getId());
+        productVariantDto.setProductId(productVariation.getProduct().getId());
+        productVariantDto.setBrand(productVariation.getProduct().getBrand());
+        productVariantDto.setProductName(productVariation.getProduct().getName());
+        productVariantDto.setMetaData(productVariation.getMetaData());
+        productVariantDto.setPrice(productVariation.getPrice());
+        productVariantDto.setQuantityAvailable(productVariation.getQuantityAvailable());
+        productVariantDto.setActive(productVariation.isActive());
+        return productVariantDto;
+
+    }
+
+
+    //=================================================Add  new Product-Variant By seller Account==================================
 
 }

@@ -85,7 +85,7 @@ public class Bootstrap {
             seller.setActive(true);
             seller.setCompanyContact("8735279816");
             seller.setEmail("vijaysharma@gmail.com");
-            seller.setPassword(passwordEncoder.encode("Aman@1234"));
+            seller.setPassword(passwordEncoder.encode("Vijay@1234"));
             seller.setCompanyName("Vijay Multi Store");
             seller.setGst("18AABCT3518Q1ZV");
             role.setAuthority("ROLE_SELLER");

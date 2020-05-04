@@ -32,6 +32,8 @@ public class Product {
 
   private boolean isActive;
 
+  private  boolean isDeleted;
+
 
   @OneToMany(mappedBy = "product",cascade = CascadeType.ALL)    // to map product to product variant
   @Fetch(value=FetchMode.SUBSELECT)
