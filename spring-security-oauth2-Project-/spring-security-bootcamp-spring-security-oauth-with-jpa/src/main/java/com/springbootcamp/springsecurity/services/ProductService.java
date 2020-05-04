@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -184,12 +185,24 @@ public class ProductService {
 
         if (product.isActive()&&(!product.isDeleted())){
             ProductVariation productVariation=new ProductVariation();
+
             productVariation.setPrice(productVariationCo.getPrice());
             productVariation.setQuantityAvailable(productVariationCo.getQuantityAvailable());
             productVariation.setActive(true);
             productVariation.setProduct(product);
-            productVariation.setMetaData(productVariationCo.getMetaData());
-            variationRepository.save(productVariation);
+
+            List<ProductVariation> variationList=product.getProductVariationList();
+
+            Iterator<ProductVariation> iterator=variationList.iterator();
+            while (iterator.hasNext()){
+                ProductVariation currentVariation=iterator.next();
+                if (productVariationCo.getMetaData().equals(currentVariation.getMetaData()))
+                    throw new ResourceAlreadyExistException("Product Variation Already exist.");
+                else {
+                    productVariation.setMetaData(productVariationCo.getMetaData());
+                    variationRepository.save(productVariation);
+                }
+            }
         }
         return new ResponseEntity("Product variation added successfully.",HttpStatus.CREATED);
     }
