@@ -17,7 +17,6 @@ public class ProductVariationCo {
     int quantityAvailable;
     @Min(value = 1,message = "Price of product should be grater than 1.")
     float price;
-
     Map<String,String>metaData;
 
 

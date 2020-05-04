@@ -81,4 +81,12 @@ public class SellerController {
         return productService.getProductVariant(productVariantId);
     }
 
+    //=================================================Add a new  Product-Variant By seller Account==================================
+
+    @PostMapping("/product/variation/{productId}")
+    public ResponseEntity addNewProductVariant(@PathVariable(name = "productId") Long productId,@Valid @RequestBody ProductVariationCo productVariationCo){
+        return productService.addNewProductVariant(productId,productVariationCo);
+    }
+
+
 }

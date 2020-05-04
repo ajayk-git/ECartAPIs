@@ -170,7 +170,29 @@ public class ProductService {
 
     }
 
-
     //=================================================Add  new Product-Variant By seller Account==================================
+
+
+    public ResponseEntity addNewProductVariant(Long productId, ProductVariationCo productVariationCo) {
+        if (!productRepository.findById(productId).isPresent())
+            throw new ResourceNotFoundException("Product with mentioned ProductId is not exist.");
+        Product product=productRepository.findById(productId).get();
+        if (!product.isActive())
+            throw new ResourceNotFoundException("Product with mentioned ProductId is not active.");
+        if (product.isDeleted())
+            throw new ResourceNotFoundException("Product with mentioned ProductId is deleted.");
+
+        if (product.isActive()&&(!product.isDeleted())){
+            ProductVariation productVariation=new ProductVariation();
+            productVariation.setPrice(productVariationCo.getPrice());
+            productVariation.setQuantityAvailable(productVariationCo.getQuantityAvailable());
+            productVariation.setActive(true);
+            productVariation.setProduct(product);
+            productVariation.setMetaData(productVariationCo.getMetaData());
+            variationRepository.save(productVariation);
+        }
+        return new ResponseEntity("Product variation added successfully.",HttpStatus.CREATED);
+    }
+
 
 }
