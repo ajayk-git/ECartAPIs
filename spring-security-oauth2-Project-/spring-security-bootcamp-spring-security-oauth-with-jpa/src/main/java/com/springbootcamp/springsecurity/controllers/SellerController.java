@@ -1,14 +1,12 @@
 package com.springbootcamp.springsecurity.controllers;
 
 import com.springbootcamp.springsecurity.co.*;
-import com.springbootcamp.springsecurity.dtos.AddressDto;
-import com.springbootcamp.springsecurity.dtos.CategorySellerDto;
-import com.springbootcamp.springsecurity.dtos.ProductVariantDto;
-import com.springbootcamp.springsecurity.dtos.SellerDto;
+import com.springbootcamp.springsecurity.dtos.*;
 import com.springbootcamp.springsecurity.repositories.SellerRepository;
 import com.springbootcamp.springsecurity.services.CategoryService;
 import com.springbootcamp.springsecurity.services.ProductService;
 import com.springbootcamp.springsecurity.services.SellerService;
+import jdk.nashorn.internal.objects.annotations.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -86,6 +84,13 @@ public class SellerController {
     @PostMapping("/product/variation/{productId}")
     public ResponseEntity addNewProductVariant(@PathVariable(name = "productId") Long productId,@Valid @RequestBody ProductVariationCo productVariationCo){
         return productService.addNewProductVariant(productId,productVariationCo);
+    }
+
+    //=================================================View a Product By seller Account==================================
+
+    @GetMapping("/product/{productId}")
+    public ProductSellerDto viewProductBySeller(@PathVariable(name = "productId") Long productId,Principal principal){
+        return productService.viewProductBySeller(productId,principal);
     }
 
 

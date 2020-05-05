@@ -3,6 +3,7 @@ package com.springbootcamp.springsecurity.services;
 import com.springbootcamp.springsecurity.co.ProductCo;
 import com.springbootcamp.springsecurity.co.ProductVariationCo;
 import com.springbootcamp.springsecurity.dtos.ProductDto;
+import com.springbootcamp.springsecurity.dtos.ProductSellerDto;
 import com.springbootcamp.springsecurity.dtos.ProductVariantDto;
 import com.springbootcamp.springsecurity.entities.product.Category;
 import com.springbootcamp.springsecurity.entities.product.Product;
@@ -10,6 +11,7 @@ import com.springbootcamp.springsecurity.entities.product.ProductVariation;
 import com.springbootcamp.springsecurity.entities.users.Seller;
 import com.springbootcamp.springsecurity.exceptions.ProductDoesNotExistException;
 import com.springbootcamp.springsecurity.exceptions.ResourceAlreadyExistException;
+import com.springbootcamp.springsecurity.exceptions.ResourceNotAccessible;
 import com.springbootcamp.springsecurity.exceptions.ResourceNotFoundException;
 import com.springbootcamp.springsecurity.repositories.CategoryRepository;
 import com.springbootcamp.springsecurity.repositories.ProductRepository;
@@ -174,6 +176,7 @@ public class ProductService {
     //=================================================Add  new Product-Variant By seller Account==================================
 
 
+    @Secured("ROLE_SELLER")
     public ResponseEntity addNewProductVariant(Long productId, ProductVariationCo productVariationCo) {
         if (!productRepository.findById(productId).isPresent())
             throw new ResourceNotFoundException("Product with mentioned ProductId is not exist.");
@@ -205,6 +208,36 @@ public class ProductService {
             }
         }
         return new ResponseEntity("Product variation added successfully.",HttpStatus.CREATED);
+    }
+
+    //=================================================View a Product By seller Account==================================
+
+    @Secured("ROLE_SELLER")
+    public ProductSellerDto viewProductBySeller(Long productId,Principal principal){
+
+        String sellerLoggedIn=principal.getName();
+        ProductSellerDto productSellerDto=new ProductSellerDto();
+
+        if (!productRepository.findById(productId).isPresent())
+            throw  new ResourceNotFoundException("Product with mentioned ProductId is not exist.");
+
+
+        Product product=productRepository.findById(productId).get();
+        String sellerUserName=product.getSeller().getEmail();
+
+        if (!sellerUserName.equalsIgnoreCase(sellerLoggedIn))
+            throw new ResourceNotAccessible("Not Authorized  to view other seller's product.");
+
+        if (product.isDeleted())
+            throw new ResourceNotFoundException("Product with mentioned ProductId is deleted.Kindly enter existing productId.");
+
+        Category category=product.getCategory();
+
+        productSellerDto=new ProductSellerDto(product.getId(),product.getName(),product.getBrand(),
+                product.getDescription(),product.getSeller().getCompanyName(),category.getName(),
+                product.isActive(),product.isCancelable(),product.isReturnable());
+
+        return productSellerDto;
     }
 
 
