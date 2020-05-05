@@ -136,6 +136,7 @@ public class AdminController {
         return productService.deactivateProduct(productId);
     }
 
+    @GetMapping
 
 
 
