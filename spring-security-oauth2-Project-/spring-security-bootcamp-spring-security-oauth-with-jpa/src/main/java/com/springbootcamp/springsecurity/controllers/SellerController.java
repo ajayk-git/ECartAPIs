@@ -93,5 +93,12 @@ public class SellerController {
         return productService.viewProductBySeller(productId,principal);
     }
 
+    //=================================================Delete a Product By seller Account==================================
+
+    @DeleteMapping("/product/{productId}")
+    public ResponseEntity deleteProductBySeller(@PathVariable(name = "productId") Long productId,Principal principal){
+        return productService.deleteProductBySeller(productId,principal);
+    }
+
 
 }

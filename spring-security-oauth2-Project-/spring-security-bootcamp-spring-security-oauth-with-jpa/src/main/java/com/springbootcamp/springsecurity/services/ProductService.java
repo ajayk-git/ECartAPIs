@@ -11,7 +11,7 @@ import com.springbootcamp.springsecurity.entities.product.ProductVariation;
 import com.springbootcamp.springsecurity.entities.users.Seller;
 import com.springbootcamp.springsecurity.exceptions.ProductDoesNotExistException;
 import com.springbootcamp.springsecurity.exceptions.ResourceAlreadyExistException;
-import com.springbootcamp.springsecurity.exceptions.ResourceNotAccessible;
+import com.springbootcamp.springsecurity.exceptions.ResourceNotAccessibleException;
 import com.springbootcamp.springsecurity.exceptions.ResourceNotFoundException;
 import com.springbootcamp.springsecurity.repositories.CategoryRepository;
 import com.springbootcamp.springsecurity.repositories.ProductRepository;
@@ -226,7 +226,7 @@ public class ProductService {
         String sellerUserName=product.getSeller().getEmail();
 
         if (!sellerUserName.equalsIgnoreCase(sellerLoggedIn))
-            throw new ResourceNotAccessible("Not Authorized  to view other seller's product.");
+            throw new ResourceNotAccessibleException("Not Authorized  to view other seller's product.");
 
         if (product.isDeleted())
             throw new ResourceNotFoundException("Product with mentioned ProductId is deleted.Kindly enter existing productId.");
@@ -240,5 +240,37 @@ public class ProductService {
         return productSellerDto;
     }
 
+    //=================================================Delete a Product By seller Account==================================
 
+
+    public ResponseEntity deleteProductBySeller(Long productId, Principal principal) {
+
+        String loggedInSeller=principal.getName();
+
+        if (!productRepository.findById(productId).isPresent())
+            throw new ResourceNotFoundException("Product with mentioned ProductId is not exist.");
+
+        Product product=productRepository.findById(productId).get();
+        String sellerOfProduct=product.getSeller().getEmail();
+
+
+        if (product.isDeleted())
+            throw new ResourceNotFoundException("Product with mentioned productId is already deleted.");
+
+        if (!product.isActive())
+            throw new ResourceNotFoundException("Product with mentioned productId is not active.");
+
+        if (!loggedInSeller.equalsIgnoreCase(sellerOfProduct))
+            throw  new ResourceNotAccessibleException("Not Authorized  to delete other seller's product.");
+
+        if (product.isActive()&&(!product.isDeleted())){
+
+            if (loggedInSeller.equalsIgnoreCase(sellerOfProduct)){
+                product.setDeleted(true);
+                product.setActive(false);
+            }
+        }
+        productRepository.save(product);
+        return new ResponseEntity("Product deleted with mentioned productId.",HttpStatus.OK);
+    }
 }
