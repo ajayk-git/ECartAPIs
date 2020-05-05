@@ -74,9 +74,20 @@ public class SellerController {
 
     //=================================================View  Product-Variant By seller Account==================================
 
-    @GetMapping("/product/variation/{id}")
-    public ProductVariantDto viewProductVariant(@PathVariable(name = "id") Long productVariantId){
+    @GetMapping("/product/variation/{productVariantId}")
+    public ProductVariantDto viewProductVariant(@PathVariable(name = "productVariantId") Long productVariantId){
         return productService.getProductVariant(productVariantId);
+    }
+
+    //=================================================View all product Variants of a product By seller Account==================================
+    @GetMapping("/product/{productId}/variation")
+    public ResponseEntity viewAllProductVariationsBySeller(@RequestParam(value = "page",defaultValue = GlobalVariables.DEFAULT_PAGE_OFFSET)Optional<Integer> page,
+                                                           @RequestParam(value = "size",defaultValue = GlobalVariables.DEFAULT_PAGE_SIZE) Optional<Integer> contentSize,
+                                                           @RequestParam(value = "sort",defaultValue = GlobalVariables.DEFAULT_SORT_PROPERTY)Optional<String> sortProperty,
+                                                           @RequestParam(value = "direction",defaultValue = GlobalVariables.DEFAULT_SORT_DIRECTION)Optional<String> sortDirection,
+                                                           @PathVariable(name = "productId") Long productId,Principal principal){
+
+        return productService.viewAllProductVariationsBySeller(page,contentSize,sortProperty,sortDirection,productId,principal);
     }
 
 

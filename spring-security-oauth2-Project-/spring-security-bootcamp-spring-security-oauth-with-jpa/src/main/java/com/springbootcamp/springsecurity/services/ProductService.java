@@ -175,6 +175,50 @@ public class ProductService {
         return productVariantDto;
 
     }
+    //=================================================View all product Variants of a product By seller Account==================================
+
+
+    public ResponseEntity viewAllProductVariationsBySeller(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection, Long productId,Principal principal) {
+
+        if (!productRepository.findById(productId).isPresent())
+            throw new ResourceNotFoundException("Product with mentioned ProductId is not exist.");
+
+        Product product=productRepository.findById(productId).get();
+
+        String loggedInSeller=principal.getName();
+        String productSeller=product.getSeller().getEmail();
+
+        if (!loggedInSeller.equalsIgnoreCase(productSeller))
+            throw new ResourceNotAccessibleException("Not Authorized to access other seller's products.");
+        
+        if (product.isDeleted())
+            throw new ResourceNotFoundException("Product with mentioned ProductId has been deleted by admin.");
+
+        ProductVariantDto productVariantDto=new ProductVariantDto();
+        List<ProductVariantDto> productVariantDtoList=new ArrayList<>();
+
+        List<ProductVariation>productVariations=product.getProductVariationList();
+
+        Iterator<ProductVariation> iterator=productVariations.iterator();
+
+        while (iterator.hasNext()) {
+
+            ProductVariation currentVariation=iterator.next();
+
+            productVariantDto=new ProductVariantDto(product.getId(),product.getBrand(),product.getName(),
+                    currentVariation.getId(),currentVariation.getMetaData(),currentVariation.isActive(),
+                    currentVariation.getQuantityAvailable(),currentVariation.getPrice());
+
+            productVariantDtoList.add(productVariantDto);
+
+        }
+        if (productVariantDtoList.size()<1)
+            throw new ResourceNotFoundException("No product variation available for given product.");
+
+        return new ResponseEntity(productVariantDtoList,null,HttpStatus.OK);
+
+
+    }
 
     //=================================================Add  new Product-Variant By seller Account==================================
 

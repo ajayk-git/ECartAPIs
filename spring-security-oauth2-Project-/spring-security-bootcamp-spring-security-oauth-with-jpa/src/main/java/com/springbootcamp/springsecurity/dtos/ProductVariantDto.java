@@ -21,4 +21,21 @@ public class ProductVariantDto {
     boolean  isActive;
     Map<String,String> metaData;
 
+    public ProductVariantDto(Long productId, String brand, String productName, Long productVariantId, Map<String, String> metaData, boolean active, int quantityAvailable, float price) {
+
+
+        this.setBrand(brand);
+        this.setPrice(price);
+        this.setActive(active);
+        this.setMetaData(metaData);
+        this.setProductId(productId);
+        this.setProductName(productName);
+        this.setProductVariantId(productVariantId);
+        this.setQuantityAvailable(quantityAvailable);
+
+    }
+
+    public ProductVariantDto() {
+
+    }
 }
