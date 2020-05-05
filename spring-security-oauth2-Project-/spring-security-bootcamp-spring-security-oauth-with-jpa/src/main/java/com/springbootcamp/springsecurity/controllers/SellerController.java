@@ -79,6 +79,7 @@ public class SellerController {
         return productService.getProductVariant(productVariantId);
     }
 
+
     //=================================================Add a new  Product-Variant By seller Account==================================
 
     @PostMapping("/product/variation/{productId}")
@@ -92,6 +93,18 @@ public class SellerController {
     public ProductSellerDto viewProductBySeller(@PathVariable(name = "productId") Long productId,Principal principal){
         return productService.viewProductBySeller(productId,principal);
     }
+
+    //=================================================View all products By seller Account==================================
+
+    @GetMapping("/product")
+    public ResponseEntity viewAllProductsBySeller(@RequestParam(value = "page",defaultValue = GlobalVariables.DEFAULT_PAGE_OFFSET)Optional<Integer> page,
+                                                  @RequestParam(value = "size",defaultValue = GlobalVariables.DEFAULT_PAGE_SIZE) Optional<Integer> contentSize,
+                                                  @RequestParam(value = "sort",defaultValue = GlobalVariables.DEFAULT_SORT_PROPERTY)Optional<String> sortProperty,
+                                                  @RequestParam(value = "direction",defaultValue = GlobalVariables.DEFAULT_SORT_DIRECTION)Optional<String> sortDirection,
+                                                  Principal principal){
+        return productService.viewAllProductsBySeller(page,contentSize,sortProperty,sortDirection,principal);
+    }
+
 
     //=================================================Delete a Product By seller Account==================================
 

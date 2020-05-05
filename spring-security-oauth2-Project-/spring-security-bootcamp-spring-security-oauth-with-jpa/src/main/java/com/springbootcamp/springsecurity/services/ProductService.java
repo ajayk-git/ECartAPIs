@@ -18,6 +18,9 @@ import com.springbootcamp.springsecurity.repositories.ProductRepository;
 import com.springbootcamp.springsecurity.repositories.ProductVariationRepository;
 import com.springbootcamp.springsecurity.repositories.SellerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -273,6 +276,43 @@ public class ProductService {
         productRepository.save(product);
         return new ResponseEntity("Product deleted with mentioned productId.",HttpStatus.OK);
     }
+
+    //=================================================View all products By seller Account==================================
+
+    public ResponseEntity viewAllProductsBySeller(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection,Principal principal) {
+
+        Sort.Direction sortingDirection = sortDirection.get().equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        String loggedInSeller=principal.getName();
+
+        Page<Product> products=productRepository.findAll(PageRequest.of(page.get(),contentSize.get(),sortingDirection,sortProperty.get()));
+
+        if (products.getTotalElements()<1)
+            throw  new ResourceNotFoundException("No products available in product List.");
+
+        ProductSellerDto productSellerDto=new ProductSellerDto();
+        List<ProductSellerDto> productSellerDtoList=new ArrayList<>();
+
+        Iterator<Product> productIterator=products.iterator();
+        while (productIterator.hasNext()){
+
+            Product currentProduct=productIterator.next();
+            Category category=currentProduct.getCategory();
+            String sellerName=currentProduct.getSeller().getEmail();
+
+            if ((!currentProduct.isDeleted())&&(sellerName.equalsIgnoreCase(loggedInSeller))) {
+
+                productSellerDto = new ProductSellerDto(currentProduct.getId(), currentProduct.getName(),
+                        currentProduct.getBrand(), currentProduct.getDescription(), currentProduct.getSeller().getCompanyName(),
+                        category.getName(), currentProduct.isActive(), currentProduct.isCancelable(), currentProduct.isReturnable());
+
+                productSellerDtoList.add(productSellerDto);
+            }
+        }
+        return new ResponseEntity(productSellerDtoList,null,HttpStatus.OK);
+
+    }
+
+
 
 
 }
