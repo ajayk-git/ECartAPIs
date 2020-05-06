@@ -98,6 +98,19 @@ public class SellerController {
         return productService.addNewProductVariant(productId,productVariationCo);
     }
 
+
+
+    //=====================================================Update a Product Variant  By seller ===============================================
+
+    @PatchMapping("product/variation/{variationId}")
+    public ResponseEntity updateProductVariantBySeller(@PathVariable(name = "variationId") Long variationId,Principal principal,
+                                                      @Valid @RequestBody ProductVariationUpdateCo variationUpdateCo){
+
+        return productService.updateProductVariantBySeller(variationId,principal,variationUpdateCo);
+    }
+
+
+
     //=================================================View a Product By seller Account==================================
 
     @GetMapping("/product/{productId}")

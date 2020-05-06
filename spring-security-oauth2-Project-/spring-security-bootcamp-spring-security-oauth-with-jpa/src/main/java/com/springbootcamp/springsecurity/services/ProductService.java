@@ -3,6 +3,7 @@ package com.springbootcamp.springsecurity.services;
 import com.springbootcamp.springsecurity.co.ProductCo;
 import com.springbootcamp.springsecurity.co.ProductUpdateBySellerCo;
 import com.springbootcamp.springsecurity.co.ProductVariationCo;
+import com.springbootcamp.springsecurity.co.ProductVariationUpdateCo;
 import com.springbootcamp.springsecurity.dtos.ProductDto;
 import com.springbootcamp.springsecurity.dtos.ProductSellerDto;
 import com.springbootcamp.springsecurity.dtos.ProductVariantDto;
@@ -28,10 +29,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ProductService {
@@ -255,6 +253,60 @@ public class ProductService {
         return new ResponseEntity("Product variation added successfully.", HttpStatus.CREATED);
     }
 
+
+    //=====================================================Update a Product Variant  By seller ===============================================
+
+
+    @Secured("ROLE_SELLER")
+    public ResponseEntity updateProductVariantBySeller(Long variationId, Principal principal, ProductVariationUpdateCo variationUpdateCo) {
+
+        if (!variationRepository.findById(variationId).isPresent())
+
+            throw new ResourceNotFoundException("Product variant with mentioned ProductVariantId is not exist.");
+
+        else {
+            ProductVariation productVariation=variationRepository.findById(variationId).get();
+
+            Product product=productVariation.getProduct();
+
+            String productSeller=productVariation.getProduct().getSeller().getEmail();
+
+            String loggedInSeller=principal.getName();
+
+            if (!productSeller.equalsIgnoreCase(loggedInSeller))
+                throw new ResourceNotAccessibleException("Not Authorized  to update other seller's product variant.");
+
+            if (!product.isActive())
+                throw new ResourceNotFoundException("Product with mentioned productVariantId is not activated.Cannot update the product variant.");
+
+            if (product.isDeleted())
+                throw new ResourceNotFoundException("Product with mentioned productVariantId is deleted.Cannot update the product variant.");
+
+            else {
+
+                Map<String,String> metaDataOld=productVariation.getMetaData();
+                Map<String,String> metaDataNew=variationUpdateCo.getMetaData();
+
+                if (metaDataNew.equals(metaDataOld))
+                    throw new ResourceAlreadyExistException("ProductVariation already exist.Kindly update with unique metaData values.");
+
+                if (metaDataNew!=null)
+                    productVariation.setMetaData(metaDataNew);
+
+                if (variationUpdateCo.getPrice()!=null&&variationUpdateCo.getPrice()>0){
+                    productVariation.setPrice(variationUpdateCo.getPrice());
+                }
+
+                if (variationUpdateCo.getQuantityAvailable()!=null&&variationUpdateCo.getQuantityAvailable()>0)
+                    productVariation.setQuantityAvailable(variationUpdateCo.getQuantityAvailable());
+
+                variationRepository.save(productVariation);
+                return new ResponseEntity("Product with productVariantId : " + variationId + " is updated successfully.", HttpStatus.OK);
+            }
+        }
+    }
+
+
     //=================================================View a Product By seller Account==================================
 
     @Secured("ROLE_SELLER")
@@ -288,6 +340,7 @@ public class ProductService {
     //=================================================Delete a Product By seller Account==================================
 
 
+    @Secured("ROLE_SELLER")
     public ResponseEntity deleteProductBySeller(Long productId, Principal principal) {
 
         String loggedInSeller = principal.getName();
@@ -321,6 +374,7 @@ public class ProductService {
 
     //=================================================View all products By seller Account==================================
 
+    @Secured("ROLE_SELLER")
     public ResponseEntity viewAllProductsBySeller(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection, Principal principal) {
 
         Sort.Direction sortingDirection = sortDirection.get().equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
@@ -354,8 +408,10 @@ public class ProductService {
 
     }
 
+
     //=================================================Update a product By seller =========================================================
 
+    @Secured("ROLE_SELLER")
     public ResponseEntity updateProductBySeller(ProductUpdateBySellerCo productUpdateBySellerCo, Long productId, Principal principal) {
 
         if (!productRepository.findById(productId).isPresent())
@@ -400,4 +456,9 @@ public class ProductService {
 
         }
     }
+
+
+
+
+
 }
