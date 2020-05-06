@@ -2,8 +2,10 @@ package com.springbootcamp.springsecurity.entities.product;
 
 
 import com.springbootcamp.springsecurity.entities.users.Seller;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -13,26 +15,27 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@FieldDefaults(level = AccessLevel.PRIVATE)
 //@Table(name = "PRODUCT")
 public class Product {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+   Long id;
 
 
-  private String name;
+   String name;
 
-  private String description;
+   String description;
 
-  private boolean isCancelable;
+   Boolean isCancelable;
 
-  private boolean isReturnable;
+   Boolean isReturnable;
 
-  private String brand;
+   String brand;
 
-  private boolean isActive;
+   Boolean isActive;
 
-  private  boolean isDeleted;
+    Boolean isDeleted;
 
 
   @OneToMany(mappedBy = "product",cascade = CascadeType.ALL)    // to map product to product variant

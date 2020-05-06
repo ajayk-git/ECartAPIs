@@ -241,10 +241,11 @@ public class Bootstrap {
             product.setSeller( sellerRepository.findByEmail("vijaysharma@gmail.com"));
             product.setDescription("India's smartest mobile phone....");
             product.setCategory(categoryRepository.findByName("Mobile Phones").get());
-            product.setCancelable(false);
-            product.setReturnable(false);
+            product.setIsReturnable(false);
+            product.setIsCancelable(false);
+            product.setIsDeleted(false);
             product.setBrand("OnePlus");
-            product.setActive(true);
+            product.setIsActive(true);
 
 
             Product product1 = new Product();
@@ -252,10 +253,11 @@ public class Bootstrap {
             product1.setSeller( sellerRepository.findByEmail("vijaysharma@gmail.com"));
             product1.setDescription("First choice of every Sportsman.");
             product1.setCategory(categoryRepository.findByName("T-Shirt").get());
-            product1.setCancelable(false);
-            product1.setReturnable(false);
+            product1.setIsCancelable(false);
+            product1.setIsReturnable(false);
+            product1.setIsDeleted(false);
             product1.setBrand("Nike");
-            product1.setActive(true);
+            product1.setIsActive(true);
             productRepository.save(product);
             productRepository.save(product1);
 
@@ -297,7 +299,7 @@ public class Bootstrap {
             metaDataValues.put("Color","Black");
             metaDataValues.put("fabric","Dri-Fit");
             productVariation.setMetaData(metaDataValues);
-            productVariation.setActive(true);
+            productVariation.setIsActive(true);
             productVariation.setPrice(250f);
             productVariation.setQuantityAvailable(25);
             productVariation.setProduct(product);

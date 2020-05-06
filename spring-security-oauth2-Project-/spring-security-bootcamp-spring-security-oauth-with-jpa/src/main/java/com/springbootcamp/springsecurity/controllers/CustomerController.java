@@ -5,9 +5,12 @@ import com.springbootcamp.springsecurity.co.*;
 import com.springbootcamp.springsecurity.dtos.AddressDto;
 import com.springbootcamp.springsecurity.dtos.CategoryDTO;
 import com.springbootcamp.springsecurity.dtos.CustomerDto;
+import com.springbootcamp.springsecurity.dtos.ProductCustomerDto;
 import com.springbootcamp.springsecurity.entities.product.Category;
+import com.springbootcamp.springsecurity.entities.product.Product;
 import com.springbootcamp.springsecurity.services.CategoryService;
 import com.springbootcamp.springsecurity.services.CustomerService;
+import com.springbootcamp.springsecurity.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,6 +29,8 @@ public class CustomerController {
     CustomerService customerService;
     @Autowired
     CategoryService categoryService;
+    @Autowired
+    ProductService productService;
 
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -48,7 +53,7 @@ public class CustomerController {
     //============================Update Profile  of Customer Account===============================================
 
     @PatchMapping("/profile")
-    public ResponseEntity<String> updateCustomerProfile(Principal principal, @RequestBody CustomerProfileUpdateCo customerProfileUpdateCo){
+    public ResponseEntity<String> updateCustomerProfile(Principal principal, @Valid @RequestBody CustomerProfileUpdateCo customerProfileUpdateCo){
         return customerService.updateCustomerProfile(principal.getName(),customerProfileUpdateCo);
     }
 
@@ -81,13 +86,21 @@ public class CustomerController {
     //============================Update a customers address==========================================================
 
     @PatchMapping("/address/{id}")
-    public ResponseEntity<String> updateCustomerAddress(@PathVariable("id") Long id,@RequestBody AddressCO addressCO,Principal principal){
+    public ResponseEntity<String> updateCustomerAddress(@PathVariable("id") Long id, @Valid @RequestBody AddressCO addressCO,Principal principal){
         return customerService.updateCustomerAddress(addressCO,id,principal.getName());
     }
+
 
     @GetMapping("/categories")
     public List<CategoryDTO> getCategoriesByCustomer(@RequestParam(value = "id",required = false) Long categoryId){
         return categoryService.getCategoriesByCustomer(categoryId);
+    }
+
+    //=================================================Get a product By Customer =========================================================
+
+    @GetMapping("product/{productId}")
+    public ProductCustomerDto getProductByCustomer(@PathVariable(name = "productId") Long productId){
+        return productService.getProductByCustomer(productId);
     }
 
 }

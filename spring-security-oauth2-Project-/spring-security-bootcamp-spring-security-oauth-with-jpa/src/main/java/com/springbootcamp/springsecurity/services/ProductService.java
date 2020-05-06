@@ -4,6 +4,7 @@ import com.springbootcamp.springsecurity.co.ProductCo;
 import com.springbootcamp.springsecurity.co.ProductUpdateBySellerCo;
 import com.springbootcamp.springsecurity.co.ProductVariationCo;
 import com.springbootcamp.springsecurity.co.ProductVariationUpdateCo;
+import com.springbootcamp.springsecurity.dtos.ProductCustomerDto;
 import com.springbootcamp.springsecurity.dtos.ProductDto;
 import com.springbootcamp.springsecurity.dtos.ProductSellerDto;
 import com.springbootcamp.springsecurity.dtos.ProductVariantDto;
@@ -19,6 +20,7 @@ import com.springbootcamp.springsecurity.repositories.CategoryRepository;
 import com.springbootcamp.springsecurity.repositories.ProductRepository;
 import com.springbootcamp.springsecurity.repositories.ProductVariationRepository;
 import com.springbootcamp.springsecurity.repositories.SellerRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -46,6 +48,8 @@ public class ProductService {
     @Autowired
     EmailService emailService;
 
+    ModelMapper modelMapper=new ModelMapper();
+
     public ProductDto getProductByid(long id) {
 
         if (!productRepository.findById(id).isPresent()) {
@@ -53,7 +57,7 @@ public class ProductService {
         }
         Product product = productRepository.findById(id).get();
         ProductDto productDto = new ProductDto(product.getBrand(), product.getDescription(),
-                product.getId(), product.getName(), product.getSeller().getCompanyName(), product.isCancelable(), product.isReturnable());
+                product.getId(), product.getName(), product.getSeller().getCompanyName(), product.getIsCancelable(), product.getIsReturnable());
 
         return productDto;
     }
@@ -65,7 +69,7 @@ public class ProductService {
         productIterable.forEach(product -> productDtoList.add(new ProductDto(product.getBrand(),
                 product.getDescription(), product.getId(),
                 product.getName(), product.getSeller().getCompanyName(),
-                product.isCancelable(), product.isReturnable())));
+                product.getIsCancelable(), product.getIsReturnable())));
 
         return productDtoList;
 
@@ -99,10 +103,10 @@ public class ProductService {
         product.setName(productNameCo);
         product.setCategory(category.get());
         product.setDescription(productCo.getDescription());
-        product.setReturnable(false);
-        product.setCancelable(false);
-        product.setActive(false);
-        product.setDeleted(false);
+        product.setIsReturnable(false);
+        product.setIsCancelable(false);
+        product.setIsActive(false);
+        product.setIsDeleted(false);
         product.setSeller(seller);
 
 
@@ -119,10 +123,10 @@ public class ProductService {
             throw new ResourceNotFoundException("Product is not found with mentioned productId.Please enter existing productId.");
         } else {
             Product product = productRepository.findById(productId).get();
-            if (product.isActive())
+            if (product.getIsActive())
                 throw new RuntimeException("Product with mentioned id is already activated.");
 
-            product.setActive(true);
+            product.setIsActive(true);
             String email = product.getSeller().getEmail();
             emailService.mailNotificationSellerProductActivate(email, product);
             productRepository.save(product);
@@ -139,9 +143,9 @@ public class ProductService {
             throw new ResourceNotFoundException("Product is not found with mentioned productId.Please enter existing productId.");
         } else {
             Product product = productRepository.findById(productId).get();
-            if (!product.isActive())
+            if (!product.getIsActive())
                 throw new RuntimeException("Product with mentioned id is already deactivated.");
-            product.setActive(false);
+            product.setIsActive(false);
             String email = product.getSeller().getEmail();
             emailService.mailNotificationSellerProductDeactivate(email, product);
             productRepository.save(product);
@@ -167,7 +171,7 @@ public class ProductService {
         productVariantDto.setMetaData(productVariation.getMetaData());
         productVariantDto.setPrice(productVariation.getPrice());
         productVariantDto.setQuantityAvailable(productVariation.getQuantityAvailable());
-        productVariantDto.setActive(productVariation.isActive());
+        productVariantDto.setActive(productVariation.getIsActive());
         return productVariantDto;
 
     }
@@ -187,7 +191,7 @@ public class ProductService {
         if (!loggedInSeller.equalsIgnoreCase(productSeller))
             throw new ResourceNotAccessibleException("Not Authorized to access other seller's products.");
 
-        if (product.isDeleted())
+        if (product.getIsDeleted())
             throw new ResourceNotFoundException("Product with mentioned ProductId has been deleted by admin.");
 
         ProductVariantDto productVariantDto = new ProductVariantDto();
@@ -202,7 +206,7 @@ public class ProductService {
             ProductVariation currentVariation = iterator.next();
 
             productVariantDto = new ProductVariantDto(product.getId(), product.getBrand(), product.getName(),
-                    currentVariation.getId(), currentVariation.getMetaData(), currentVariation.isActive(),
+                    currentVariation.getId(), currentVariation.getMetaData(), currentVariation.getIsActive(),
                     currentVariation.getQuantityAvailable(), currentVariation.getPrice());
 
             productVariantDtoList.add(productVariantDto);
@@ -224,17 +228,17 @@ public class ProductService {
         if (!productRepository.findById(productId).isPresent())
             throw new ResourceNotFoundException("Product with mentioned ProductId is not exist.");
         Product product = productRepository.findById(productId).get();
-        if (!product.isActive())
+        if (!product.getIsActive())
             throw new ResourceNotFoundException("Product with mentioned ProductId is not active.");
-        if (product.isDeleted())
+        if (product.getIsDeleted())
             throw new ResourceNotFoundException("Product with mentioned ProductId is deleted.");
 
-        if (product.isActive() && (!product.isDeleted())) {
+        if (product.getIsActive() && (!product.getIsDeleted())) {
             ProductVariation productVariation = new ProductVariation();
 
             productVariation.setPrice(productVariationCo.getPrice());
             productVariation.setQuantityAvailable(productVariationCo.getQuantityAvailable());
-            productVariation.setActive(true);
+            productVariation.setIsActive(true);
             productVariation.setProduct(product);
 
             List<ProductVariation> variationList = product.getProductVariationList();
@@ -276,10 +280,10 @@ public class ProductService {
             if (!productSeller.equalsIgnoreCase(loggedInSeller))
                 throw new ResourceNotAccessibleException("Not Authorized  to update other seller's product variant.");
 
-            if (!product.isActive())
+            if (!product.getIsActive())
                 throw new ResourceNotFoundException("Product with mentioned productVariantId is not activated.Cannot update the product variant.");
 
-            if (product.isDeleted())
+            if (product.getIsDeleted())
                 throw new ResourceNotFoundException("Product with mentioned productVariantId is deleted.Cannot update the product variant.");
 
             else {
@@ -299,9 +303,9 @@ public class ProductService {
 
                 if (variationUpdateCo.getQuantityAvailable() != null && variationUpdateCo.getQuantityAvailable() > 0)
                     productVariation.setQuantityAvailable(variationUpdateCo.getQuantityAvailable());
-                
+
                 if (variationUpdateCo.getIsActive() != null)
-                    productVariation.setActive(variationUpdateCo.getIsActive());
+                    productVariation.setIsActive(variationUpdateCo.getIsActive());
 
                 variationRepository.save(productVariation);
                 return new ResponseEntity("Product with productVariantId : " + variationId + " is updated successfully.", HttpStatus.OK);
@@ -328,14 +332,14 @@ public class ProductService {
         if (!sellerUserName.equalsIgnoreCase(sellerLoggedIn))
             throw new ResourceNotAccessibleException("Not Authorized  to view other seller's product.");
 
-        if (product.isDeleted())
+        if (product.getIsDeleted())
             throw new ResourceNotFoundException("Product with mentioned ProductId is deleted.Kindly enter existing productId.");
 
         Category category = product.getCategory();
 
         productSellerDto = new ProductSellerDto(product.getId(), product.getName(), product.getBrand(),
                 product.getDescription(), product.getSeller().getCompanyName(), category.getName(),
-                product.isActive(), product.isCancelable(), product.isReturnable());
+                product.getIsActive(), product.getIsCancelable(), product.getIsReturnable());
 
         return productSellerDto;
     }
@@ -355,20 +359,20 @@ public class ProductService {
         String sellerOfProduct = product.getSeller().getEmail();
 
 
-        if (product.isDeleted())
+        if (product.getIsDeleted())
             throw new ResourceNotFoundException("Product with mentioned productId is already deleted.");
 
-        if (!product.isActive())
+        if (!product.getIsActive())
             throw new ResourceNotFoundException("Product with mentioned productId is not active.");
 
         if (!loggedInSeller.equalsIgnoreCase(sellerOfProduct))
             throw new ResourceNotAccessibleException("Not Authorized  to delete other seller's product.");
 
-        if (product.isActive() && (!product.isDeleted())) {
+        if (product.getIsActive() && (!product.getIsDeleted())) {
 
             if (loggedInSeller.equalsIgnoreCase(sellerOfProduct)) {
-                product.setDeleted(true);
-                product.setActive(false);
+                product.setIsDeleted(true);
+                product.setIsActive(false);
             }
         }
         productRepository.save(product);
@@ -398,11 +402,11 @@ public class ProductService {
             Category category = currentProduct.getCategory();
             String sellerName = currentProduct.getSeller().getEmail();
 
-            if ((!currentProduct.isDeleted()) && (sellerName.equalsIgnoreCase(loggedInSeller))) {
+            if ((!currentProduct.getIsDeleted()) && (sellerName.equalsIgnoreCase(loggedInSeller))) {
 
                 productSellerDto = new ProductSellerDto(currentProduct.getId(), currentProduct.getName(),
                         currentProduct.getBrand(), currentProduct.getDescription(), currentProduct.getSeller().getCompanyName(),
-                        category.getName(), currentProduct.isActive(), currentProduct.isCancelable(), currentProduct.isReturnable());
+                        category.getName(), currentProduct.getIsActive(), currentProduct.getIsCancelable(), currentProduct.getIsReturnable());
 
                 productSellerDtoList.add(productSellerDto);
             }
@@ -430,10 +434,10 @@ public class ProductService {
             if (!productSeller.equalsIgnoreCase(loggedInSeller))
                 throw new ResourceNotAccessibleException("Not Authorized  to update other seller's product.");
 
-            if (product.isDeleted())
+            if (product.getIsDeleted())
                 throw new ResourceNotFoundException("Product with mentioned productId is already deleted.Cannot update.");
 
-            if (!product.isActive())
+            if (!product.getIsActive())
                 throw new ResourceNotFoundException("Product with mentioned productId is not activated.Kindly wait to get activated by admin to update.");
 
             else {
@@ -448,9 +452,9 @@ public class ProductService {
                 if (productUpdateBySellerCo.getDescription() != null)
                     product.setDescription(productUpdateBySellerCo.getDescription());
                 if (productUpdateBySellerCo.getIsCancellable() != null)
-                    product.setCancelable(productUpdateBySellerCo.getIsCancellable());
+                    product.setIsCancelable(productUpdateBySellerCo.getIsCancellable());
                 if (productUpdateBySellerCo.getIsReturnable() != null)
-                    product.setReturnable(productUpdateBySellerCo.getIsReturnable());
+                    product.setIsReturnable(productUpdateBySellerCo.getIsReturnable());
 
                 productRepository.save(product);
 
@@ -461,4 +465,28 @@ public class ProductService {
     }
 
 
+    //=================================================Get a product By Customer =========================================================
+
+    @Secured("ROLE_USER")
+    public ProductCustomerDto getProductByCustomer(Long productId) {
+        if (!productRepository.findById(productId).isPresent())
+            throw new ResourceNotFoundException("Product with mentioned ProductId is not exist.");
+
+        Product product=productRepository.findById(productId).get();
+
+        if (product.getIsDeleted())
+            throw new ResourceNotFoundException("Product with mentioned productId is deleted.");
+
+        if (!product.getIsActive())
+            throw new ResourceNotFoundException("Product with mentioned productId is not activated.");
+
+        else {
+            ProductCustomerDto productCustomerDto=modelMapper.map(product,ProductCustomerDto.class);
+
+            return productCustomerDto;
+        }
+
+
+
+    }
 }

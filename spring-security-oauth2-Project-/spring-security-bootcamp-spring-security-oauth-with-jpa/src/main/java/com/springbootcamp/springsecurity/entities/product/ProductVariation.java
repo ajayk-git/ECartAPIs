@@ -2,8 +2,10 @@ package com.springbootcamp.springsecurity.entities.product;
 
 import com.springbootcamp.springsecurity.entities.Cart;
 import com.springbootcamp.springsecurity.entities.order.OrderProduct;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -14,37 +16,37 @@ import java.util.Map;
 @Getter
 @Setter
 @Entity
+@FieldDefaults(level = AccessLevel.PRIVATE)
 //@Table(name = "PRODUCT_VARIATION")
 public class ProductVariation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+     Long id;
 
-    private String primaryImage_Name;
+     String primaryImage_Name;
 
-    private int quantityAvailable;
+     Integer quantityAvailable;
 
-    private float price;
+     Float price;
 
-    private  boolean isActive;
+      Boolean isActive;
 
     @ElementCollection(targetClass=String.class)
-    private Map<String,String> metaData;
+     Map<String,String> metaData;
 
     @ManyToOne
     //@JoinColumn(name = "product_id")
-    private Product product;
+     Product product;
 
     @OneToMany(mappedBy = "productVariation",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     @Fetch(value= FetchMode.SUBSELECT)
-    private List<OrderProduct> orderProductList;
+     List<OrderProduct> orderProductList;
 
     @OneToMany(mappedBy = "productVariation",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     @Fetch(value=FetchMode.SUBSELECT)
+     List<Cart> cartList;
 
-    private List<Cart> cartList;
-
-    public ProductVariation(){
+     public ProductVariation(){
 
     }
 
