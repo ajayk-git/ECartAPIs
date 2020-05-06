@@ -116,8 +116,15 @@ public class SellerController {
         return productService.viewAllProductsBySeller(page,contentSize,sortProperty,sortDirection,principal);
     }
 
+    //=================================================Update a product By seller =========================================================
 
-    //=================================================Delete a Product By seller Account==================================
+    @PutMapping("/product/{productId}")
+    public ResponseEntity updateProductBySeller(@PathVariable(name = "productId") Long productId,Principal principal,
+                                                @RequestBody ProductUpdateBySellerCo productUpdateBySellerCo){
+        return productService.updateProductBySeller(productUpdateBySellerCo,productId,principal);
+    }
+
+    //=================================================Delete a Product By seller Account=====================================================
 
     @DeleteMapping("/product/{productId}")
     public ResponseEntity deleteProductBySeller(@PathVariable(name = "productId") Long productId,Principal principal){

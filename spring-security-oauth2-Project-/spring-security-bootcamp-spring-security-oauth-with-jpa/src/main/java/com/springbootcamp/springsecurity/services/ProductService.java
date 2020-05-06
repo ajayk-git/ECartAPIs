@@ -1,6 +1,7 @@
 package com.springbootcamp.springsecurity.services;
 
 import com.springbootcamp.springsecurity.co.ProductCo;
+import com.springbootcamp.springsecurity.co.ProductUpdateBySellerCo;
 import com.springbootcamp.springsecurity.co.ProductVariationCo;
 import com.springbootcamp.springsecurity.dtos.ProductDto;
 import com.springbootcamp.springsecurity.dtos.ProductSellerDto;
@@ -116,41 +117,38 @@ public class ProductService {
     //===========================================to activate product ===========================================================
 
     public ResponseEntity activateProduct(Long productId) {
-        if(!productRepository.findById(productId).isPresent()){
+        if (!productRepository.findById(productId).isPresent()) {
             throw new ResourceNotFoundException("Product is not found with mentioned productId.Please enter existing productId.");
-        }
-
-        else {
+        } else {
             Product product = productRepository.findById(productId).get();
             if (product.isActive())
                 throw new RuntimeException("Product with mentioned id is already activated.");
 
             product.setActive(true);
-            String email=product.getSeller().getEmail();
-            emailService.mailNotificationSellerProductActivate(email,product);
+            String email = product.getSeller().getEmail();
+            emailService.mailNotificationSellerProductActivate(email, product);
             productRepository.save(product);
 
         }
-        return new ResponseEntity("Product is activated successfully.Email is triggered to seller.",HttpStatus.OK);
+        return new ResponseEntity("Product is activated successfully.Email is triggered to seller.", HttpStatus.OK);
     }
 
     //===========================================to deactivate product ===========================================================
 
 
     public ResponseEntity deactivateProduct(Long productId) {
-        if(!productRepository.findById(productId).isPresent()){
+        if (!productRepository.findById(productId).isPresent()) {
             throw new ResourceNotFoundException("Product is not found with mentioned productId.Please enter existing productId.");
-        }
-        else {
+        } else {
             Product product = productRepository.findById(productId).get();
             if (!product.isActive())
                 throw new RuntimeException("Product with mentioned id is already deactivated.");
             product.setActive(false);
-            String email=product.getSeller().getEmail();
-            emailService.mailNotificationSellerProductDeactivate(email,product);
+            String email = product.getSeller().getEmail();
+            emailService.mailNotificationSellerProductDeactivate(email, product);
             productRepository.save(product);
         }
-        return new ResponseEntity("Product is deactivated successfully.Email is triggered to seller.",HttpStatus.OK);
+        return new ResponseEntity("Product is deactivated successfully.Email is triggered to seller.", HttpStatus.OK);
     }
 
 
@@ -159,11 +157,11 @@ public class ProductService {
 
     public ProductVariantDto getProductVariant(Long productVariantId) {
 
-        if(!variationRepository.findById(productVariantId).isPresent())
-            throw  new ResourceNotFoundException("Product Variant is not found with mentioned productVariantId.Please enter existing productVariantId.");
-        ProductVariation productVariation=variationRepository.findById(productVariantId).get();
+        if (!variationRepository.findById(productVariantId).isPresent())
+            throw new ResourceNotFoundException("Product Variant is not found with mentioned productVariantId.Please enter existing productVariantId.");
+        ProductVariation productVariation = variationRepository.findById(productVariantId).get();
 
-        ProductVariantDto productVariantDto=new ProductVariantDto();
+        ProductVariantDto productVariantDto = new ProductVariantDto();
         productVariantDto.setProductVariantId(productVariation.getId());
         productVariantDto.setProductId(productVariation.getProduct().getId());
         productVariantDto.setBrand(productVariation.getProduct().getBrand());
@@ -178,44 +176,44 @@ public class ProductService {
     //=================================================View all product Variants of a product By seller Account==================================
 
 
-    public ResponseEntity viewAllProductVariationsBySeller(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection, Long productId,Principal principal) {
+    public ResponseEntity viewAllProductVariationsBySeller(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection, Long productId, Principal principal) {
 
         if (!productRepository.findById(productId).isPresent())
             throw new ResourceNotFoundException("Product with mentioned ProductId is not exist.");
 
-        Product product=productRepository.findById(productId).get();
+        Product product = productRepository.findById(productId).get();
 
-        String loggedInSeller=principal.getName();
-        String productSeller=product.getSeller().getEmail();
+        String loggedInSeller = principal.getName();
+        String productSeller = product.getSeller().getEmail();
 
         if (!loggedInSeller.equalsIgnoreCase(productSeller))
             throw new ResourceNotAccessibleException("Not Authorized to access other seller's products.");
-        
+
         if (product.isDeleted())
             throw new ResourceNotFoundException("Product with mentioned ProductId has been deleted by admin.");
 
-        ProductVariantDto productVariantDto=new ProductVariantDto();
-        List<ProductVariantDto> productVariantDtoList=new ArrayList<>();
+        ProductVariantDto productVariantDto = new ProductVariantDto();
+        List<ProductVariantDto> productVariantDtoList = new ArrayList<>();
 
-        List<ProductVariation>productVariations=product.getProductVariationList();
+        List<ProductVariation> productVariations = product.getProductVariationList();
 
-        Iterator<ProductVariation> iterator=productVariations.iterator();
+        Iterator<ProductVariation> iterator = productVariations.iterator();
 
         while (iterator.hasNext()) {
 
-            ProductVariation currentVariation=iterator.next();
+            ProductVariation currentVariation = iterator.next();
 
-            productVariantDto=new ProductVariantDto(product.getId(),product.getBrand(),product.getName(),
-                    currentVariation.getId(),currentVariation.getMetaData(),currentVariation.isActive(),
-                    currentVariation.getQuantityAvailable(),currentVariation.getPrice());
+            productVariantDto = new ProductVariantDto(product.getId(), product.getBrand(), product.getName(),
+                    currentVariation.getId(), currentVariation.getMetaData(), currentVariation.isActive(),
+                    currentVariation.getQuantityAvailable(), currentVariation.getPrice());
 
             productVariantDtoList.add(productVariantDto);
 
         }
-        if (productVariantDtoList.size()<1)
+        if (productVariantDtoList.size() < 1)
             throw new ResourceNotFoundException("No product variation available for given product.");
 
-        return new ResponseEntity(productVariantDtoList,null,HttpStatus.OK);
+        return new ResponseEntity(productVariantDtoList, null, HttpStatus.OK);
 
 
     }
@@ -227,25 +225,25 @@ public class ProductService {
     public ResponseEntity addNewProductVariant(Long productId, ProductVariationCo productVariationCo) {
         if (!productRepository.findById(productId).isPresent())
             throw new ResourceNotFoundException("Product with mentioned ProductId is not exist.");
-        Product product=productRepository.findById(productId).get();
+        Product product = productRepository.findById(productId).get();
         if (!product.isActive())
             throw new ResourceNotFoundException("Product with mentioned ProductId is not active.");
         if (product.isDeleted())
             throw new ResourceNotFoundException("Product with mentioned ProductId is deleted.");
 
-        if (product.isActive()&&(!product.isDeleted())){
-            ProductVariation productVariation=new ProductVariation();
+        if (product.isActive() && (!product.isDeleted())) {
+            ProductVariation productVariation = new ProductVariation();
 
             productVariation.setPrice(productVariationCo.getPrice());
             productVariation.setQuantityAvailable(productVariationCo.getQuantityAvailable());
             productVariation.setActive(true);
             productVariation.setProduct(product);
 
-            List<ProductVariation> variationList=product.getProductVariationList();
+            List<ProductVariation> variationList = product.getProductVariationList();
 
-            Iterator<ProductVariation> iterator=variationList.iterator();
-            while (iterator.hasNext()){
-                ProductVariation currentVariation=iterator.next();
+            Iterator<ProductVariation> iterator = variationList.iterator();
+            while (iterator.hasNext()) {
+                ProductVariation currentVariation = iterator.next();
                 if (productVariationCo.getMetaData().equals(currentVariation.getMetaData()))
                     throw new ResourceAlreadyExistException("Product Variation Already exist.");
                 else {
@@ -254,23 +252,23 @@ public class ProductService {
                 }
             }
         }
-        return new ResponseEntity("Product variation added successfully.",HttpStatus.CREATED);
+        return new ResponseEntity("Product variation added successfully.", HttpStatus.CREATED);
     }
 
     //=================================================View a Product By seller Account==================================
 
     @Secured("ROLE_SELLER")
-    public ProductSellerDto viewProductBySeller(Long productId,Principal principal){
+    public ProductSellerDto viewProductBySeller(Long productId, Principal principal) {
 
-        String sellerLoggedIn=principal.getName();
-        ProductSellerDto productSellerDto=new ProductSellerDto();
+        String sellerLoggedIn = principal.getName();
+        ProductSellerDto productSellerDto = new ProductSellerDto();
 
         if (!productRepository.findById(productId).isPresent())
-            throw  new ResourceNotFoundException("Product with mentioned ProductId is not exist.");
+            throw new ResourceNotFoundException("Product with mentioned ProductId is not exist.");
 
 
-        Product product=productRepository.findById(productId).get();
-        String sellerUserName=product.getSeller().getEmail();
+        Product product = productRepository.findById(productId).get();
+        String sellerUserName = product.getSeller().getEmail();
 
         if (!sellerUserName.equalsIgnoreCase(sellerLoggedIn))
             throw new ResourceNotAccessibleException("Not Authorized  to view other seller's product.");
@@ -278,11 +276,11 @@ public class ProductService {
         if (product.isDeleted())
             throw new ResourceNotFoundException("Product with mentioned ProductId is deleted.Kindly enter existing productId.");
 
-        Category category=product.getCategory();
+        Category category = product.getCategory();
 
-        productSellerDto=new ProductSellerDto(product.getId(),product.getName(),product.getBrand(),
-                product.getDescription(),product.getSeller().getCompanyName(),category.getName(),
-                product.isActive(),product.isCancelable(),product.isReturnable());
+        productSellerDto = new ProductSellerDto(product.getId(), product.getName(), product.getBrand(),
+                product.getDescription(), product.getSeller().getCompanyName(), category.getName(),
+                product.isActive(), product.isCancelable(), product.isReturnable());
 
         return productSellerDto;
     }
@@ -292,13 +290,13 @@ public class ProductService {
 
     public ResponseEntity deleteProductBySeller(Long productId, Principal principal) {
 
-        String loggedInSeller=principal.getName();
+        String loggedInSeller = principal.getName();
 
         if (!productRepository.findById(productId).isPresent())
             throw new ResourceNotFoundException("Product with mentioned ProductId is not exist.");
 
-        Product product=productRepository.findById(productId).get();
-        String sellerOfProduct=product.getSeller().getEmail();
+        Product product = productRepository.findById(productId).get();
+        String sellerOfProduct = product.getSeller().getEmail();
 
 
         if (product.isDeleted())
@@ -308,42 +306,42 @@ public class ProductService {
             throw new ResourceNotFoundException("Product with mentioned productId is not active.");
 
         if (!loggedInSeller.equalsIgnoreCase(sellerOfProduct))
-            throw  new ResourceNotAccessibleException("Not Authorized  to delete other seller's product.");
+            throw new ResourceNotAccessibleException("Not Authorized  to delete other seller's product.");
 
-        if (product.isActive()&&(!product.isDeleted())){
+        if (product.isActive() && (!product.isDeleted())) {
 
-            if (loggedInSeller.equalsIgnoreCase(sellerOfProduct)){
+            if (loggedInSeller.equalsIgnoreCase(sellerOfProduct)) {
                 product.setDeleted(true);
                 product.setActive(false);
             }
         }
         productRepository.save(product);
-        return new ResponseEntity("Product deleted with mentioned productId.",HttpStatus.OK);
+        return new ResponseEntity("Product deleted with mentioned productId.", HttpStatus.OK);
     }
 
     //=================================================View all products By seller Account==================================
 
-    public ResponseEntity viewAllProductsBySeller(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection,Principal principal) {
+    public ResponseEntity viewAllProductsBySeller(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection, Principal principal) {
 
         Sort.Direction sortingDirection = sortDirection.get().equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-        String loggedInSeller=principal.getName();
+        String loggedInSeller = principal.getName();
 
-        Page<Product> products=productRepository.findAll(PageRequest.of(page.get(),contentSize.get(),sortingDirection,sortProperty.get()));
+        Page<Product> products = productRepository.findAll(PageRequest.of(page.get(), contentSize.get(), sortingDirection, sortProperty.get()));
 
-        if (products.getTotalElements()<1)
-            throw  new ResourceNotFoundException("No products available in product List.");
+        if (products.getTotalElements() < 1)
+            throw new ResourceNotFoundException("No products available in product List.");
 
-        ProductSellerDto productSellerDto=new ProductSellerDto();
-        List<ProductSellerDto> productSellerDtoList=new ArrayList<>();
+        ProductSellerDto productSellerDto = new ProductSellerDto();
+        List<ProductSellerDto> productSellerDtoList = new ArrayList<>();
 
-        Iterator<Product> productIterator=products.iterator();
-        while (productIterator.hasNext()){
+        Iterator<Product> productIterator = products.iterator();
+        while (productIterator.hasNext()) {
 
-            Product currentProduct=productIterator.next();
-            Category category=currentProduct.getCategory();
-            String sellerName=currentProduct.getSeller().getEmail();
+            Product currentProduct = productIterator.next();
+            Category category = currentProduct.getCategory();
+            String sellerName = currentProduct.getSeller().getEmail();
 
-            if ((!currentProduct.isDeleted())&&(sellerName.equalsIgnoreCase(loggedInSeller))) {
+            if ((!currentProduct.isDeleted()) && (sellerName.equalsIgnoreCase(loggedInSeller))) {
 
                 productSellerDto = new ProductSellerDto(currentProduct.getId(), currentProduct.getName(),
                         currentProduct.getBrand(), currentProduct.getDescription(), currentProduct.getSeller().getCompanyName(),
@@ -352,11 +350,52 @@ public class ProductService {
                 productSellerDtoList.add(productSellerDto);
             }
         }
-        return new ResponseEntity(productSellerDtoList,null,HttpStatus.OK);
+        return new ResponseEntity(productSellerDtoList, null, HttpStatus.OK);
 
     }
 
+    //=================================================Update a product By seller =========================================================
 
+    public ResponseEntity updateProductBySeller(ProductUpdateBySellerCo productUpdateBySellerCo, Long productId, Principal principal) {
 
+        if (!productRepository.findById(productId).isPresent())
+            throw new ResourceNotFoundException("Product with mentioned ProductId is not exist.");
 
+        else {
+
+            Product product = productRepository.findById(productId).get();
+
+            String productSeller = product.getSeller().getEmail();
+            String loggedInSeller = principal.getName();
+
+            if (!productSeller.equalsIgnoreCase(loggedInSeller))
+                throw new ResourceNotAccessibleException("Not Authorized  to update other seller's product.");
+
+            if (product.isDeleted())
+                throw new ResourceNotFoundException("Product with mentioned productId is already deleted.Cannot update.");
+
+            if (!product.isActive())
+                throw new ResourceNotFoundException("Product with mentioned productId is not activated.Kindly wait to get activated by admin to update.");
+
+            else {
+                String productNewName = productUpdateBySellerCo.getProductName();
+                if (productRepository.findByName(productNewName).isPresent())
+                    throw new ResourceAlreadyExistException("Product with " + productNewName + " is already exist. Kindly uodate with another name.");
+
+                if (productUpdateBySellerCo.getProductName()!=null)
+                product.setName(productUpdateBySellerCo.getProductName());
+                if (productUpdateBySellerCo.getBrandName()!=null)
+                product.setBrand(productUpdateBySellerCo.getBrandName());
+                if (productUpdateBySellerCo.getDescription()!=null)
+                product.setDescription(productUpdateBySellerCo.getDescription());
+                product.setCancelable(productUpdateBySellerCo.isCancellable());
+                product.setReturnable(productUpdateBySellerCo.isReturnable());
+
+                productRepository.save(product);
+
+                return new ResponseEntity("Product with productId : " + productId + " is updated successfully.", HttpStatus.OK);
+            }
+
+        }
+    }
 }
