@@ -388,8 +388,10 @@ public class ProductService {
                 product.setBrand(productUpdateBySellerCo.getBrandName());
                 if (productUpdateBySellerCo.getDescription()!=null)
                 product.setDescription(productUpdateBySellerCo.getDescription());
-                product.setCancelable(productUpdateBySellerCo.isCancellable());
-                product.setReturnable(productUpdateBySellerCo.isReturnable());
+                if (productUpdateBySellerCo.getIsCancellable()!=null)
+                product.setCancelable(productUpdateBySellerCo.getIsCancellable());
+                if (productUpdateBySellerCo.getIsReturnable()!=null)
+                product.setReturnable(productUpdateBySellerCo.getIsReturnable());
 
                 productRepository.save(product);
 

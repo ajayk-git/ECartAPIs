@@ -19,9 +19,9 @@ public class ProductUpdateBySellerCo {
     String description;
 
     @NotNull(message = "Set value true/false")
-    boolean isReturnable;
+    Boolean isReturnable;
 
     @NotNull(message = "Set value true/false")
-    boolean isCancellable;
+    Boolean isCancellable;
 
 }
