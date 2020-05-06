@@ -1,5 +1,6 @@
 package com.springbootcamp.springsecurity.co;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +20,8 @@ public class ProductVariationUpdateCo {
 
     @Min(value = 1,message = "Minimum price must be greater than equals to 1 Rs. .")
     Float price;
+
+    Boolean isActive;
 
      Map<String,String> metaData;
 }

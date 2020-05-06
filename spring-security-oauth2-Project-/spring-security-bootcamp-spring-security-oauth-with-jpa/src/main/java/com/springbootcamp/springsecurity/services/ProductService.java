@@ -265,13 +265,13 @@ public class ProductService {
             throw new ResourceNotFoundException("Product variant with mentioned ProductVariantId is not exist.");
 
         else {
-            ProductVariation productVariation=variationRepository.findById(variationId).get();
+            ProductVariation productVariation = variationRepository.findById(variationId).get();
 
-            Product product=productVariation.getProduct();
+            Product product = productVariation.getProduct();
 
-            String productSeller=productVariation.getProduct().getSeller().getEmail();
+            String productSeller = productVariation.getProduct().getSeller().getEmail();
 
-            String loggedInSeller=principal.getName();
+            String loggedInSeller = principal.getName();
 
             if (!productSeller.equalsIgnoreCase(loggedInSeller))
                 throw new ResourceNotAccessibleException("Not Authorized  to update other seller's product variant.");
@@ -284,21 +284,24 @@ public class ProductService {
 
             else {
 
-                Map<String,String> metaDataOld=productVariation.getMetaData();
-                Map<String,String> metaDataNew=variationUpdateCo.getMetaData();
+                Map<String, String> metaDataOld = productVariation.getMetaData();
+                Map<String, String> metaDataNew = variationUpdateCo.getMetaData();
 
                 if (metaDataNew.equals(metaDataOld))
                     throw new ResourceAlreadyExistException("ProductVariation already exist.Kindly update with unique metaData values.");
 
-                if (metaDataNew!=null)
+                if (metaDataNew != null)
                     productVariation.setMetaData(metaDataNew);
 
-                if (variationUpdateCo.getPrice()!=null&&variationUpdateCo.getPrice()>0){
+                if (variationUpdateCo.getPrice() != null && variationUpdateCo.getPrice() > 0) {
                     productVariation.setPrice(variationUpdateCo.getPrice());
                 }
 
-                if (variationUpdateCo.getQuantityAvailable()!=null&&variationUpdateCo.getQuantityAvailable()>0)
+                if (variationUpdateCo.getQuantityAvailable() != null && variationUpdateCo.getQuantityAvailable() > 0)
                     productVariation.setQuantityAvailable(variationUpdateCo.getQuantityAvailable());
+                
+                if (variationUpdateCo.getIsActive() != null)
+                    productVariation.setActive(variationUpdateCo.getIsActive());
 
                 variationRepository.save(productVariation);
                 return new ResponseEntity("Product with productVariantId : " + variationId + " is updated successfully.", HttpStatus.OK);
@@ -438,16 +441,16 @@ public class ProductService {
                 if (productRepository.findByName(productNewName).isPresent())
                     throw new ResourceAlreadyExistException("Product with " + productNewName + " is already exist. Kindly uodate with another name.");
 
-                if (productUpdateBySellerCo.getProductName()!=null)
-                product.setName(productUpdateBySellerCo.getProductName());
-                if (productUpdateBySellerCo.getBrandName()!=null)
-                product.setBrand(productUpdateBySellerCo.getBrandName());
-                if (productUpdateBySellerCo.getDescription()!=null)
-                product.setDescription(productUpdateBySellerCo.getDescription());
-                if (productUpdateBySellerCo.getIsCancellable()!=null)
-                product.setCancelable(productUpdateBySellerCo.getIsCancellable());
-                if (productUpdateBySellerCo.getIsReturnable()!=null)
-                product.setReturnable(productUpdateBySellerCo.getIsReturnable());
+                if (productUpdateBySellerCo.getProductName() != null)
+                    product.setName(productUpdateBySellerCo.getProductName());
+                if (productUpdateBySellerCo.getBrandName() != null)
+                    product.setBrand(productUpdateBySellerCo.getBrandName());
+                if (productUpdateBySellerCo.getDescription() != null)
+                    product.setDescription(productUpdateBySellerCo.getDescription());
+                if (productUpdateBySellerCo.getIsCancellable() != null)
+                    product.setCancelable(productUpdateBySellerCo.getIsCancellable());
+                if (productUpdateBySellerCo.getIsReturnable() != null)
+                    product.setReturnable(productUpdateBySellerCo.getIsReturnable());
 
                 productRepository.save(product);
 
@@ -456,9 +459,6 @@ public class ProductService {
 
         }
     }
-
-
-
 
 
 }
