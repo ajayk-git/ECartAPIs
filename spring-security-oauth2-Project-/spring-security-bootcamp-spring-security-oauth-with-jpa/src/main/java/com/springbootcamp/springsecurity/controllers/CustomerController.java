@@ -1,6 +1,7 @@
 package com.springbootcamp.springsecurity.controllers;
 
 
+import com.springbootcamp.springsecurity.GlobalVariables;
 import com.springbootcamp.springsecurity.co.*;
 import com.springbootcamp.springsecurity.dtos.AddressDto;
 import com.springbootcamp.springsecurity.dtos.CategoryDTO;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 @RequestMapping("/customer")
 @RestController
@@ -39,7 +41,7 @@ public class CustomerController {
 
     @PatchMapping("/update-password")
     public ResponseEntity<String> updateCustomerPassword(@Valid @RequestBody PasswordUpdateCO passwordUpdateCO,Principal principal){
-        return customerService.updateCustomerPassword(passwordUpdateCO,principal.getName());
+        return customerService.updateCustomerPassword(passwordUpdateCO,principal.getName(),principal);
     }
 
 
@@ -47,14 +49,14 @@ public class CustomerController {
 
     @GetMapping("/profile")
     public CustomerDto viewCustomerProfile(Principal principal){
-        return  customerService.viewCustomerProfile(principal.getName());
+        return  customerService.viewCustomerProfile(principal.getName(),principal);
     }
 
     //============================Update Profile  of Customer Account===============================================
 
     @PatchMapping("/profile")
     public ResponseEntity<String> updateCustomerProfile(Principal principal, @Valid @RequestBody CustomerProfileUpdateCo customerProfileUpdateCo){
-        return customerService.updateCustomerProfile(principal.getName(),customerProfileUpdateCo);
+        return customerService.updateCustomerProfile(principal.getName(),customerProfileUpdateCo,principal);
     }
 
 
@@ -63,7 +65,7 @@ public class CustomerController {
 
     @GetMapping("/address")                   // id=customer id
     public List<AddressDto> getAllAddressCustomer(Principal principal ){
-        return customerService.getAddressListCustomer(principal.getName());
+        return customerService.getAddressListCustomer(principal.getName(),principal);
     }
 
 
@@ -71,7 +73,7 @@ public class CustomerController {
 
     @DeleteMapping("/address/{id}")               //id=address id
     public ResponseEntity<String> deleteAddressById(@PathVariable(name = "id") Long id, Principal principal) {
-        return customerService.deleteAddressById(id,principal.getName());
+        return customerService.deleteAddressById(id,principal.getName(),principal);
     }
 
 
@@ -79,29 +81,32 @@ public class CustomerController {
 
     @PostMapping("/address")
     public ResponseEntity<String> addCustomerNewAddress(@RequestBody AddressCO addressCO, Principal principal){
-        return customerService.addCustomerAddress(addressCO,principal.getName());
+        return customerService.addCustomerAddress(addressCO,principal.getName(),principal);
     }
 
 
     //============================Update a customers address==========================================================
 
     @PatchMapping("/address/{id}")
-    public ResponseEntity<String> updateCustomerAddress(@PathVariable("id") Long id, @Valid @RequestBody AddressCO addressCO,Principal principal){
-        return customerService.updateCustomerAddress(addressCO,id,principal.getName());
+    public ResponseEntity<String> updateCustomerAddress(@PathVariable("id") Long id,
+                                                        @Valid @RequestBody AddressCO addressCO,Principal principal){
+        return customerService.updateCustomerAddress(addressCO,id,principal.getName(),principal);
     }
 
 
     @GetMapping("/categories")
-    public List<CategoryDTO> getCategoriesByCustomer(@RequestParam(value = "id",required = false) Long categoryId){
-        return categoryService.getCategoriesByCustomer(categoryId);
+    public List<CategoryDTO> getCategoriesByCustomer(@RequestParam(value = "id",required = false) Long categoryId,
+                                                     Principal principal){
+        return categoryService.getCategoriesByCustomer(categoryId,principal);
     }
 
     //=================================================Get a product By Customer =========================================================
 
     @GetMapping("product/{productId}")
-    public ProductCustomerDto getProductByCustomer(@PathVariable(name = "productId") Long productId){
-        return productService.getProductByCustomer(productId);
+    public ProductCustomerDto getProductByCustomer(@PathVariable(name = "productId") Long productId,Principal principal){
+        return productService.getProductByCustomer(productId,principal);
     }
+
 
 }
 

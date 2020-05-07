@@ -1,5 +1,7 @@
 package com.springbootcamp.springsecurity.services;
 
+import com.springbootcamp.springsecurity.AuditHistoryRepository;
+import com.springbootcamp.springsecurity.AuditHistoryService;
 import com.springbootcamp.springsecurity.co.*;
 import com.springbootcamp.springsecurity.ConfirmationToken;
 import com.springbootcamp.springsecurity.dtos.AddressDto;
@@ -21,6 +23,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.Calendar;
 
 @Service
@@ -32,9 +35,14 @@ public class SellerService {
     @Autowired
     UserRepository userRepository;
     @Autowired
+    AuditHistoryRepository auditRepository;
+    @Autowired
     JavaMailSender javaMailSender;
     @Autowired
     EmailService emailService;
+
+    @Autowired
+    AuditHistoryService auditService;
 
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -46,9 +54,10 @@ public class SellerService {
     }
 
 
+//==============================================get seller Address==================================================================
 
     @Secured("ROLE_SELLER")
-    public AddressDto getAddressSeller(String email) {
+    public AddressDto getAddressSeller(String email,Principal principal) {
        boolean emailFalg=isEmailExists(email);
         if (emailFalg==false){
             throw new AccountDoesNotExistException("User's  does not exist");
@@ -61,6 +70,9 @@ public class SellerService {
                 seller.getAddress().getZipcode(),
                 seller.getAddress().getLable(),
                 seller.getAddress().getCountry());
+
+        auditService.readObject("Address",seller.getAddress().getId(),principal.getName());
+
         return addressDto;
 
     }
@@ -113,10 +125,10 @@ public class SellerService {
 
 
 
-//
+//===================================================View profile by seller===================================================
 
     @Secured("ROLE_SELLER")
-    public SellerDto viewSellerProfile(String email) {
+    public SellerDto viewSellerProfile(String email,Principal principal) {
 
         Seller seller=sellerRepository.findByEmail(email);
 
@@ -126,11 +138,15 @@ public class SellerService {
                 seller.getAddress().getCountry(),seller.getAddress().getLable(),
                 seller.getAddress().getZipcode(),seller.getAddress().getState(),seller.isActive());
 
+        auditService.readObject("Seller",seller.getId(),principal.getName());
+
         return sellerDto;
     }
 
+    //===============================================Update Seller profile============================================================
+
     @Secured("ROLE_SELLER")
-    public ResponseEntity<String> upadteSellerProfile(String email, SellerProfileUpdateCO sellerProfileUpdateCO) {
+    public ResponseEntity<String> upadteSellerProfile(String email, SellerProfileUpdateCO sellerProfileUpdateCO,Principal principal) {
 
         Seller sellerToUpdate=sellerRepository.findByEmail(email);
 
@@ -143,22 +159,31 @@ public class SellerService {
 
         sellerRepository.save(sellerToUpdate);
 
+        auditService.updateObject("Seller",sellerToUpdate.getId(),principal.getName());
+
         return new ResponseEntity<String>("Profile Updated.",HttpStatus.OK);
 
     }
 
+    //===============================================Update Seller Password============================================================
+
 
     @Secured("ROLE_SELLER")
-    public ResponseEntity<String> updateSellerPassword(PasswordUpdateCO passwordUpdateCO, String email) {
+    public ResponseEntity<String> updateSellerPassword(PasswordUpdateCO passwordUpdateCO, String email,Principal principal) {
 
         User user=userRepository.findByEmail(email);
         user.setPassword(encoder.encode(passwordUpdateCO.getPassword()));
         emailService.sendMailPasswordUpdate(user.getEmail());
         userRepository.save(user);
+
+        auditService.updateObject("User",user.getId(),principal.getName());
+
         return new ResponseEntity<>("Password updated and alert message has been send to registered mail id.",HttpStatus.OK);
     }
 
-    public ResponseEntity<String> updateForgotPassword(String token, PasswordUpdateCO passwordUpdateCO) {
+    //===============================================Update Seller Password  when forgot============================================================
+
+    public ResponseEntity<String> updateForgotPassword(String token, PasswordUpdateCO passwordUpdateCO,Principal principal) {
 
 
         if (confirmationTokenRepository.findByConfirmationToken(token)==null)
@@ -170,13 +195,18 @@ public class SellerService {
         seller.setPassword(encoder.encode(passwordUpdateCO.getPassword()));
         sellerRepository.save(seller);
         emailService.sendMailPasswordUpdate(seller.getEmail());
+
+        auditService.updateObject("User",seller.getId(),principal.getName());
+
         return new ResponseEntity<String>("Password Succesfully updated.",HttpStatus.OK);
 
 
     }
 
+    //===============================================Update Seller Address ============================================================
+
     @Secured("ROLE_SELLER")
-    public ResponseEntity<String> updateSellerAddress(AddressCO addressCO, Long id, String email) {
+    public ResponseEntity<String> updateSellerAddress(AddressCO addressCO, Long id, String email,Principal principal) {
         Seller seller=sellerRepository.findByEmail(email);
         Address address=seller.getAddress();
         if(address.getId()==id){
@@ -193,15 +223,15 @@ public class SellerService {
             if(addressCO.getZipcode()!=null)
                 address.setZipcode(addressCO.getZipcode());
             sellerRepository.save(seller);
+
+            auditService.updateObject("Address",address.getId(),principal.getName());
+
             return new ResponseEntity<>("Seller Address has been updated successfully.",HttpStatus.OK);
 
         }
         throw new ResourceNotFoundException("No address found with id : " + id + ", associated with your account");
 
     }
-
-
-
 
 
 

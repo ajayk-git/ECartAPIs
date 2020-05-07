@@ -1,5 +1,6 @@
 package com.springbootcamp.springsecurity.services;
 
+import com.springbootcamp.springsecurity.AuditHistoryService;
 import com.springbootcamp.springsecurity.co.ProductCo;
 import com.springbootcamp.springsecurity.co.ProductUpdateBySellerCo;
 import com.springbootcamp.springsecurity.co.ProductVariationCo;
@@ -21,6 +22,7 @@ import com.springbootcamp.springsecurity.repositories.ProductRepository;
 import com.springbootcamp.springsecurity.repositories.ProductVariationRepository;
 import com.springbootcamp.springsecurity.repositories.SellerRepository;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +32,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Type;
 import java.security.Principal;
 import java.util.*;
 
@@ -48,9 +52,14 @@ public class ProductService {
     @Autowired
     EmailService emailService;
 
+    @Autowired
+    AuditHistoryService auditService;
     ModelMapper modelMapper=new ModelMapper();
 
-    public ProductDto getProductByid(long id) {
+    //===============================Get a  Product by seller================================================================
+
+
+    public ProductDto getProductByid(long id,Principal principal) {
 
         if (!productRepository.findById(id).isPresent()) {
             throw new ProductDoesNotExistException("Product not available with given product Id");
@@ -59,10 +68,15 @@ public class ProductService {
         ProductDto productDto = new ProductDto(product.getBrand(), product.getDescription(),
                 product.getId(), product.getName(), product.getSeller().getCompanyName(), product.getIsCancelable(), product.getIsReturnable());
 
+
+        auditService.readObject("Product",product.getId(),principal.getName());
         return productDto;
     }
 
-    public List<ProductDto> getAllProducts() {
+
+    //===============================Get all Products===========================================================
+
+    public List<ProductDto> getAllProducts(Principal principal) {
         List<ProductDto> productDtoList = new ArrayList<>();
         Iterable<Product> productIterable = productRepository.findAll();
 
@@ -71,13 +85,15 @@ public class ProductService {
                 product.getName(), product.getSeller().getCompanyName(),
                 product.getIsCancelable(), product.getIsReturnable())));
 
+
+        auditService.readAllObjects("Product",principal.getName());
         return productDtoList;
 
     }
 
+    //===============================Add a new Product by seller================================================================
 
     @Secured("ROLE_SELLER")
-    //===============================Add a new Product by seller================================================================
     public ResponseEntity addNewProduct(ProductCo productCo, Principal principal) {
 
         String productNameCo = productCo.getProductName();
@@ -112,13 +128,16 @@ public class ProductService {
 
         emailService.mailNotificationAdminNewProductAdd();
         productRepository.save(product);
+
+        auditService.saveNewObject("Product",product.getId(),principal.getName());
+
         return new ResponseEntity("Product added successfully.Product will  be activated  soon by admin,", HttpStatus.CREATED);
 
     }
 
     //===========================================to activate product ===========================================================
 
-    public ResponseEntity activateProduct(Long productId) {
+    public ResponseEntity activateProduct(Long productId,Principal principal) {
         if (!productRepository.findById(productId).isPresent()) {
             throw new ResourceNotFoundException("Product is not found with mentioned productId.Please enter existing productId.");
         } else {
@@ -131,6 +150,8 @@ public class ProductService {
             emailService.mailNotificationSellerProductActivate(email, product);
             productRepository.save(product);
 
+            auditService.activateObject("Product",product.getId(),principal.getName());
+
         }
         return new ResponseEntity("Product is activated successfully.Email is triggered to seller.", HttpStatus.OK);
     }
@@ -138,7 +159,7 @@ public class ProductService {
     //===========================================to deactivate product ===========================================================
 
 
-    public ResponseEntity deactivateProduct(Long productId) {
+    public ResponseEntity deactivateProduct(Long productId,Principal principal) {
         if (!productRepository.findById(productId).isPresent()) {
             throw new ResourceNotFoundException("Product is not found with mentioned productId.Please enter existing productId.");
         } else {
@@ -149,6 +170,9 @@ public class ProductService {
             String email = product.getSeller().getEmail();
             emailService.mailNotificationSellerProductDeactivate(email, product);
             productRepository.save(product);
+
+            auditService.deactivateObject("Product",product.getId(),principal.getName());
+
         }
         return new ResponseEntity("Product is deactivated successfully.Email is triggered to seller.", HttpStatus.OK);
     }
@@ -157,7 +181,7 @@ public class ProductService {
     //=================================================View  Product-Variant By seller Account==================================
 
 
-    public ProductVariantDto getProductVariant(Long productVariantId) {
+    public ProductVariantDto getProductVariant(Long productVariantId,Principal principal) {
 
         if (!variationRepository.findById(productVariantId).isPresent())
             throw new ResourceNotFoundException("Product Variant is not found with mentioned productVariantId.Please enter existing productVariantId.");
@@ -172,6 +196,8 @@ public class ProductService {
         productVariantDto.setPrice(productVariation.getPrice());
         productVariantDto.setQuantityAvailable(productVariation.getQuantityAvailable());
         productVariantDto.setActive(productVariation.getIsActive());
+
+        auditService.readObject("Product",productVariation.getId(),principal.getName());
         return productVariantDto;
 
     }
@@ -215,6 +241,7 @@ public class ProductService {
         if (productVariantDtoList.size() < 1)
             throw new ResourceNotFoundException("No product variation available for given product.");
 
+        auditService.readAllObjects("ProductVariation",principal.getName());
         return new ResponseEntity(productVariantDtoList, null, HttpStatus.OK);
 
 
@@ -224,7 +251,7 @@ public class ProductService {
 
 
     @Secured("ROLE_SELLER")
-    public ResponseEntity addNewProductVariant(Long productId, ProductVariationCo productVariationCo) {
+    public ResponseEntity addNewProductVariant(Long productId, ProductVariationCo productVariationCo,Principal principal) {
         if (!productRepository.findById(productId).isPresent())
             throw new ResourceNotFoundException("Product with mentioned ProductId is not exist.");
         Product product = productRepository.findById(productId).get();
@@ -251,6 +278,8 @@ public class ProductService {
                 else {
                     productVariation.setMetaData(productVariationCo.getMetaData());
                     variationRepository.save(productVariation);
+                    auditService.saveNewObject("ProductVariation",productVariation.getId(),principal.getName());
+
                 }
             }
         }
@@ -308,6 +337,8 @@ public class ProductService {
                     productVariation.setIsActive(variationUpdateCo.getIsActive());
 
                 variationRepository.save(productVariation);
+
+                auditService.updateObject("ProductVariation",productVariation.getId(),principal.getName());
                 return new ResponseEntity("Product with productVariantId : " + variationId + " is updated successfully.", HttpStatus.OK);
             }
         }
@@ -341,6 +372,7 @@ public class ProductService {
                 product.getDescription(), product.getSeller().getCompanyName(), category.getName(),
                 product.getIsActive(), product.getIsCancelable(), product.getIsReturnable());
 
+        auditService.readObject("Product",product.getId(),principal.getName());
         return productSellerDto;
     }
 
@@ -376,6 +408,9 @@ public class ProductService {
             }
         }
         productRepository.save(product);
+
+        auditService.deleteObject("Product",product.getId(),principal.getName());
+
         return new ResponseEntity("Product deleted with mentioned productId.", HttpStatus.OK);
     }
 
@@ -411,6 +446,7 @@ public class ProductService {
                 productSellerDtoList.add(productSellerDto);
             }
         }
+        auditService.readAllObjects("Product",principal.getName());
         return new ResponseEntity(productSellerDtoList, null, HttpStatus.OK);
 
     }
@@ -458,6 +494,8 @@ public class ProductService {
 
                 productRepository.save(product);
 
+                auditService.updateObject("Product",product.getId(),principal.getName());
+
                 return new ResponseEntity("Product with productId : " + productId + " is updated successfully.", HttpStatus.OK);
             }
 
@@ -468,7 +506,7 @@ public class ProductService {
     //=================================================Get a product By Customer =========================================================
 
     @Secured("ROLE_USER")
-    public ProductCustomerDto getProductByCustomer(Long productId) {
+    public ProductCustomerDto getProductByCustomer(Long productId,Principal principal) {
         if (!productRepository.findById(productId).isPresent())
             throw new ResourceNotFoundException("Product with mentioned ProductId is not exist.");
 
@@ -483,10 +521,12 @@ public class ProductService {
         else {
             ProductCustomerDto productCustomerDto=modelMapper.map(product,ProductCustomerDto.class);
 
+            auditService.readObject("Product",product.getId(),principal.getName());
             return productCustomerDto;
         }
 
 
 
     }
+
 }

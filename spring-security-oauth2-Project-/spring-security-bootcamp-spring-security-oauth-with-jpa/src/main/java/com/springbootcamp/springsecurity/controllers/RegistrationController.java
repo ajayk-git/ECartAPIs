@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/register")
@@ -43,8 +44,9 @@ public class RegistrationController {
         registrationService.forgotPasswordSendTokenToMail(emailCO.getEmail());
     }
     @PatchMapping("/confirm-reset")
-    public ResponseEntity<String> updateForgotPassword(@RequestParam("token") String token,@Valid @RequestBody PasswordUpdateCO passwordUpdateCO ){
-        return registrationService.updateForgotPassword(token,passwordUpdateCO);
+    public ResponseEntity<String> updateForgotPassword(@RequestParam("token") String token, Principal principal,
+                                                       @Valid @RequestBody PasswordUpdateCO passwordUpdateCO ){
+        return registrationService.updateForgotPassword(token,passwordUpdateCO,principal);
     }
 
 }

@@ -30,32 +30,32 @@ public class SellerController {
     CategoryService categoryService;
     @GetMapping("/profile")
     public SellerDto viewSellerProfile(Principal principal) {
-        return sellerService.viewSellerProfile(principal.getName());
+        return sellerService.viewSellerProfile(principal.getName(),principal);
     }
 
     @GetMapping("/address")
     public AddressDto getAddressSeller(Principal principal){
-        return sellerService.getAddressSeller(principal.getName());
+        return sellerService.getAddressSeller(principal.getName(),principal);
     }
 
     //==================================update seller password===========================================================
     @PatchMapping("/password")
     public ResponseEntity<String> updateCustomerPassword(@Valid @RequestBody PasswordUpdateCO passwordUpdateCO, Principal principal){
-        return sellerService.updateSellerPassword(passwordUpdateCO,principal.getName());
+        return sellerService.updateSellerPassword(passwordUpdateCO,principal.getName(),principal);
     }
 
     //=================================================Update Profile  of seller Account==================================
 
     @PatchMapping("/profile")
     public ResponseEntity<String> updateCustomerProfile(Principal principal, @RequestBody SellerProfileUpdateCO sellerProfileUpdateCO){
-        return sellerService.upadteSellerProfile(principal.getName(),sellerProfileUpdateCO);
+        return sellerService.upadteSellerProfile(principal.getName(),sellerProfileUpdateCO,principal);
     }
 
     //=================================================Update Address  of seller Account==================================
 
     @PatchMapping("/address/{id}")
     public ResponseEntity<String> updateSellerAddress(@PathVariable("id") Long id,@RequestBody  AddressCO addressCO,Principal principal){
-        return sellerService.updateSellerAddress(addressCO,id,principal.getName());
+        return sellerService.updateSellerAddress(addressCO,id,principal.getName(),principal);
     }
 
     //=================================================Add a new Product By seller Account==================================
@@ -68,15 +68,15 @@ public class SellerController {
     //=================================================View Category(ies) by seller==================================
 
     @GetMapping("/categories")
-    public List<CategorySellerDto> viewAllCategoriesBySeller(){
-        return categoryService.viewAllCategoriesBySeller();
+    public List<CategorySellerDto> viewAllCategoriesBySeller(Principal principal){
+        return categoryService.viewAllCategoriesBySeller(principal);
     }
 
     //=================================================View  Product-Variant By seller Account==================================
 
     @GetMapping("/product/variation/{productVariantId}")
-    public ProductVariantDto viewProductVariant(@PathVariable(name = "productVariantId") Long productVariantId){
-        return productService.getProductVariant(productVariantId);
+    public ProductVariantDto viewProductVariant(@PathVariable(name = "productVariantId") Long productVariantId,Principal principal){
+        return productService.getProductVariant(productVariantId,principal);
     }
 
     //=================================================View all product Variants of a product By seller Account==================================
@@ -94,8 +94,9 @@ public class SellerController {
     //=================================================Add a new  Product-Variant By seller Account==================================
 
     @PostMapping("/product/variation/{productId}")
-    public ResponseEntity addNewProductVariant(@PathVariable(name = "productId") Long productId,@Valid @RequestBody ProductVariationCo productVariationCo){
-        return productService.addNewProductVariant(productId,productVariationCo);
+    public ResponseEntity addNewProductVariant(@PathVariable(name = "productId") Long productId,Principal principal,
+                                               @Valid @RequestBody ProductVariationCo productVariationCo){
+        return productService.addNewProductVariant(productId,productVariationCo,principal);
     }
 
 

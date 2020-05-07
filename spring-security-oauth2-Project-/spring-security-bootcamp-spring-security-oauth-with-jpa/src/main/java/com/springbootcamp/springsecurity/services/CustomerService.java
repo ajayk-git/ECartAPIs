@@ -1,5 +1,6 @@
 package com.springbootcamp.springsecurity.services;
 
+import com.springbootcamp.springsecurity.AuditHistoryService;
 import com.springbootcamp.springsecurity.co.AddressCO;
 import com.springbootcamp.springsecurity.co.CustomerProfileUpdateCo;
 import com.springbootcamp.springsecurity.co.PasswordUpdateCO;
@@ -22,6 +23,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.*;
 
 @Service
@@ -36,6 +38,10 @@ public class CustomerService {
     UserRepository userRepository;
     @Autowired
     EmailService emailService;
+
+    @Autowired
+    AuditHistoryService auditService;
+
     @Autowired
     ConfirmationToken confirmationToken;
     @Autowired
@@ -52,7 +58,7 @@ public class CustomerService {
     //=============================update a customer details ================================
 
     @Secured("ROLE_USER")
-    public ResponseEntity<String> updateCustomerProfile(String email, CustomerProfileUpdateCo customerProfileUpdateCo) {
+    public ResponseEntity<String> updateCustomerProfile(String email, CustomerProfileUpdateCo customerProfileUpdateCo, Principal principal) {
         Customer customerToUpdate = customerRepository.findByEmail(email);
         if (customerProfileUpdateCo.getContact() != null)
             customerToUpdate.setContact(customerProfileUpdateCo.getContact());
@@ -62,36 +68,44 @@ public class CustomerService {
             customerToUpdate.setLastName(customerProfileUpdateCo.getLastName());
 
         customerRepository.save(customerToUpdate);
+
+        auditService.updateObject("User",customerToUpdate.getId(),principal.getName());
+
         return new ResponseEntity<String>("Profile has been updated.", HttpStatus.OK);
 
 
     }
 
     @Secured("ROLE_USER")
-    public ResponseEntity<String> updateCustomerPassword(PasswordUpdateCO passwordUpdateCO, String email) {
+    public ResponseEntity<String> updateCustomerPassword(PasswordUpdateCO passwordUpdateCO, String email,Principal principal) {
         User user = userRepository.findByEmail(email);
         user.setPassword(encoder.encode(passwordUpdateCO.getPassword()));
-        System.out.println("============================================");
-        System.out.println(user.getEmail());
+
         emailService.sendMailPasswordUpdate(user.getEmail());
         userRepository.save(user);
+
+        auditService.updateObject("User",user.getId(),principal.getName());
+
         return new ResponseEntity<>("Password updated and alert message has been send to registered mail id.", HttpStatus.OK);
 
     }
 
 
     @Secured("ROLE_USER")
-    public CustomerDto viewCustomerProfile(String email) {
+    public CustomerDto viewCustomerProfile(String email,Principal principal) {
         Customer customer = customerRepository.findByEmail(email);
         CustomerDto customerDto = new CustomerDto(customer.getId(), customer.getEmail(), customer.getFirstName(), customer.getLastName(), customer.getContact(), customer.isActive());
+
+        auditService.readObject("Cutomer",customer.getId(),principal.getName());
+
         return customerDto;
     }
 
 
-
+//===========================================Get addressList  by customer===============================
 
     @Secured("ROLE_USER")
-    public List<AddressDto> getAddressListCustomer(String email) {
+    public List<AddressDto> getAddressListCustomer(String email,Principal principal) {
         boolean emailFlag=isEmailExists(email);
         if(emailFlag==false){
             throw new AccountDoesNotExistException("User's  does not exist");
@@ -103,11 +117,15 @@ public class CustomerService {
                 address.getAddressLine(),address.getCity(),address.getState(),
                 address.getZipcode(),address.getLable(),address.getCountry())));
 
+        auditService.readObject("Address",customer.getId(),principal.getName());
+
         return addressList;
     }
 
+    //============================================Delete Address by Customer========================================================
+
     @Secured("ROLE_USER")
-    public ResponseEntity<String> deleteAddressById(Long id,String email){
+    public ResponseEntity<String> deleteAddressById(Long id,String email,Principal principal){
         Customer customer = customerRepository.findByEmail(email);
 
         List<Address> addressList =  customer.getAddressList();
@@ -116,8 +134,10 @@ public class CustomerService {
         {
             if(address.getId() == id)
             {
+
                 customer.deleteAddress(address);
                 customerRepository.save(customer);
+                auditService.deleteObject("Address",address.getId(),principal.getName());
                 return new ResponseEntity<String>("Deleted Address with id " + id, null, HttpStatus.OK);
             }
         }
@@ -125,8 +145,10 @@ public class CustomerService {
 
     }
 
+    //============================================Add new Address by Customer========================================================
+
     @Secured("ROLE_USER")
-    public ResponseEntity<String> addCustomerAddress(AddressCO addressCO, String email) {
+    public ResponseEntity<String> addCustomerAddress(AddressCO addressCO, String email,Principal principal) {
 
         if(customerRepository.findByEmail(email)==null){
             return new ResponseEntity<String>("customer does not exist with given id.",HttpStatus.BAD_REQUEST);
@@ -144,13 +166,18 @@ public class CustomerService {
         addressList.add(address);
         customer.addAddress(address);
         customerRepository.save(customer);
+
+        auditService.saveNewObject("Address",address.getId(),principal.getName());
+
         return new ResponseEntity<String>("Address is successfully added to customers address list",HttpStatus.CREATED);
 
     }
 
 
+    //============================================Update Address by Customer========================================================
+
     @Secured("ROLE_USER")
-    public ResponseEntity<String> updateCustomerAddress(AddressCO addressCO,Long id,String email) {
+    public ResponseEntity<String> updateCustomerAddress(AddressCO addressCO,Long id,String email,Principal principal) {
 
         Customer customer=customerRepository.findByEmail(email);
         List<Address> addressList=customer.getAddressList();
@@ -169,6 +196,9 @@ public class CustomerService {
                 if(addressCO.getZipcode()!=null)
                     address.setZipcode(addressCO.getZipcode());
                 customerRepository.save(customer);
+
+                auditService.updateObject("Address",address.getId(),principal.getName());
+
                 return new ResponseEntity<>("Customer Address has been updated successfully.",HttpStatus.OK);
 
             }

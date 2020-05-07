@@ -17,4 +17,8 @@ public class ProductVariantCustomerDto {
     Integer quantityAvailable;
 
     Map<String,String> metaData;
+
+   public ProductVariantCustomerDto(){
+
+    }
 }

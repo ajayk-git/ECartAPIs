@@ -4,6 +4,7 @@ package com.springbootcamp.springsecurity.entities.product;
 import com.springbootcamp.springsecurity.entities.users.Seller;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.Fetch;

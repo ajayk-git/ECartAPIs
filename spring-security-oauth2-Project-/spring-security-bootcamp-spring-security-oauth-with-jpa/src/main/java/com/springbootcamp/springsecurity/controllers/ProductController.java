@@ -6,6 +6,7 @@ import com.springbootcamp.springsecurity.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RequestMapping("/Product")
@@ -15,14 +16,14 @@ public class ProductController {
     ProductService productService;
 
     @GetMapping("/{id}")
-    public ProductDto getProductByid(@PathVariable long id) {
+    public ProductDto getProductByid(@PathVariable long id,Principal principal) {
         System.out.println("Product Details are :");
-        return productService.getProductByid(id);
+        return productService.getProductByid(id,principal);
     }
 
     @GetMapping("/")
-    public List<ProductDto>getAllProducts(){
-        return productService.getAllProducts();
+    public List<ProductDto>getAllProducts(Principal principal){
+        return productService.getAllProducts(principal);
     }
 
 

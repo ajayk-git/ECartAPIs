@@ -33,5 +33,9 @@ public class ProductCustomerDto {
 
     CategoryDTO category;
 
+   public ProductCustomerDto(){
+
+    }
+
 
 }

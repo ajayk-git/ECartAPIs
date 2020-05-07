@@ -1,5 +1,8 @@
 package com.springbootcamp.springsecurity.services;
 
+import com.springbootcamp.springsecurity.AuditHistory;
+import com.springbootcamp.springsecurity.AuditHistoryRepository;
+import com.springbootcamp.springsecurity.AuditHistoryService;
 import com.springbootcamp.springsecurity.co.CustomerCO;
 import com.springbootcamp.springsecurity.co.PasswordUpdateCO;
 import com.springbootcamp.springsecurity.co.SellerCO;
@@ -23,6 +26,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -36,7 +40,12 @@ public class RegistrationService {
     @Autowired
     ConfirmationTokenRepository confirmationTokenRepository;
     @Autowired
+    AuditHistoryRepository auditRepository;
+    @Autowired
     EmailService emailService;
+
+    @Autowired
+    AuditHistoryService auditService;
     @Autowired
     JavaMailSender javaMailSender;
 
@@ -66,8 +75,12 @@ public class RegistrationService {
         customerRepository.save(customer);
 
         ConfirmationToken confirmationToken = new ConfirmationToken(customer);
+
         confirmationTokenRepository.save(confirmationToken);
         emailService.sendEmailToCustomer(customer.getEmail(), confirmationToken.getConfirmationToken());
+
+        auditService.registerUser("User",customer.getId(),customer.getEmail());
+
         return new ResponseEntity("Verification mail is send to registered mail id.", HttpStatus.OK);
 
     }
@@ -104,6 +117,9 @@ public class RegistrationService {
         ConfirmationToken confirmationToken = new ConfirmationToken(seller);
         confirmationTokenRepository.save(confirmationToken);
         emailService.sendEmailToSeller(seller.getEmail(), confirmationToken.getConfirmationToken());
+
+
+        auditService.registerUser("User",seller.getId(),seller.getEmail());
         return new ResponseEntity("Verification mail is send to registered mail id.", HttpStatus.OK);
 
 
@@ -172,7 +188,7 @@ public class RegistrationService {
     }
 
 
-    public ResponseEntity updateForgotPassword(String token, PasswordUpdateCO passwordUpdateCO) {
+    public ResponseEntity updateForgotPassword(String token, PasswordUpdateCO passwordUpdateCO, Principal principal) {
         if (confirmationTokenRepository.findByConfirmationToken(token)==null)
             throw new ResourceNotFoundException("Invalid/ Token");
 
@@ -182,6 +198,10 @@ public class RegistrationService {
         customer.setPassword(encoder.encode(passwordUpdateCO.getPassword()));
         customerRepository.save(customer);
         emailService.sendMailPasswordUpdate(customer.getEmail());
+
+
+
+        auditService.updateObject("User",customer.getId(),principal.getName());
         return new ResponseEntity("Password Successfully updated.",HttpStatus.OK);
 
 
