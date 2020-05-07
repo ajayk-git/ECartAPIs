@@ -3,6 +3,7 @@ package com.springbootcamp.springsecurity.entities.users;
 
 import com.springbootcamp.springsecurity.entities.Address;
 import com.springbootcamp.springsecurity.entities.product.Product;
+import io.swagger.annotations.ApiModel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Fetch;
@@ -15,6 +16,7 @@ import java.util.Set;
 @Entity
 //@Table(name = "SELLER")
 @PrimaryKeyJoinColumn(name = "UserID")
+@ApiModel(description="All details about Seller.")
 public class Seller extends User {
 
 

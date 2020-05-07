@@ -1,5 +1,9 @@
 package com.springbootcamp.springsecurity.controllers;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
+
+@Api(value = "LogoutRest Controller",description = "To Logout the Users")
 @RestController
 @RequestMapping("/logout")
 public class UserLogoutController {
@@ -19,6 +25,11 @@ public class UserLogoutController {
     private TokenStore tokenStore;
 
     //==========Api To Logout ===========//
+    @ApiOperation(value = "To Logout Users successfully")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success|OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 401, message = "not authorized!")})
     @PostMapping("/")
     public ResponseEntity<String> logout(HttpServletRequest request){
         String authHeader = request.getHeader("Authorization");

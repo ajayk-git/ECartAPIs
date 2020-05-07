@@ -7,6 +7,10 @@ import com.springbootcamp.springsecurity.repositories.SellerRepository;
 import com.springbootcamp.springsecurity.services.CategoryService;
 import com.springbootcamp.springsecurity.services.ProductService;
 import com.springbootcamp.springsecurity.services.SellerService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +20,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
+@Api(value = "Seller Rest Controller",description = "Operations Related to Seller")
 @RestController
 @RequestMapping("/seller")
 public class SellerController {
@@ -28,17 +33,40 @@ public class SellerController {
     ProductService productService;
     @Autowired
     CategoryService categoryService;
+
+
+
+    @ApiOperation(value = "To view a seller's profile .")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success|OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 404, message = "not found!!!") })
     @GetMapping("/profile")
     public SellerDto viewSellerProfile(Principal principal) {
         return sellerService.viewSellerProfile(principal.getName(),principal);
     }
 
+    //==============================================get seller Address==================================================================
+
+    @ApiOperation(value = "To view seller's  address,")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success|OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 401, message = "not authorized!"),
+            @ApiResponse(code = 404, message = "not found!!!") })
     @GetMapping("/address")
     public AddressDto getAddressSeller(Principal principal){
         return sellerService.getAddressSeller(principal.getName(),principal);
     }
 
     //==================================update seller password===========================================================
+
+    @ApiOperation(value = "To update seller's password")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success|OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 401, message = "not authorized!"),
+            @ApiResponse(code = 404, message = "not found!!!") })
     @PatchMapping("/password")
     public ResponseEntity<String> updateCustomerPassword(@Valid @RequestBody PasswordUpdateCO passwordUpdateCO, Principal principal){
         return sellerService.updateSellerPassword(passwordUpdateCO,principal.getName(),principal);
@@ -46,6 +74,12 @@ public class SellerController {
 
     //=================================================Update Profile  of seller Account==================================
 
+    @ApiOperation(value = "To update seller's  profile")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success|OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 401, message = "not authorized!"),
+            @ApiResponse(code = 404, message = "not found!!!") })
     @PatchMapping("/profile")
     public ResponseEntity<String> updateCustomerProfile(Principal principal, @RequestBody SellerProfileUpdateCO sellerProfileUpdateCO){
         return sellerService.upadteSellerProfile(principal.getName(),sellerProfileUpdateCO,principal);
@@ -53,13 +87,26 @@ public class SellerController {
 
     //=================================================Update Address  of seller Account==================================
 
+    @ApiOperation(value = "To update seller's  Address")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success|OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 401, message = "not authorized!"),
+            @ApiResponse(code = 404, message = "not found!!!") })
     @PatchMapping("/address/{id}")
-    public ResponseEntity<String> updateSellerAddress(@PathVariable("id") Long id,@RequestBody  AddressCO addressCO,Principal principal){
+    public ResponseEntity<String> updateSellerAddress(@PathVariable("id") Long id,
+                                                      @RequestBody  AddressCO addressCO,Principal principal){
         return sellerService.updateSellerAddress(addressCO,id,principal.getName(),principal);
     }
 
     //=================================================Add a new Product By seller Account==================================
 
+    @ApiOperation(value = "To Add new product byu seller")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success|OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 401, message = "not authorized!"),
+            @ApiResponse(code = 404, message = "not found!!!") })
     @PostMapping("/product")
     public ResponseEntity addNewProduct(@Valid @RequestBody ProductCo productCo,Principal principal){
         return productService.addNewProduct(productCo,principal);
@@ -67,6 +114,12 @@ public class SellerController {
 
     //=================================================View Category(ies) by seller==================================
 
+    @ApiOperation(value = "View Category(ies) by seller")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success|OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 401, message = "not authorized!"),
+            @ApiResponse(code = 404, message = "not found!!!") })
     @GetMapping("/categories")
     public List<CategorySellerDto> viewAllCategoriesBySeller(Principal principal){
         return categoryService.viewAllCategoriesBySeller(principal);
@@ -74,12 +127,25 @@ public class SellerController {
 
     //=================================================View  Product-Variant By seller Account==================================
 
+    @ApiOperation(value = "View Product Variant by seller")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success|OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 401, message = "not authorized!"),
+            @ApiResponse(code = 404, message = "not found!!!") })
     @GetMapping("/product/variation/{productVariantId}")
     public ProductVariantDto viewProductVariant(@PathVariable(name = "productVariantId") Long productVariantId,Principal principal){
         return productService.getProductVariant(productVariantId,principal);
     }
 
     //=================================================View all product Variants of a product By seller Account==================================
+
+    @ApiOperation(value = "View all product Variants of a product By seller.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success|OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 401, message = "not authorized!"),
+            @ApiResponse(code = 404, message = "not found!!!") })
     @GetMapping("/product/{productId}/variation")
     public ResponseEntity viewAllProductVariationsBySeller(@RequestParam(value = "page",defaultValue = GlobalVariables.DEFAULT_PAGE_OFFSET)Optional<Integer> page,
                                                            @RequestParam(value = "size",defaultValue = GlobalVariables.DEFAULT_PAGE_SIZE) Optional<Integer> contentSize,
@@ -93,6 +159,12 @@ public class SellerController {
 
     //=================================================Add a new  Product-Variant By seller Account==================================
 
+    @ApiOperation(value = "To add a new  Product-Variant By seller")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success|OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 401, message = "not authorized!"),
+            @ApiResponse(code = 404, message = "not found!!!") })
     @PostMapping("/product/variation/{productId}")
     public ResponseEntity addNewProductVariant(@PathVariable(name = "productId") Long productId,Principal principal,
                                                @Valid @RequestBody ProductVariationCo productVariationCo){
@@ -103,6 +175,12 @@ public class SellerController {
 
     //=====================================================Update a Product Variant  By seller ===============================================
 
+    @ApiOperation(value = "To update a Product Variant  By seller")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success|OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 401, message = "not authorized!"),
+            @ApiResponse(code = 404, message = "not found!!!") })
     @PatchMapping("product/variation/{variationId}")
     public ResponseEntity updateProductVariantBySeller(@PathVariable(name = "variationId") Long variationId,Principal principal,
                                                       @Valid @RequestBody ProductVariationUpdateCo variationUpdateCo){
@@ -114,6 +192,12 @@ public class SellerController {
 
     //=================================================View a Product By seller Account==================================
 
+    @ApiOperation(value = "To View a Product By seller.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success|OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 401, message = "not authorized!"),
+            @ApiResponse(code = 404, message = "not found!!!") })
     @GetMapping("/product/{productId}")
     public ProductSellerDto viewProductBySeller(@PathVariable(name = "productId") Long productId,Principal principal){
         return productService.viewProductBySeller(productId,principal);
@@ -121,6 +205,12 @@ public class SellerController {
 
     //=================================================View all products By seller Account==================================
 
+    @ApiOperation(value = "To View all products By seller Account")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success|OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 401, message = "not authorized!"),
+            @ApiResponse(code = 404, message = "not found!!!") })
     @GetMapping("/product")
     public ResponseEntity viewAllProductsBySeller(@RequestParam(value = "page",defaultValue = GlobalVariables.DEFAULT_PAGE_OFFSET)Optional<Integer> page,
                                                   @RequestParam(value = "size",defaultValue = GlobalVariables.DEFAULT_PAGE_SIZE) Optional<Integer> contentSize,
@@ -132,6 +222,12 @@ public class SellerController {
 
     //=================================================Update a product By seller =========================================================
 
+    @ApiOperation(value = "To Update a product By seller")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success|OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 401, message = "not authorized!"),
+            @ApiResponse(code = 404, message = "not found!!!") })
     @PutMapping("/product/{productId}")
     public ResponseEntity updateProductBySeller(@PathVariable(name = "productId") Long productId,Principal principal,
                                                 @RequestBody ProductUpdateBySellerCo productUpdateBySellerCo){
@@ -140,6 +236,12 @@ public class SellerController {
 
     //=================================================Delete a Product By seller Account=====================================================
 
+    @ApiOperation(value = "To Delete a Product By seller Account")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success|OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 401, message = "not authorized!"),
+            @ApiResponse(code = 404, message = "not found!!!") })
     @DeleteMapping("/product/{productId}")
     public ResponseEntity deleteProductBySeller(@PathVariable(name = "productId") Long productId,Principal principal){
         return productService.deleteProductBySeller(productId,principal);

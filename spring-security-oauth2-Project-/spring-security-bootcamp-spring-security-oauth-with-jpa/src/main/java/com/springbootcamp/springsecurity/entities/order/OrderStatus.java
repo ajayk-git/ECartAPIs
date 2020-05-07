@@ -1,5 +1,7 @@
 package com.springbootcamp.springsecurity.entities.order;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +12,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 //@Table(name = "ORDER_STATUS")
+@ApiModel(description = "All details about the Order Status in transition ")
 public class OrderStatus implements Serializable {
     @Id
     @OneToOne
@@ -22,6 +25,7 @@ public class OrderStatus implements Serializable {
 //    @Enumerated(EnumType.STRING)
 //    private TO_STATUS to_status;
 
+    @ApiModelProperty(notes = "Transition notes like handle with care etc..")
     private String transition_notes_comments;
 
     public OrderProduct getOrderProduct() {

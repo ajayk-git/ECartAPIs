@@ -3,6 +3,8 @@ package com.springbootcamp.springsecurity.entities.product;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.springbootcamp.springsecurity.entities.CategoryMetadataFieldValues;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import org.codehaus.jackson.annotate.JsonBackReference;
@@ -15,13 +17,16 @@ import java.util.List;
 @Entity
 @Setter
 @Getter
+@ApiModel(description = "All details about the category.")
 //@Table(name = "CATEGORY")
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "categoryId")
+    @ApiModelProperty(notes = "Category Id.")
     private  Long id;
 
+    @ApiModelProperty(notes = "Category Name")
     @Column(name = "NAME")
     private String  name;
 

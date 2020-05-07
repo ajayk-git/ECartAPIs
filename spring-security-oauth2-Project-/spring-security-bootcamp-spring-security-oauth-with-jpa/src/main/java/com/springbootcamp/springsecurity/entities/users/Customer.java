@@ -4,6 +4,7 @@ package com.springbootcamp.springsecurity.entities.users;
 import com.springbootcamp.springsecurity.entities.Address;
 import com.springbootcamp.springsecurity.entities.Cart;
 import com.springbootcamp.springsecurity.entities.order.Order;
+import io.swagger.annotations.ApiModel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Fetch;
@@ -17,7 +18,9 @@ import java.util.Set;
 @Setter
 @Entity
 @PrimaryKeyJoinColumn(name = "ID")
+@ApiModel(description="All details about Customer.")
 public class Customer extends User {
+
 
     private String contact;
 

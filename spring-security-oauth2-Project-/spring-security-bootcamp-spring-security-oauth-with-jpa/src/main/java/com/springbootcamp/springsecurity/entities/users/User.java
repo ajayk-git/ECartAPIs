@@ -1,6 +1,7 @@
 package com.springbootcamp.springsecurity.entities.users;
 
 import com.springbootcamp.springsecurity.entities.Role;
+import io.swagger.annotations.ApiModel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Fetch;
@@ -17,6 +18,7 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Getter
 @Setter
+@ApiModel(description="All details about User.")
 public class User implements UserDetails {
 
     @Id

@@ -58,7 +58,6 @@ public class ProductService {
 
     //===============================Get a  Product by seller================================================================
 
-
     public ProductDto getProductByid(long id,Principal principal) {
 
         if (!productRepository.findById(id).isPresent()) {

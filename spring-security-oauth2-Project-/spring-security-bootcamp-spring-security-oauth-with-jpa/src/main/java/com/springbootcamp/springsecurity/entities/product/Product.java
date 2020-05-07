@@ -2,6 +2,8 @@ package com.springbootcamp.springsecurity.entities.product;
 
 
 import com.springbootcamp.springsecurity.entities.users.Seller;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,47 +19,54 @@ import java.util.List;
 @Setter
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@ApiModel(description = "All details about the Product Entity.")
 //@Table(name = "PRODUCT")
 public class Product {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-   Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @ApiModelProperty(notes = "Product Id.")
+    Long id;
 
+    @ApiModelProperty(notes = "Product Name.")
+    String name;
 
-   String name;
+    @ApiModelProperty(notes = "Product Description.")
+    String description;
 
-   String description;
+    @ApiModelProperty(notes = "Product cancellable or not.")
+    Boolean isCancelable;
 
-   Boolean isCancelable;
+    @ApiModelProperty(notes = "Product returnable or not.")
+    Boolean isReturnable;
 
-   Boolean isReturnable;
+    @ApiModelProperty(notes = "Brand of product")
+    String brand;
 
-   String brand;
+    @ApiModelProperty(notes = "Product is active or not.")
+    Boolean isActive;
 
-   Boolean isActive;
-
+    @ApiModelProperty(notes = "Product is deleted or not.")
     Boolean isDeleted;
 
 
-  @OneToMany(mappedBy = "product",cascade = CascadeType.ALL)    // to map product to product variant
-  @Fetch(value=FetchMode.SUBSELECT)
-  private List<ProductVariation> productVariationList;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)    // to map product to product variant
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<ProductVariation> productVariationList;
 
 
-  @ManyToOne
-  @JoinColumn(name = "CATEGORY_ID")   //to map product to category
-  private Category category;
+    @ManyToOne
+    @JoinColumn(name = "CATEGORY_ID")   //to map product to category
+    private Category category;
 
-  @ManyToOne
-  @JoinColumn(name = "Seller_id")   //to map product to seller
-  private Seller seller;
+    @ManyToOne
+    @JoinColumn(name = "Seller_id")   //to map product to seller
+    private Seller seller;
 
-  @OneToMany(mappedBy = "product",cascade = CascadeType.ALL)
-  private List<ProductReview> productReviewList;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<ProductReview> productReviewList;
 
 
-
-  public Product() {
-  }
+    public Product() {
+    }
 
 }

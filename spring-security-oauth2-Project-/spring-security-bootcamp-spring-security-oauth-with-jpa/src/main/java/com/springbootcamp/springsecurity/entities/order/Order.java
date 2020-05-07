@@ -2,6 +2,8 @@ package com.springbootcamp.springsecurity.entities.order;
 
 import com.springbootcamp.springsecurity.entities.Addresscopy;
 import com.springbootcamp.springsecurity.entities.users.Customer;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Fetch;
@@ -14,35 +16,41 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Table(name="ORDERS")
+@Table(name = "ORDERS")
+@ApiModel(description = "All details about the Order ")
 public class Order {
-      @Id
-      @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @ApiModelProperty(notes = "Order Id")
     //  @Column(name = "ORDER_ID")
-      private Long id;
-  //    @Column(name = "AMOUNT_PAID")
-      private float amountPaid;
-      @Temporal(value = TemporalType.DATE)
+    private Long id;
+    //    @Column(name = "AMOUNT_PAID")
+    @ApiModelProperty(notes = "Amount to be paid.")
+    private float amountPaid;
+
+    @Temporal(value = TemporalType.DATE)
+    @ApiModelProperty(notes = "Date of order placed.")
     //  @Column(name = "DATE_CREATED")
-      private Date dateCreated;
+    private Date dateCreated;
 
-     // @Column(name = "PAYMENT_METHOD")
-      private String paymentMethod;
+    @ApiModelProperty(notes = "Payment method user to place thr order.")
+    // @Column(name = "PAYMENT_METHOD")
+    private String paymentMethod;
 
-      @Embedded
-      Addresscopy addresscopy;
+    @Embedded
+    Addresscopy addresscopy;
 
-      @ManyToOne   //to map order to user
-      @JoinColumn(name = "Customer_ID")
-      private Customer customer;
+    @ManyToOne   //to map order to user
+    @JoinColumn(name = "Customer_ID")
+    private Customer customer;
 
 
-      @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)    //order tp produuct
-      @Fetch(FetchMode.SUBSELECT)
-      private List<OrderProduct> orderProductList;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)    //order tp produuct
+    @Fetch(FetchMode.SUBSELECT)
+    private List<OrderProduct> orderProductList;
 
-      public Order() {
-      }
+    public Order() {
+    }
 
 }
 

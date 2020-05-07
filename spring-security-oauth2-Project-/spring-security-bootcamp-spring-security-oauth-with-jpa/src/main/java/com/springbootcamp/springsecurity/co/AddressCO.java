@@ -1,5 +1,6 @@
 package com.springbootcamp.springsecurity.co;
 
+import io.swagger.annotations.ApiModel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,6 +8,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 @Getter
 @Setter
+@ApiModel(description="All details about Seller.")
 public class AddressCO {
 
 
