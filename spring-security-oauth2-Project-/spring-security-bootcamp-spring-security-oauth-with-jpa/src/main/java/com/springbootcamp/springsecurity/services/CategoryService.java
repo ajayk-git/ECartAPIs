@@ -45,11 +45,14 @@ public class CategoryService {
 
     public String setToStringConverter(Set<String> inputSet) {
         String resultString = String.join(",", inputSet);
+        System.out.println("inside set to string converter");
         return resultString;
     }
 
     public Set<String> stringToSetConverter(String inputString) {
         Set<String> stringSet = new HashSet<String>(Arrays.asList(inputString.split(",")));
+        System.out.println("inside set to string converter");
+
         return stringSet;
     }
 
@@ -100,12 +103,14 @@ public class CategoryService {
                 category.setId(categoryCO.getParentId());
                 categoryRepository.save(category);
 
-                auditService.saveNewObject("Category", category.getId(),principal.getName());
+                auditService.saveNewObject("Category", category.getId(), principal.getName());
 
                 return new ResponseEntity("New category " + categoryCO.getCategoryName() + " is Added as a Root category because it has null Id. ", HttpStatus.CREATED);
-            } else
-                throw new ResourceAlreadyExistException("Category with " + categoryCO.getCategoryName() + " already exist.");
-
+            }
+            else {
+                if(categoryRepository.findByName(categoryCO.getCategoryName()).isPresent())
+                    throw new ResourceAlreadyExistException("Category with Category Name "+categoryCO.getCategoryName()+" already exist.");
+            }
         }
 
         if (categoryCO.getParentId() != null) {
@@ -240,10 +245,10 @@ public class CategoryService {
 
             metadataFieldValues.setFieldValues(filteredValues);
             metadataFieldValues.setCompositeKey(compositeKey);
-//            metadataFieldValues.setCategory(category);
+            metadataFieldValues.setCategory(category);
             metadataFieldValues.setCategoryMetaDataField(metaDataField);
 
-            metaDataFieldValuesRepository.save(metadataFieldValues);
+             metaDataFieldValuesRepository.save(metadataFieldValues);
 
             auditService.saveNewObject("CategoryMetaDataFieldValues", metaDataField.getId(),principal.getName());
 
@@ -254,6 +259,7 @@ public class CategoryService {
 
     //===========================================Update MetaDataFiledValues======================================================
 
+    @Secured("ROLE_ADMIN")
     public ResponseEntity updateMetaDataValues(MetaDataFieldValueCo metaDataFieldValueCo,Principal principal) {
 
         Long categoryId = metaDataFieldValueCo.getCategoryId();
@@ -286,7 +292,6 @@ public class CategoryService {
 
         }
         return new ResponseEntity("MetaData Field Values are updated Successfully.", HttpStatus.OK);
-
     }
 
 //===================================to get all categories by seller=======================================================
@@ -326,7 +331,6 @@ public class CategoryService {
 
 
     //===================================to get all categories by Customer=======================================================
-
 
     @Secured("ROLE_USER")
     public List<CategoryDTO> getCategoriesByCustomer(Long categoryId,Principal principal) {
