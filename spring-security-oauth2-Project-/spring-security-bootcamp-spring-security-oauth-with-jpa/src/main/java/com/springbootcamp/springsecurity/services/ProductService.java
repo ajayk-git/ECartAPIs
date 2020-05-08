@@ -5,10 +5,7 @@ import com.springbootcamp.springsecurity.co.ProductCo;
 import com.springbootcamp.springsecurity.co.ProductUpdateBySellerCo;
 import com.springbootcamp.springsecurity.co.ProductVariationCo;
 import com.springbootcamp.springsecurity.co.ProductVariationUpdateCo;
-import com.springbootcamp.springsecurity.dtos.ProductCustomerDto;
-import com.springbootcamp.springsecurity.dtos.ProductDto;
-import com.springbootcamp.springsecurity.dtos.ProductSellerDto;
-import com.springbootcamp.springsecurity.dtos.ProductVariantDto;
+import com.springbootcamp.springsecurity.dtos.*;
 import com.springbootcamp.springsecurity.entities.product.Category;
 import com.springbootcamp.springsecurity.entities.product.Product;
 import com.springbootcamp.springsecurity.entities.product.ProductVariation;
@@ -545,6 +542,20 @@ public class ProductService {
         List<ProductCustomerDto> productCustomerDtoList = modelMapper.map(productList,listType);
 
         return new ResponseEntity(productCustomerDtoList, null, HttpStatus.OK);
+
+    }
+
+    //=================================================View a Product By Admin Account==================================
+
+    public ProductAdminDto viewProductByAdmin(Long productId, Principal principal) {
+
+        if (!productRepository.findById(productId).isPresent())
+            throw  new ResourceNotFoundException("Product does not exist with mentioned productId.");
+
+        Product product=productRepository.findById(productId).get();
+        ProductAdminDto productAdminDto=modelMapper.map(product,ProductAdminDto.class);
+        return productAdminDto;
+
 
     }
 }

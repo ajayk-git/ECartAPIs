@@ -2,16 +2,15 @@ package com.springbootcamp.springsecurity.controllers;
 
 
 import com.springbootcamp.springsecurity.co.*;
-import com.springbootcamp.springsecurity.dtos.CategoryDTO;
-import com.springbootcamp.springsecurity.dtos.CategoryMetaDataFieldDTO;
-import com.springbootcamp.springsecurity.dtos.CustomerDto;
-import com.springbootcamp.springsecurity.dtos.SellerDto;
+import com.springbootcamp.springsecurity.dtos.*;
 import com.springbootcamp.springsecurity.exceptions.AccountDoesNotExistException;
 import com.springbootcamp.springsecurity.services.AdminService;
 import com.springbootcamp.springsecurity.services.CategoryService;
 import com.springbootcamp.springsecurity.services.ProductService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -169,7 +168,17 @@ public class AdminController {
         return productService.deactivateProduct(productId,principal);
     }
 
+//=================================================View a Product By Admin Account==================================
 
+    @ApiOperation(value = "To View a Product By Admin.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success|OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 401, message = "not authorized!"),
+            @ApiResponse(code = 404, message = "not found!!!") })
+    @GetMapping("/product/{productId}")
+    public ProductAdminDto viewProductByAdmin(@PathVariable(name = "productId") Long productId, Principal principal) {
+        return productService.viewProductByAdmin(productId, principal);
 
-
-}
+    }
+    }
