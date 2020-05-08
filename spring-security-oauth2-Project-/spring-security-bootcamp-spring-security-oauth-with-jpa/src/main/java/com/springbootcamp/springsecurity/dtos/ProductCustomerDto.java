@@ -1,6 +1,5 @@
 package com.springbootcamp.springsecurity.dtos;
 
-import com.springbootcamp.springsecurity.entities.product.Category;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;

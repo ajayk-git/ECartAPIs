@@ -1,6 +1,7 @@
 package com.springbootcamp.springsecurity.controllers;
 
 
+import com.springbootcamp.springsecurity.GlobalVariables;
 import com.springbootcamp.springsecurity.co.*;
 import com.springbootcamp.springsecurity.dtos.*;
 import com.springbootcamp.springsecurity.exceptions.AccountDoesNotExistException;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 @Api(value = "Admin Rest Controller",description = "Operations Related to Admin")
 @RestController
@@ -181,4 +183,16 @@ public class AdminController {
         return productService.viewProductByAdmin(productId, principal);
 
     }
+
+    //=================================================Get a all product By Admin=========================================================
+    @ApiOperation(value = "Get all products by Admin.")
+    @GetMapping("/product")
+    public ResponseEntity getAllProductsByAdmin(@RequestParam(value = "page",defaultValue = GlobalVariables.DEFAULT_PAGE_OFFSET) Optional<Integer> page,
+                                                   @RequestParam(value = "size",defaultValue = GlobalVariables.DEFAULT_PAGE_SIZE) Optional<Integer> contentSize,
+                                                   @RequestParam(value = "sort",defaultValue = GlobalVariables.DEFAULT_SORT_PROPERTY)Optional<String> sortProperty,
+                                                   @RequestParam(value = "direction",defaultValue = GlobalVariables.DEFAULT_SORT_DIRECTION)Optional<String> sortDirection,
+                                                   Principal principal){
+        return productService.getAllProductsByAdmin(page,contentSize,sortProperty,sortDirection,principal);
+    }
+
     }

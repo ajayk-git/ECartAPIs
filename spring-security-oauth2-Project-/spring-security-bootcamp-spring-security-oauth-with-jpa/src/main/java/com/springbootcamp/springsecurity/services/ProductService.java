@@ -556,6 +556,28 @@ public class ProductService {
         ProductAdminDto productAdminDto=modelMapper.map(product,ProductAdminDto.class);
         return productAdminDto;
 
+    }
+
+
+    //=================================================View a all products By Admin Account==================================
+
+    public ResponseEntity getAllProductsByAdmin(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection, Principal principal) {
+
+
+        Sort.Direction sortingDirection = sortDirection.get().equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Page<Product> productList= productRepository.findAll(PageRequest.of(page.get(), contentSize.get(), sortingDirection, sortProperty.get()));
+
+        if (productList.getTotalElements() < 1)
+            throw new ResourceNotFoundException("No products available in product List.");
+
+
+        List<Product> products=productList.getContent();
+
+        Type listType = new TypeToken<List<ProductAdminDto>>(){}.getType();
+
+        List<ProductAdminDto>  productAdminDtoList = modelMapper.map(products,listType);
+
+        return new ResponseEntity(productAdminDtoList, null, HttpStatus.OK);
 
     }
 }

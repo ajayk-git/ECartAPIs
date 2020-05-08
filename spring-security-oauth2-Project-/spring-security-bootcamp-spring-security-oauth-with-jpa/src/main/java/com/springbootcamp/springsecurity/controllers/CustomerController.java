@@ -119,7 +119,7 @@ public class CustomerController {
         return productService.getProductByCustomer(productId,principal);
     }
 
-    //=================================================Get a product By Customer =========================================================
+    //=================================================Get a all product By Customer =========================================================
     @ApiOperation(value = "Get all products by Customer.")
     @GetMapping("/product/category/{categoryId}")
     public ResponseEntity getAllProductsByCustomer(@RequestParam(value = "page",defaultValue = GlobalVariables.DEFAULT_PAGE_OFFSET)Optional<Integer> page,
