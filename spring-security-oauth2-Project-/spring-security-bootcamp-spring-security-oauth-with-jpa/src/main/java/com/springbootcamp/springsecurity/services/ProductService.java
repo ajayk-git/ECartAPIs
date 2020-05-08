@@ -523,9 +523,28 @@ public class ProductService {
             auditService.readObject("Product",product.getId(),principal.getName());
             return productCustomerDto;
         }
-
-
-
     }
 
+
+    //=================================================Get a product By Customer =========================================================
+    @Secured("ROLE_USER")
+    public ResponseEntity getAllProductsByCustomer(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection,Long categoryId, Principal principal) {
+
+        if (!productRepository.findById(categoryId).isPresent())
+            throw new ResourceNotFoundException("Category Does not exist with mentioned categoryId");
+
+        Category category=categoryRepository.findById(categoryId).get();
+        if (!category.getSubCategory().isEmpty())
+            throw  new RuntimeException("Mentioned categoryId is not a leaf node of category.Please enter a leaf node of category.");
+
+        Sort.Direction sortingDirection = sortDirection.get().equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        List<Product> productList=productRepository.findByCategory(categoryId,PageRequest.of(page.get(), contentSize.get(), sortingDirection, sortProperty.get()));
+
+        Type listType = new TypeToken<List<ProductCustomerDto>>(){}.getType();
+
+        List<ProductCustomerDto> productCustomerDtoList = modelMapper.map(productList,listType);
+
+        return new ResponseEntity(productCustomerDtoList, null, HttpStatus.OK);
+
+    }
 }
