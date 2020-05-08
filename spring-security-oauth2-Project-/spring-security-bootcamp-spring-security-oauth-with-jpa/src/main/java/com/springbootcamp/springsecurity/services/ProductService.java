@@ -547,6 +547,7 @@ public class ProductService {
 
     //=================================================View a Product By Admin Account==================================
 
+    @Secured("ROLE_ADMIN")
     public ProductAdminDto viewProductByAdmin(Long productId, Principal principal) {
 
         if (!productRepository.findById(productId).isPresent())
@@ -561,6 +562,7 @@ public class ProductService {
 
     //=================================================View a all products By Admin Account==================================
 
+    @Secured("ROLE_ADMIN")
     public ResponseEntity getAllProductsByAdmin(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection, Principal principal) {
 
 
@@ -578,6 +580,27 @@ public class ProductService {
         List<ProductAdminDto>  productAdminDtoList = modelMapper.map(products,listType);
 
         return new ResponseEntity(productAdminDtoList, null, HttpStatus.OK);
+
+    }
+
+    //=================================================Get similar products By Customer =========================================================
+
+    @Secured("ROLE_USER")
+    public ResponseEntity getSimilarProductsByCustomer(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection, Long productId, Principal principal) {
+
+        if (!productRepository.findById(productId).isPresent())
+                throw  new ResourceNotFoundException("Product with mentioned productId is not exist.");
+
+        Sort.Direction sortingDirection = sortDirection.get().equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+
+        Product product=productRepository.findById(productId).get();
+        List<Product> similarProducts =productRepository.findByCategory(product.getCategory().getId(),PageRequest.of(page.get(), contentSize.get(), sortingDirection, sortProperty.get()));
+
+        Type listType = new TypeToken<List<ProductCustomerDto>>(){}.getType();
+
+
+        List<ProductCustomerDto> similarProductDtoList=modelMapper.map(similarProducts,listType);
+        return new ResponseEntity(similarProductDtoList, null, HttpStatus.OK);
 
     }
 }
