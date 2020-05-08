@@ -90,7 +90,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add new MetaData fields by Admin")
     @PostMapping("/metadata-fields")
-    public ResponseEntity addMetaDataFields(@RequestBody MetaDataFieldCO metaDataFieldCO,Principal principal){
+    public ResponseEntity addMetaDataFields(@Valid @RequestBody MetaDataFieldCO metaDataFieldCO,Principal principal){
         String fieldName=metaDataFieldCO.getFieldName();
         return  categoryService.addMetaDataField(fieldName,principal);
     }

@@ -541,6 +541,10 @@ public class ProductService {
 
         List<ProductCustomerDto> productCustomerDtoList = modelMapper.map(productList,listType);
 
+
+        auditService.readAllObjects("Product",principal.getName());
+
+
         return new ResponseEntity(productCustomerDtoList, null, HttpStatus.OK);
 
     }
@@ -555,6 +559,9 @@ public class ProductService {
 
         Product product=productRepository.findById(productId).get();
         ProductAdminDto productAdminDto=modelMapper.map(product,ProductAdminDto.class);
+
+        auditService.readObject("Product",product.getId(),principal.getName());
+
         return productAdminDto;
 
     }
@@ -579,6 +586,9 @@ public class ProductService {
 
         List<ProductAdminDto>  productAdminDtoList = modelMapper.map(products,listType);
 
+        auditService.readAllObjects("Product",principal.getName());
+
+
         return new ResponseEntity(productAdminDtoList, null, HttpStatus.OK);
 
     }
@@ -600,6 +610,9 @@ public class ProductService {
 
 
         List<ProductCustomerDto> similarProductDtoList=modelMapper.map(similarProducts,listType);
+
+        auditService.readAllObjects("Product",principal.getName());
+
         return new ResponseEntity(similarProductDtoList, null, HttpStatus.OK);
 
     }
