@@ -5,6 +5,7 @@ import com.springbootcamp.springsecurity.AuditHistoryRepository;
 import com.springbootcamp.springsecurity.AuditHistoryService;
 import com.springbootcamp.springsecurity.dtos.CustomerDto;
 import com.springbootcamp.springsecurity.dtos.SellerDto;
+import com.springbootcamp.springsecurity.entities.product.Product;
 import com.springbootcamp.springsecurity.entities.users.Customer;
 import com.springbootcamp.springsecurity.entities.users.Seller;
 import com.springbootcamp.springsecurity.entities.users.User;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
@@ -45,9 +47,23 @@ public class AdminService {
     AuditHistoryService auditService;
 
     @Autowired
+     EmailService emailService;
+
+    @Autowired
     AuditHistoryRepository auditRepository;
 
+    @Autowired
+    ProductRepository productRepository;
 
+
+
+    @Scheduled(cron="0 0/15 20 * * ?")
+    public void scheduleTaskSendEmailAdmin(){
+        List<User> usersToActivate=userRepository.findByIsNotActive();
+        List<Product> productListToActivate=productRepository.findIsNotActiveProduct();
+        emailService.sendScheduleMailToActivateUserAndProduct(usersToActivate,productListToActivate);
+
+    }
     @Secured("ROLE_ADMIN")
     public ResponseEntity<String> deactivateAccountById(Long id,Principal principal) {
         if (!userRepository.findById(id).isPresent()) {

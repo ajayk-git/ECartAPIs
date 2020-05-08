@@ -49,25 +49,25 @@ public class RegistrationController {
 
     //=================================================Customer registration confirmation . =========================================================
 
-    @ApiOperation(value = "Customer registration conformation.")
+    @ApiOperation(value = "Registration confirmation.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success|OK"),
             @ApiResponse(code = 400, message = "Bad Request")})
-    @GetMapping("/confirm-customer")
-    public ResponseEntity registrationConfirmCustomer(@RequestParam("token") String token) {
-        return registrationService.registrationConfirmCustomer(token);
+    @GetMapping("/confirm")
+    public ResponseEntity registrationConfirm(@RequestParam("token") String token) {
+        return registrationService.registrationConfirm(token);
     }
 
-    //=================================================Seller registration confirmation . =========================================================
-
-    @ApiOperation(value = "Seller registration confirmation .")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success|OK"),
-            @ApiResponse(code = 400, message = "Bad Request")})
-    @GetMapping("/confirm-seller")
-    public ResponseEntity registrationConfirmSeller(@RequestParam("token") String token) {
-        return registrationService.sellerRegistrationConfirm(token);
-    }
+//    //=================================================Seller registration confirmation . =========================================================
+//
+//    @ApiOperation(value = "Seller registration confirmation .")
+//    @ApiResponses(value = {
+//            @ApiResponse(code = 200, message = "Success|OK"),
+//            @ApiResponse(code = 400, message = "Bad Request")})
+//    @GetMapping("/confirm-seller")
+//    public ResponseEntity registrationConfirmSeller(@RequestParam("token") String token) {
+//        return registrationService.sellerRegistrationConfirm(token);
+//    }
 
     //=================================================Forgot password activation link mail send =======================================================
 
@@ -92,6 +92,19 @@ public class RegistrationController {
     public ResponseEntity<String> updateForgotPassword(@RequestParam("token") String token, Principal principal,
                                                        @Valid @RequestBody PasswordUpdateCO passwordUpdateCO ){
         return registrationService.updateForgotPassword(token,passwordUpdateCO,principal);
+    }
+
+    //=================================================Re-sent activation link email .=======================================================
+
+
+    @ApiOperation(value = "Re-sent activation link email .")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success|OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 404, message = "not found!!!") })
+    @PostMapping("/resend-activation-mail")
+    public ResponseEntity<String> reSendActivationLink(@Valid @RequestBody EmailCO emailCO ){
+        return registrationService.reSendActivationLink(emailCO.getEmail());
     }
 
 }

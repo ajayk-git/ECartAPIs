@@ -53,8 +53,8 @@ public class RegistrationService {
     UserRepository userRepository;
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    private boolean isEmailExists(String Email){
-        return userRepository.findByEmail(Email)!=null;
+    private boolean isEmailExists(String Email) {
+        return userRepository.findByEmail(Email) != null;
     }
 
     public ResponseEntity registerCustomer(CustomerCO customerCO) throws AccountAreadyExistException {
@@ -68,9 +68,9 @@ public class RegistrationService {
         customer.setEmail(customerCO.getEmail());
         customer.setContact(customerCO.getContact());
         customer.setPassword(encoder.encode(customerCO.getPassword()));
-        Role role=new Role();
+        Role role = new Role();
         role.setAuthority("ROLE_USER");
-        List<Role>roleList=new ArrayList<>();
+        List<Role> roleList = new ArrayList<>();
         roleList.add(role);
         customerRepository.save(customer);
 
@@ -79,12 +79,11 @@ public class RegistrationService {
         confirmationTokenRepository.save(confirmationToken);
         emailService.sendEmailToCustomer(customer.getEmail(), confirmationToken.getConfirmationToken());
 
-        auditService.registerUser("User",customer.getId(),customer.getEmail());
+        auditService.registerUser("User", customer.getId(), customer.getEmail());
 
         return new ResponseEntity("Verification mail is send to registered mail id.", HttpStatus.OK);
 
     }
-
 
 
     public ResponseEntity registerSeller(SellerCO sellerCO) throws AccountAreadyExistException {
@@ -93,7 +92,7 @@ public class RegistrationService {
         }
 
         Seller seller = new Seller();
-        Address address=new Address();
+        Address address = new Address();
         seller.setFirstName(sellerCO.getFirstName());
         seller.setLastName(sellerCO.getLastName());
         seller.setEmail(sellerCO.getEmail());
@@ -105,9 +104,9 @@ public class RegistrationService {
         address.setZipcode(sellerCO.getZipcode());
         address.setCountry(sellerCO.getCountry());
         address.setState(sellerCO.getState());
-        Role role=new Role();
+        Role role = new Role();
         role.setAuthority("ROLE_SELLER");
-        List<Role>roleList=new ArrayList<>();
+        List<Role> roleList = new ArrayList<>();
         roleList.add(role);
         seller.setAddress(address);
         seller.setRoleList(roleList);
@@ -119,95 +118,106 @@ public class RegistrationService {
         emailService.sendEmailToSeller(seller.getEmail(), confirmationToken.getConfirmationToken());
 
 
-        auditService.registerUser("User",seller.getId(),seller.getEmail());
+        auditService.registerUser("User", seller.getId(), seller.getEmail());
         return new ResponseEntity("Verification mail is send to registered mail id.", HttpStatus.OK);
 
 
     }
 
-    public ResponseEntity registrationConfirmCustomer(String token) {
+    public ResponseEntity registrationConfirm(String token) {
 
-        ConfirmationToken confirmationToken=confirmationTokenRepository.findByConfirmationToken(token);
-
-        if(confirmationToken==null){
-            return new ResponseEntity("Invalid Token is entered by customer",HttpStatus.BAD_REQUEST);
-        }
-
-        User user=confirmationToken.getUser();
-        Calendar calendar=Calendar.getInstance();
-
-        if(ConfirmationToken.calculateExpiryDate().getTime()-calendar.getTime().getTime()<0){
-            return new ResponseEntity("Token Expired",HttpStatus.BAD_REQUEST);
-
-        }
-        user.setActive(false);
-        userRepository.save(user);
-        return new ResponseEntity("Congratulations......Your account have been created and registered as a Customer." +
-                "Kindly wait to get activated your account by Admin",HttpStatus.CREATED);
-
-    }
-
-
-    public ResponseEntity sellerRegistrationConfirm(String token) {
         ConfirmationToken confirmationToken = confirmationTokenRepository.findByConfirmationToken(token);
+
         if (confirmationToken == null) {
-            return new ResponseEntity("Invalid Token is entered by customer",HttpStatus.BAD_REQUEST);
+            return new ResponseEntity("Invalid Token is entered by customer", HttpStatus.BAD_REQUEST);
         }
 
         User user = confirmationToken.getUser();
         Calendar calendar = Calendar.getInstance();
-        if (ConfirmationToken.calculateExpiryDate().getTime()-calendar.getTime().getTime()<0) {
-            return new ResponseEntity("Token Expired",HttpStatus.BAD_REQUEST);
+
+        if (ConfirmationToken.calculateExpiryDate().getTime() - calendar.getTime().getTime() < 0) {
+            return new ResponseEntity("Token Expired", HttpStatus.BAD_REQUEST);
+
         }
         user.setActive(false);
         userRepository.save(user);
-        return new ResponseEntity("Congratulations......Your account have been created and registered as a seller." +
-                "Kindly wait to get activated your account by Admin",HttpStatus.CREATED);    }
+        return new ResponseEntity("Congratulations......Your account have been created and Kindly wait to get activated your account by Admin", HttpStatus.CREATED);
+
+    }
+
+//
+//    public ResponseEntity sellerRegistrationConfirm(String token) {
+//        ConfirmationToken confirmationToken = confirmationTokenRepository.findByConfirmationToken(token);
+//        if (confirmationToken == null) {
+//            return new ResponseEntity("Invalid Token is entered by customer",HttpStatus.BAD_REQUEST);
+//        }
+//
+//        User user = confirmationToken.getUser();
+//        Calendar calendar = Calendar.getInstance();
+//        if (ConfirmationToken.calculateExpiryDate().getTime()-calendar.getTime().getTime()<0) {
+//            return new ResponseEntity("Token Expired",HttpStatus.BAD_REQUEST);
+//        }
+//        user.setActive(false);
+//        userRepository.save(user);
+//        return new ResponseEntity("Congratulations......Your account have been created and registered as a seller." +
+//                "Kindly wait to get activated your account by Admin",HttpStatus.CREATED);    }
+//
 
 
-
-
-    public  ResponseEntity forgotPasswordSendTokenToMail(String email){
-        User userFromDatabase=userRepository.findByEmail(email);
-        if(userFromDatabase!=null){
-            ConfirmationToken confirmationToken=new ConfirmationToken(userFromDatabase);
+    public ResponseEntity forgotPasswordSendTokenToMail(String email) {
+        User userFromDatabase = userRepository.findByEmail(email);
+        if (userFromDatabase != null) {
+            ConfirmationToken confirmationToken = new ConfirmationToken(userFromDatabase);
             confirmationTokenRepository.save(confirmationToken);
 
-            SimpleMailMessage simpleMailMessage=   new SimpleMailMessage();
+            SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
             simpleMailMessage.setFrom("imcoolajaykumar2010@gmail.com");
             simpleMailMessage.setTo(userFromDatabase.getEmail().toString());
             simpleMailMessage.setSubject("Reset Your Account Password");
             simpleMailMessage.setText("To complete the password reset process, please click here: "
-                    + "localhost:8080/register/confirm-reset?token="+confirmationToken.getConfirmationToken());
-         //   System.out.println("password reset link has been sent to mail : "+userFromDatabase.getEmail());
+                    + "localhost:8080/register/confirm-reset?token=" + confirmationToken.getConfirmationToken());
+            //   System.out.println("password reset link has been sent to mail : "+userFromDatabase.getEmail());
             javaMailSender.send(simpleMailMessage);
-            return new ResponseEntity("password reset link has been sent to mail : "+userFromDatabase.getEmail(),HttpStatus.OK);
-        }
-        else return new ResponseEntity("this email does not exist",HttpStatus.NOT_FOUND);
+            return new ResponseEntity("password reset link has been sent to mail : " + userFromDatabase.getEmail(), HttpStatus.OK);
+        } else return new ResponseEntity("this email does not exist", HttpStatus.NOT_FOUND);
 
     }
 
 
     public ResponseEntity updateForgotPassword(String token, PasswordUpdateCO passwordUpdateCO, Principal principal) {
-        if (confirmationTokenRepository.findByConfirmationToken(token)==null)
+        if (confirmationTokenRepository.findByConfirmationToken(token) == null)
             throw new ResourceNotFoundException("Invalid/ Token");
 
-        ConfirmationToken confirmationToken=confirmationTokenRepository.findByConfirmationToken(token);
+        ConfirmationToken confirmationToken = confirmationTokenRepository.findByConfirmationToken(token);
 
-        Customer customer=(Customer) confirmationToken.getUser();
+        Customer customer = (Customer) confirmationToken.getUser();
         customer.setPassword(encoder.encode(passwordUpdateCO.getPassword()));
         customerRepository.save(customer);
         emailService.sendMailPasswordUpdate(customer.getEmail());
 
 
-
-        auditService.updateObject("User",customer.getId(),principal.getName());
-        return new ResponseEntity("Password Successfully updated.",HttpStatus.OK);
+        auditService.updateObject("User", customer.getId(), principal.getName());
+        return new ResponseEntity("Password Successfully updated.", HttpStatus.OK);
 
 
     }
 
 
+    public ResponseEntity<String> reSendActivationLink(String email) {
 
+        if (email == null)
+            throw new RuntimeException("Email cant be null.");
 
+        User user = userRepository.findByEmail(email);
+
+        if (user == null)
+            throw new ResourceNotFoundException("User does not exist with mentioned EmailId.");
+        else {
+            ConfirmationToken confirmationToken = new ConfirmationToken(user);
+
+            confirmationTokenRepository.save(confirmationToken);
+            emailService.resendActivationLinkMail(email, confirmationToken.getConfirmationToken());
+            return new ResponseEntity("Verification mail is send to registered mail id.", HttpStatus.OK);
+        }
+    }
 }

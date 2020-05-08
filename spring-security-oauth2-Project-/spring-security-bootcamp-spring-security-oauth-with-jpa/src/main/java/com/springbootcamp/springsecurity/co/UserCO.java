@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 @Getter
 @Setter
@@ -16,7 +17,7 @@ import javax.validation.constraints.NotNull;
 public class UserCO {
 
     @NotNull(message = "Email must be unique")
-    @IsValidEmail
+    @Pattern(regexp = "^[_A-Za-z0-9-+]+(.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(.[A-Za-z0-9]+)*(.[A-Za-z]{2,})$",message = "enter a valid email id.")
     private String email;
 
      @NotNull(message = "First Name cannot be Null")

@@ -64,8 +64,9 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .authorizeRequests()
                 .antMatchers(AUTH_WHITELIST).permitAll()
                 .antMatchers("/register/customer","/register/seller",
-                        "/register/confirm-customer", "/register/confirm-seller",
-                        "/register/forgot-password","/register/confirm-reset").anonymous()
+                         "/register/confirm",
+                        "/register/forgot-password","/register/confirm-reset",
+                        "/register/resend-activation-mail").anonymous()
                 .antMatchers("/admin/customer/{id}", "admin/sellers",
                         "admin/seller/{id}","admin/customers",
                         "/admin/activate-account/{id}",

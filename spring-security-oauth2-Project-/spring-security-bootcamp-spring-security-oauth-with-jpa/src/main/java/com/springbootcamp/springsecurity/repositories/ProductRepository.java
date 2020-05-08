@@ -22,4 +22,6 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
     List<Product> findByCategory(@Param("categoryId") Long categoryId, Pageable pageable);
 
 
+    @Query(value ="select * from Product where IsActive=0",nativeQuery = true)
+    List<Product> findIsNotActiveProduct();
 }
