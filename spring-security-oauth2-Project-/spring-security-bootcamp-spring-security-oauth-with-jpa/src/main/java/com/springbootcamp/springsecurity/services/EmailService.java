@@ -83,4 +83,13 @@ public class EmailService {
         mailSender.send(mailMessage);
     }
 
+    @Async
+    public void sendAccountLockedMail(String email) {
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setText("Account has been locked kindly wait for 24 hours to get unlocked your account by admin.");
+        mailMessage.setTo(email);
+        mailMessage.setFrom("imcoolajaykumar2010@gmail.com");
+        mailMessage.setSubject("Alert : Account locked");
+        mailSender.send(mailMessage);
+    }
 }

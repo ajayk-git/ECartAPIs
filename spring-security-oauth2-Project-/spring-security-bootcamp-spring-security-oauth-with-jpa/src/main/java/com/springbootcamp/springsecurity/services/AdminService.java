@@ -89,6 +89,7 @@ public class AdminService {
             user.setAccountNonLocked(true);
             user.setCredentialsNonExpired(true);
             user.setAccountNotExpired(true);
+            user.setFalseAttemptCount(0);
             userRepository.save(user);
             SimpleMailMessage mailMessage = new SimpleMailMessage();
             mailMessage.setText("Congratulations,Your account has been activated by admin.");
