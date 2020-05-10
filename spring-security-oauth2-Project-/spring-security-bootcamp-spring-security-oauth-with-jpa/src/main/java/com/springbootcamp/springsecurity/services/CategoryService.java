@@ -18,6 +18,7 @@ import com.springbootcamp.springsecurity.exceptions.ResourceNotFoundException;
 import com.springbootcamp.springsecurity.repositories.MetaDataFieldRepository;
 import com.springbootcamp.springsecurity.repositories.CategoryRepository;
 import com.springbootcamp.springsecurity.repositories.MetaDataFieldValuesRepository;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,10 +27,9 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
+@Log4j2
 public class CategoryService {
 
     @Autowired
@@ -45,28 +45,31 @@ public class CategoryService {
 
     public String setToStringConverter(Set<String> inputSet) {
         String resultString = String.join(",", inputSet);
-        System.out.println("inside set to string converter");
         return resultString;
     }
 
     public Set<String> stringToSetConverter(String inputString) {
         Set<String> stringSet = new HashSet<String>(Arrays.asList(inputString.split(",")));
-        System.out.println("inside set to string converter");
-
         return stringSet;
     }
 
 
     @Secured("ROLE_ADMIN")
     public ResponseEntity<String> addMetaDataField(String fieldName, Principal principal) {
-        if (!(categoryMetaDataFieldRepository.findByFieldName(fieldName) == null))
-            throw new MetaDatafieldAlreadyExistException("MetaData field " + fieldName + " already exist.");
 
+        log.info("inside addMetaDataField method");
+
+
+        if (!(categoryMetaDataFieldRepository.findByFieldName(fieldName) == null)) {
+            log.warn("MetaDataFieldAlreadyExistException Occurred");
+            throw new MetaDatafieldAlreadyExistException("MetaData field " + fieldName + " already exist.");
+        }
         CategoryMetaDataField metaDataField = new CategoryMetaDataField(fieldName);
         categoryMetaDataFieldRepository.save(metaDataField);
 
         auditService.saveNewObject("CategoryMetaDataField", metaDataField.getId(),principal.getName());
 
+        log.info("CategoryMetaDataField Added successfully");
         return new ResponseEntity<String>("MetaData field " + fieldName + " is added.", HttpStatus.CREATED);
     }
 
@@ -76,8 +79,13 @@ public class CategoryService {
 
     @Secured("ROLE_ADMIN")
     public List<CategoryMetaDataFieldDTO> getAllMetaDataFieldList(Principal principal) {
-        if (categoryMetaDataFieldRepository.findAll() == null)
+
+        log.info("inside getAllMetaDataFieldList method");
+
+        if (categoryMetaDataFieldRepository.findAll() == null) {
+            log.warn("ResourceNotFoundException Occurred");
             throw new ResourceNotFoundException("No Category MetaData fields exist in database.");
+        }
         else {
             Iterable<CategoryMetaDataField> categoryMetaDataFieldIterable = categoryMetaDataFieldRepository.findAll();
             List<CategoryMetaDataFieldDTO> categoryMetaDataFieldDTOList = new ArrayList<>();
@@ -94,6 +102,9 @@ public class CategoryService {
 
     @Secured("ROLE_ADMIN")
     public ResponseEntity addNewCategory(CategoryCO categoryCO,Principal principal) {
+
+        log.info("inside addNewCategory method");
+
         if (categoryCO.getParentId() == null) {
             if (categoryRepository.findByName(categoryCO.getCategoryName()) == null) {
 
@@ -133,7 +144,7 @@ public class CategoryService {
         categoryRepository.save(subCategory);
 
         auditService.saveNewObject("Category", subCategory.getId(),principal.getName());
-
+        log.info("Category Added successfully");
 
         return new ResponseEntity("New category " + categoryName + " is added having Parent id is : " + categoryCO.getParentId() + ".", HttpStatus.CREATED);
 
@@ -145,11 +156,14 @@ public class CategoryService {
     @Secured("ROLE_ADMIN")
     public List<CategoryDTO> getAllCategories(Principal principal) {
 
+        log.info("inside getAllCategories method");
+
         List<Category> categoryList = categoryRepository.findAll();
 
-        if (categoryList == null)
+        if (categoryList == null) {
+            log.warn("ResourceNotFoundException Occurred");
             throw new ResourceNotFoundException("Category List is not available.");
-
+        }
         List<CategoryDTO> categoryDTOList = new ArrayList<>();
 
         Iterator<Category> iterator = categoryList.iterator();
@@ -182,9 +196,16 @@ public class CategoryService {
 
 
     public List<CategoryDTO> getCategory(Long id,Principal principal) {
-        if (!categoryRepository.findById(id).isPresent())
+
+        log.info("inside getCategory method");
+
+
+        if (!categoryRepository.findById(id).isPresent()) {
+            log.warn("ResourceNotFoundException Occurred");
             throw new ResourceNotFoundException("Category does not exist with given category Id.");
-        Category categoryList = categoryRepository.findById(id).get();
+
+        }
+            Category categoryList = categoryRepository.findById(id).get();
         if (categoryList.getSubCategory().isEmpty())
             throw new ResourceNotFoundException("No subcategory,since,given category is leaf node of a category.");
         List<CategoryDTO> categoryDTOList = new ArrayList<>();
@@ -202,9 +223,12 @@ public class CategoryService {
 
     public ResponseEntity updateCategory(Long id, CategoryUpdateCO categoryUpdateCO,Principal principal) {
 
-        if (!categoryRepository.findById(id).isPresent())
-            throw new ResourceNotFoundException("Category does not exist with given Category Id.");
+        log.info("inside updateCategory method");
 
+        if (!categoryRepository.findById(id).isPresent()) {
+            log.warn("ResourceNotFoundException Occurred");
+            throw new ResourceNotFoundException("Category does not exist with given Category Id.");
+        }
         if (categoryRepository.findById(id).isPresent()) {
             String categoryName = categoryUpdateCO.getCategoryName();
             Optional<Category> category = categoryRepository.findByName(categoryName);
@@ -219,11 +243,14 @@ public class CategoryService {
                 auditService.updateObject("Category", category1.getId(),principal.getName());
             }
         }
+        log.info("Category updated successfully");
         return new ResponseEntity("Category details updated Successfully.", HttpStatus.OK);
 
     }
 
     public ResponseEntity addMetaDataValues(MetaDataFieldValueCo metaDataFieldValueCo,Principal principal) {
+
+        log.info("inside addMetaDataValues method");
 
         Long categoryId = metaDataFieldValueCo.getCategoryId();
         Long metaDataFieldId = metaDataFieldValueCo.getFieldId();
@@ -252,6 +279,7 @@ public class CategoryService {
 
             auditService.saveNewObject("CategoryMetaDataFieldValues", metaDataField.getId(),principal.getName());
 
+            log.info("CategoryMetaDataFieldValues added successfully");
             return new ResponseEntity("MetaData Field Values are successfully added.", HttpStatus.CREATED);
         } else
             throw new ResourceNotFoundException("Please enter a valid Combination of CategoryId and MetaData FieldId.");
@@ -261,6 +289,9 @@ public class CategoryService {
 
     @Secured("ROLE_ADMIN")
     public ResponseEntity updateMetaDataValues(MetaDataFieldValueCo metaDataFieldValueCo,Principal principal) {
+
+        log.info("inside updateMetaDataValues method");
+
 
         Long categoryId = metaDataFieldValueCo.getCategoryId();
         Long metaDataFieldId = metaDataFieldValueCo.getFieldId();
@@ -291,6 +322,8 @@ public class CategoryService {
             auditService.updateObject("MetaDataFiledValues", metaDataFieldId,principal.getName());
 
         }
+        log.info("CategoryMetaDataFieldValues updated successfully");
+
         return new ResponseEntity("MetaData Field Values are updated Successfully.", HttpStatus.OK);
     }
 
@@ -298,6 +331,8 @@ public class CategoryService {
 
     @Secured("ROLE_SELLER")
     public List<CategorySellerDto> viewAllCategoriesBySeller(Principal principal) {
+
+        log.info("inside viewAllCategoriesBySeller method");
 
         List<Category> categoryList = categoryRepository.findAll();
 
@@ -334,6 +369,8 @@ public class CategoryService {
 
     @Secured("ROLE_USER")
     public List<CategoryDTO> getCategoriesByCustomer(Long categoryId,Principal principal) {
+
+        log.info("inside getCategoriesByCustomer method");
 
         List<CategoryDTO> categoryDTOList = new ArrayList<>();
 

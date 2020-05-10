@@ -10,7 +10,9 @@ import com.springbootcamp.springsecurity.entities.users.Customer;
 import com.springbootcamp.springsecurity.entities.users.Seller;
 import com.springbootcamp.springsecurity.entities.users.User;
 import com.springbootcamp.springsecurity.exceptions.AccountDoesNotExistException;
+import com.springbootcamp.springsecurity.exceptions.ResourceNotFoundException;
 import com.springbootcamp.springsecurity.repositories.*;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Log4j2
 public class AdminService {
 
 
@@ -47,7 +50,7 @@ public class AdminService {
     AuditHistoryService auditService;
 
     @Autowired
-     EmailService emailService;
+    EmailService emailService;
 
     @Autowired
     AuditHistoryRepository auditRepository;
@@ -56,17 +59,22 @@ public class AdminService {
     ProductRepository productRepository;
 
 
-
-    @Scheduled(cron="0 0/15 20 * * ?")
-    public void scheduleTaskSendEmailAdmin(){
-        List<User> usersToActivate=userRepository.findByIsNotActive();
-        List<Product> productListToActivate=productRepository.findIsNotActiveProduct();
-        emailService.sendScheduleMailToActivateUserAndProduct(usersToActivate,productListToActivate);
+    @Scheduled(cron = "0 0/15 20 * * ?")
+    public void scheduleTaskSendEmailAdmin() {
+        List<User> usersToActivate = userRepository.findByIsNotActive();
+        List<Product> productListToActivate = productRepository.findIsNotActiveProduct();
+        emailService.sendScheduleMailToActivateUserAndProduct(usersToActivate, productListToActivate);
 
     }
+
     @Secured("ROLE_ADMIN")
-    public ResponseEntity<String> deactivateAccountById(Long id,Principal principal) {
+    public ResponseEntity<String> deactivateAccountById(Long id, Principal principal) {
+
+        log.info("inside deactivateAccountById method");
+
+
         if (!userRepository.findById(id).isPresent()) {
+            log.warn("AccountDoesNotExistException may occur");
             throw new AccountDoesNotExistException("User with mentioned id is registered.So not able to deactivate.");
         } else {
             User user = userRepository.findById(id).get();
@@ -81,10 +89,10 @@ public class AdminService {
                 javaMailSender.send(simpleMailMessage);
                 userRepository.save(user);
 
-                auditService.deactivateObject("User",user.getId(),principal.getName());
+                log.info("Account deactivated by Admin.");
+                auditService.deactivateObject("User", user.getId(), principal.getName());
 
                 return new ResponseEntity<String>("User is deactivated", HttpStatus.OK);
-
 
 
             } else return new ResponseEntity<String>("User is already deactivated", HttpStatus.BAD_REQUEST);
@@ -94,10 +102,15 @@ public class AdminService {
 
 
     @Secured("ROLE_ADMIN")
-    public ResponseEntity<String> activateAccountById(Long id,Principal principal) {
-        if (!userRepository.findById(id).isPresent())
-            throw new AccountDoesNotExistException(" User with given id is not registered.");
+    public ResponseEntity<String> activateAccountById(Long id, Principal principal) {
 
+        log.info("inside activateAccountById method");
+
+
+        if (!userRepository.findById(id).isPresent()) {
+            log.warn("AccountDoesNotExistException may occur");
+            throw new AccountDoesNotExistException(" User with given id is not registered.");
+        }
         User user = userRepository.findById(id).get();
         if (!user.isEnabled()) {
             user.setActive(true);
@@ -114,8 +127,9 @@ public class AdminService {
             mailMessage.setSubject("Alert : Account Activated by admin.");
             javaMailSender.send(mailMessage);
 
+            log.info("Account deactivated by Admin.");
 
-            auditService.activateObject("User",user.getId(),principal.getName());
+            auditService.activateObject("User", user.getId(), principal.getName());
 
             return new ResponseEntity<String>("User's Account associated email id : " + user.getEmail() + "is activated.", HttpStatus.CREATED);
         } else
@@ -127,14 +141,18 @@ public class AdminService {
     //=================================to get a customer by id from repository===========================
 
     @Secured("ROLE_ADMIN")
-    public CustomerDto getCustomerById(long id,Principal principal) throws AccountDoesNotExistException {
+    public CustomerDto getCustomerById(long id, Principal principal) throws AccountDoesNotExistException {
+
+        log.info("inside getCustomerById method");
+
         CustomerDto customerDTO = new CustomerDto();
         Customer customer;
 
 
-        if (!customerRepository.findById(id).isPresent())
+        if (!customerRepository.findById(id).isPresent()) {
+            log.warn("AccountDoesNotExistException may occur");
             throw new AccountDoesNotExistException("Customer does not exist having Customer Id : " + id);
-
+        }
         customer = customerRepository.findById(id).get();
 
         customerDTO.setId(customer.getId());
@@ -144,7 +162,7 @@ public class AdminService {
         customerDTO.setLastName(customer.getLastName());
 
 
-        auditService.readObject("User",customer.getId(),principal.getName());
+        auditService.readObject("User", customer.getId(), principal.getName());
 
         return customerDTO;
     }
@@ -154,6 +172,7 @@ public class AdminService {
 
     @Secured("ROLE_ADMIN")
     public List<CustomerDto> getAllCustomers(Principal principal) {
+        log.info("inside getAllCustomers method");
         List<CustomerDto> customerDtoList = new ArrayList<>();
         Iterable<Customer> customerIterable = customerRepository.findAll();
         customerIterable.forEach(customer -> customerDtoList.add(new CustomerDto(customer.getId(),
@@ -161,7 +180,7 @@ public class AdminService {
                 customer.getLastName(),
                 customer.getContact(),
                 customer.getEmail(), customer.isActive())));
-        auditService.readAllObjects("User",principal.getName());
+        auditService.readAllObjects("User", principal.getName());
         return customerDtoList;
     }
 
@@ -169,9 +188,15 @@ public class AdminService {
 //====================================get details of   a given seller===========================================
 
     @Secured("ROLE_ADMIN")
-    public SellerDto getSellerByid(long id,Principal principal) {
+    public SellerDto getSellerByid(long id, Principal principal) {
+
+        log.info("inside getSellerByid method");
         SellerDto sellerDto = new SellerDto();
         Seller seller = sellerRepository.findById(id).get();
+        if (seller==null){
+            log.warn("ResourceNotFoundException may occur.");
+            throw new ResourceNotFoundException("Seller with mentioned SellerId is not exist.");
+        }
         sellerDto.setId(seller.getId());
         sellerDto.setFirstName(seller.getFirstName());
         sellerDto.setLastName(seller.getLastName());
@@ -185,9 +210,7 @@ public class AdminService {
         sellerDto.setLable(seller.getAddress().getLable());
         sellerDto.setCountry(seller.getAddress().getCountry());
         sellerDto.setZipcode(seller.getAddress().getZipcode());
-
-        auditService.readObject("Seller",seller.getId(),principal.getName());
-
+        auditService.readObject("Seller", seller.getId(), principal.getName());
         return sellerDto;
     }
 
@@ -197,6 +220,8 @@ public class AdminService {
 
     @Secured("ROLE_ADMIN")
     public List<SellerDto> getAllSellers(Principal principal) {
+
+        log.info("inside getAllSellers method");
         List<SellerDto> sellerDtoList = new ArrayList<>();
         Iterable<Seller> sellerIterable = sellerRepository.findAll();
         sellerIterable.forEach(seller -> sellerDtoList.add(new SellerDto(seller.getCompanyContact(), seller.getCompanyName(),
@@ -205,11 +230,10 @@ public class AdminService {
                 seller.getAddress().getCountry(), seller.getAddress().getLable(),
                 seller.getAddress().getZipcode(), seller.getAddress().getState(), seller.isActive())));
 
-        auditService.readAllObjects("Seller",principal.getName());
+        auditService.readAllObjects("Seller", principal.getName());
 
         return sellerDtoList;
     }
-
 
 
 }

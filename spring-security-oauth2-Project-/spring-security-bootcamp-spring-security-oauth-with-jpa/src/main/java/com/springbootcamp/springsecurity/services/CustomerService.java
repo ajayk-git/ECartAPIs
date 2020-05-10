@@ -15,6 +15,7 @@ import com.springbootcamp.springsecurity.exceptions.ResourceNotFoundException;
 import com.springbootcamp.springsecurity.repositories.ConfirmationTokenRepository;
 import com.springbootcamp.springsecurity.repositories.CustomerRepository;
 import com.springbootcamp.springsecurity.repositories.UserRepository;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ import java.security.Principal;
 import java.util.*;
 
 @Service
+@Log4j2
 public class CustomerService {
 
 
@@ -59,6 +61,9 @@ public class CustomerService {
 
     @Secured("ROLE_USER")
     public ResponseEntity<String> updateCustomerProfile(String email, CustomerProfileUpdateCo customerProfileUpdateCo, Principal principal) {
+
+        log.info("inside updateCustomerProfile method");
+
         Customer customerToUpdate = customerRepository.findByEmail(email);
         if (customerProfileUpdateCo.getContact() != null)
             customerToUpdate.setContact(customerProfileUpdateCo.getContact());
@@ -71,6 +76,8 @@ public class CustomerService {
 
         auditService.updateObject("User",customerToUpdate.getId(),principal.getName());
 
+        log.info("Customer profile updated successfully.");
+
         return new ResponseEntity<String>("Profile has been updated.", HttpStatus.OK);
 
 
@@ -78,6 +85,9 @@ public class CustomerService {
 
     @Secured("ROLE_USER")
     public ResponseEntity<String> updateCustomerPassword(PasswordUpdateCO passwordUpdateCO, String email,Principal principal) {
+
+        log.info("inside updateCustomerPassword method");
+
         User user = userRepository.findByEmail(email);
         user.setPassword(encoder.encode(passwordUpdateCO.getPassword()));
 
@@ -93,10 +103,13 @@ public class CustomerService {
 
     @Secured("ROLE_USER")
     public CustomerDto viewCustomerProfile(String email,Principal principal) {
+
+        log.info("inside viewCustomerProfile method");
+
         Customer customer = customerRepository.findByEmail(email);
         CustomerDto customerDto = new CustomerDto(customer.getId(), customer.getEmail(), customer.getFirstName(), customer.getLastName(), customer.getContact(), customer.isActive());
 
-        auditService.readObject("Cutomer",customer.getId(),principal.getName());
+        auditService.readObject("Customer",customer.getId(),principal.getName());
 
         return customerDto;
     }
@@ -106,6 +119,10 @@ public class CustomerService {
 
     @Secured("ROLE_USER")
     public List<AddressDto> getAddressListCustomer(String email,Principal principal) {
+
+        log.info("inside getAddressListCustomer method");
+
+
         boolean emailFlag=isEmailExists(email);
         if(emailFlag==false){
             throw new AccountDoesNotExistException("User's  does not exist");
@@ -126,6 +143,9 @@ public class CustomerService {
 
     @Secured("ROLE_USER")
     public ResponseEntity<String> deleteAddressById(Long id,String email,Principal principal){
+
+        log.info("inside deleteAddressById method");
+
         Customer customer = customerRepository.findByEmail(email);
 
         List<Address> addressList =  customer.getAddressList();
@@ -135,9 +155,13 @@ public class CustomerService {
             if(address.getId() == id)
             {
 
+                log.warn("Customer Address will be deleted.");
                 customer.deleteAddress(address);
                 customerRepository.save(customer);
                 auditService.deleteObject("Address",address.getId(),principal.getName());
+
+                log.info("Customer Address has been deleted successfully.");
+
                 return new ResponseEntity<String>("Deleted Address with id " + id, null, HttpStatus.OK);
             }
         }
@@ -149,6 +173,8 @@ public class CustomerService {
 
     @Secured("ROLE_USER")
     public ResponseEntity<String> addCustomerAddress(AddressCO addressCO, String email,Principal principal) {
+
+        log.info("inside addCustomerAddress method");
 
         if(customerRepository.findByEmail(email)==null){
             return new ResponseEntity<String>("customer does not exist with given id.",HttpStatus.BAD_REQUEST);
@@ -169,6 +195,8 @@ public class CustomerService {
 
         auditService.saveNewObject("Address",address.getId(),principal.getName());
 
+        log.info("Address is successfully added to customers address list");
+
         return new ResponseEntity<String>("Address is successfully added to customers address list",HttpStatus.CREATED);
 
     }
@@ -178,6 +206,8 @@ public class CustomerService {
 
     @Secured("ROLE_USER")
     public ResponseEntity<String> updateCustomerAddress(AddressCO addressCO,Long id,String email,Principal principal) {
+
+        log.info("inside updateCustomerAddress method");
 
         Customer customer=customerRepository.findByEmail(email);
         List<Address> addressList=customer.getAddressList();
@@ -199,6 +229,8 @@ public class CustomerService {
 
                 auditService.updateObject("Address",address.getId(),principal.getName());
 
+                log.info("Customer Address has been updated successfully.");
+
                 return new ResponseEntity<>("Customer Address has been updated successfully.",HttpStatus.OK);
 
             }
@@ -209,39 +241,6 @@ public class CustomerService {
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //

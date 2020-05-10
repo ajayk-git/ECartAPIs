@@ -18,6 +18,7 @@ import com.springbootcamp.springsecurity.repositories.ConfirmationTokenRepositor
 import com.springbootcamp.springsecurity.repositories.CustomerRepository;
 import com.springbootcamp.springsecurity.repositories.SellerRepository;
 import com.springbootcamp.springsecurity.repositories.UserRepository;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,7 @@ import java.util.Calendar;
 import java.util.List;
 
 @Service
+@Log4j2
 public class RegistrationService {
     @Autowired
     CustomerRepository customerRepository;
@@ -51,6 +53,7 @@ public class RegistrationService {
 
     @Autowired
     UserRepository userRepository;
+
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     private boolean isEmailExists(String Email) {
@@ -59,6 +62,7 @@ public class RegistrationService {
 
     public ResponseEntity registerCustomer(CustomerCO customerCO) throws AccountAreadyExistException {
         if (isEmailExists(customerCO.getEmail())) {
+            log.warn("Already registered mail exception may occur");
             throw new AccountAreadyExistException("The given email id  is already registered.Kindly register with another mail id,or login with registered mail id.");
         }
 
@@ -81,6 +85,7 @@ public class RegistrationService {
 
         auditService.registerUser("User", customer.getId(), customer.getEmail());
 
+        log.info("User registered successfully");
         return new ResponseEntity("Verification mail is send to registered mail id.", HttpStatus.OK);
 
     }
@@ -88,6 +93,7 @@ public class RegistrationService {
 
     public ResponseEntity registerSeller(SellerCO sellerCO) throws AccountAreadyExistException {
         if (isEmailExists(sellerCO.getEmail())) {
+            log.warn("Already registered mail exception may occur");
             throw new AccountAreadyExistException("The given email id  is already registered.Kindly register with another mail id,or login with registered mail id.");
         }
 
@@ -119,6 +125,7 @@ public class RegistrationService {
 
 
         auditService.registerUser("User", seller.getId(), seller.getEmail());
+        log.info("User registered successfully");
         return new ResponseEntity("Verification mail is send to registered mail id.", HttpStatus.OK);
 
 
@@ -129,6 +136,7 @@ public class RegistrationService {
         ConfirmationToken confirmationToken = confirmationTokenRepository.findByConfirmationToken(token);
 
         if (confirmationToken == null) {
+            log.error("Invalid Token is entered by customer");
             return new ResponseEntity("Invalid Token is entered by customer", HttpStatus.BAD_REQUEST);
         }
 
@@ -136,11 +144,13 @@ public class RegistrationService {
         Calendar calendar = Calendar.getInstance();
 
         if (ConfirmationToken.calculateExpiryDate().getTime() - calendar.getTime().getTime() < 0) {
+            log.error("Expired Token is entered by customer");
             return new ResponseEntity("Token Expired", HttpStatus.BAD_REQUEST);
 
         }
         user.setActive(false);
         userRepository.save(user);
+        log.info("User registration activation done successfully");
         return new ResponseEntity("Congratulations......Your account have been created and Kindly wait to get activated your account by Admin", HttpStatus.CREATED);
 
     }
@@ -178,16 +188,20 @@ public class RegistrationService {
                     + "localhost:8080/register/confirm-reset?token=" + confirmationToken.getConfirmationToken());
             //   System.out.println("password reset link has been sent to mail : "+userFromDatabase.getEmail());
             javaMailSender.send(simpleMailMessage);
+            log.info("password reset link has been sent to mail");
             return new ResponseEntity("password reset link has been sent to mail : " + userFromDatabase.getEmail(), HttpStatus.OK);
-        } else return new ResponseEntity("this email does not exist", HttpStatus.NOT_FOUND);
-
+        } else {
+            log.error("Entered email does not exist");
+            return new ResponseEntity("this email does not exist", HttpStatus.NOT_FOUND);
+        }
     }
 
 
     public ResponseEntity updateForgotPassword(String token, PasswordUpdateCO passwordUpdateCO, Principal principal) {
-        if (confirmationTokenRepository.findByConfirmationToken(token) == null)
+        if (confirmationTokenRepository.findByConfirmationToken(token) == null) {
+            log.warn(" Invalid/Expired token exception may occur");
             throw new ResourceNotFoundException("Invalid/ Token");
-
+        }
         ConfirmationToken confirmationToken = confirmationTokenRepository.findByConfirmationToken(token);
 
         Customer customer = (Customer) confirmationToken.getUser();
@@ -197,6 +211,7 @@ public class RegistrationService {
 
 
         auditService.updateObject("User", customer.getId(), principal.getName());
+        log.info("Password Successfully updated.");
         return new ResponseEntity("Password Successfully updated.", HttpStatus.OK);
 
 
@@ -205,14 +220,17 @@ public class RegistrationService {
 
     public ResponseEntity<String> reSendActivationLink(String email) {
 
-        if (email == null)
+        if (email == null) {
+            log.warn("Null email is entered.Runtime exception may occur.");
             throw new RuntimeException("Email cant be null.");
-
+        }
         User user = userRepository.findByEmail(email);
 
-        if (user == null)
+        if (user == null) {
+            log.error("User does not exist with mentioned EmailId.");
             throw new ResourceNotFoundException("User does not exist with mentioned EmailId.");
-        else {
+        }
+            else {
             ConfirmationToken confirmationToken = new ConfirmationToken(user);
 
             confirmationTokenRepository.save(confirmationToken);

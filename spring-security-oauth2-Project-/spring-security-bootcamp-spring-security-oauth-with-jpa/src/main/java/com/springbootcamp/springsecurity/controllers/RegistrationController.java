@@ -9,14 +9,19 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.Objects;
 
 
+@Log4j2
 @Api(value = "Registration Rest Controller",description = "Operations Related to Registration.")
 @RestController
 @RequestMapping("/register")
@@ -33,6 +38,7 @@ public class RegistrationController {
             @ApiResponse(code = 400, message = "Bad Request")})
     @PostMapping("/customer")
     public ResponseEntity customerRegistration(@Valid @RequestBody CustomerCO customerCO) {
+        log.info("inside the customer register controller");
         return registrationService.registerCustomer(customerCO);
     }
 
@@ -44,6 +50,7 @@ public class RegistrationController {
             @ApiResponse(code = 400, message = "Bad Request")})
     @PostMapping("/seller")
     public ResponseEntity sellerRegistration(@Valid @RequestBody SellerCO sellerCO) {
+        log.info("inside the seller register controller");
         return registrationService.registerSeller(sellerCO);
     }
 
@@ -55,6 +62,7 @@ public class RegistrationController {
             @ApiResponse(code = 400, message = "Bad Request")})
     @GetMapping("/confirm")
     public ResponseEntity registrationConfirm(@RequestParam("token") String token) {
+        log.info("inside  registration confirmation controller");
         return registrationService.registrationConfirm(token);
     }
 
@@ -78,6 +86,7 @@ public class RegistrationController {
             @ApiResponse(code = 404, message = "not found!!!") })
     @PostMapping("/forgot-password")
     public  void  forgotPassword(@RequestBody EmailCO emailCO){
+
         registrationService.forgotPasswordSendTokenToMail(emailCO.getEmail());
     }
 

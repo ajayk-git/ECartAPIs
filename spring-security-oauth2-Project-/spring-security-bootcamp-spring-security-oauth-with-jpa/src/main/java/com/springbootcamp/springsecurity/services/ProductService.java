@@ -18,6 +18,8 @@ import com.springbootcamp.springsecurity.repositories.CategoryRepository;
 import com.springbootcamp.springsecurity.repositories.ProductRepository;
 import com.springbootcamp.springsecurity.repositories.ProductVariationRepository;
 import com.springbootcamp.springsecurity.repositories.SellerRepository;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,7 @@ import java.lang.reflect.Type;
 import java.security.Principal;
 import java.util.*;
 
+@Log4j2
 @Service
 public class ProductService {
 
@@ -57,6 +60,8 @@ public class ProductService {
 
     public ProductDto getProductByid(long id,Principal principal) {
 
+        log.info("inside getProductByid method");
+
         if (!productRepository.findById(id).isPresent()) {
             throw new ProductDoesNotExistException("Product not available with given product Id");
         }
@@ -73,6 +78,9 @@ public class ProductService {
     //===============================Get all Products===========================================================
 
     public List<ProductDto> getAllProducts(Principal principal) {
+
+        log.info("inside getAllProducts method");
+
         List<ProductDto> productDtoList = new ArrayList<>();
         Iterable<Product> productIterable = productRepository.findAll();
 
@@ -91,6 +99,8 @@ public class ProductService {
 
     @Secured("ROLE_SELLER")
     public ResponseEntity addNewProduct(ProductCo productCo, Principal principal) {
+
+        log.info("inside addNewProduct method");
 
         String productNameCo = productCo.getProductName();
         String brandNameCo = productCo.getBrandName();
@@ -125,6 +135,7 @@ public class ProductService {
         emailService.mailNotificationAdminNewProductAdd();
         productRepository.save(product);
 
+        log.info("Product added successfully by seller");
         auditService.saveNewObject("Product",product.getId(),principal.getName());
 
         return new ResponseEntity("Product added successfully.Product will  be activated  soon by admin,", HttpStatus.CREATED);
@@ -133,7 +144,11 @@ public class ProductService {
 
     //===========================================to activate product ===========================================================
 
+    @Secured("ROLE_ADMIN")
     public ResponseEntity activateProduct(Long productId,Principal principal) {
+
+        log.info("inside activateProduct method");
+
         if (!productRepository.findById(productId).isPresent()) {
             throw new ResourceNotFoundException("Product is not found with mentioned productId.Please enter existing productId.");
         } else {
@@ -146,8 +161,9 @@ public class ProductService {
             emailService.mailNotificationSellerProductActivate(email, product);
             productRepository.save(product);
 
-            auditService.activateObject("Product",product.getId(),principal.getName());
+            log.info("Product activated successfully by seller");
 
+            auditService.activateObject("Product",product.getId(),principal.getName());
         }
         return new ResponseEntity("Product is activated successfully.Email is triggered to seller.", HttpStatus.OK);
     }
@@ -155,7 +171,12 @@ public class ProductService {
     //===========================================to deactivate product ===========================================================
 
 
+    @Secured("ROLE_ADMIN")
     public ResponseEntity deactivateProduct(Long productId,Principal principal) {
+
+        log.info("inside deactivateProduct method");
+
+
         if (!productRepository.findById(productId).isPresent()) {
             throw new ResourceNotFoundException("Product is not found with mentioned productId.Please enter existing productId.");
         } else {
@@ -169,6 +190,8 @@ public class ProductService {
 
             auditService.deactivateObject("Product",product.getId(),principal.getName());
 
+            log.info("Product deactivated successfully by seller");
+
         }
         return new ResponseEntity("Product is deactivated successfully.Email is triggered to seller.", HttpStatus.OK);
     }
@@ -178,6 +201,9 @@ public class ProductService {
 
 
     public ProductVariantDto getProductVariant(Long productVariantId,Principal principal) {
+
+        log.info("inside getProductVariant method");
+
 
         if (!variationRepository.findById(productVariantId).isPresent())
             throw new ResourceNotFoundException("Product Variant is not found with mentioned productVariantId.Please enter existing productVariantId.");
@@ -194,6 +220,7 @@ public class ProductService {
         productVariantDto.setActive(productVariation.getIsActive());
 
         auditService.readObject("Product",productVariation.getId(),principal.getName());
+
         return productVariantDto;
 
     }
@@ -201,6 +228,8 @@ public class ProductService {
 
 
     public ResponseEntity viewAllProductVariationsBySeller(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection, Long productId, Principal principal) {
+
+        log.info("inside viewAllProductVariationsBySeller method");
 
         if (!productRepository.findById(productId).isPresent())
             throw new ResourceNotFoundException("Product with mentioned ProductId is not exist.");
@@ -248,6 +277,9 @@ public class ProductService {
 
     @Secured("ROLE_SELLER")
     public ResponseEntity addNewProductVariant(Long productId, ProductVariationCo productVariationCo,Principal principal) {
+
+        log.info("inside addNewProductVariant method");
+
         if (!productRepository.findById(productId).isPresent())
             throw new ResourceNotFoundException("Product with mentioned ProductId is not exist.");
         Product product = productRepository.findById(productId).get();
@@ -274,6 +306,7 @@ public class ProductService {
                 else {
                     productVariation.setMetaData(productVariationCo.getMetaData());
                     variationRepository.save(productVariation);
+                    log.info("Product variant is added successfully by seller");
                     auditService.saveNewObject("ProductVariation",productVariation.getId(),principal.getName());
 
                 }
@@ -288,6 +321,9 @@ public class ProductService {
 
     @Secured("ROLE_SELLER")
     public ResponseEntity updateProductVariantBySeller(Long variationId, Principal principal, ProductVariationUpdateCo variationUpdateCo) {
+
+        log.info("inside updateProductVariantBySeller method");
+
 
         if (!variationRepository.findById(variationId).isPresent())
 
@@ -334,6 +370,8 @@ public class ProductService {
 
                 variationRepository.save(productVariation);
 
+                log.info("Product variant is updated successfully by seller");
+
                 auditService.updateObject("ProductVariation",productVariation.getId(),principal.getName());
                 return new ResponseEntity("Product with productVariantId : " + variationId + " is updated successfully.", HttpStatus.OK);
             }
@@ -345,6 +383,8 @@ public class ProductService {
 
     @Secured("ROLE_SELLER")
     public ProductSellerDto viewProductBySeller(Long productId, Principal principal) {
+
+        log.info("inside viewProductBySeller method");
 
         String sellerLoggedIn = principal.getName();
         ProductSellerDto productSellerDto = new ProductSellerDto();
@@ -378,6 +418,9 @@ public class ProductService {
     @Secured("ROLE_SELLER")
     public ResponseEntity deleteProductBySeller(Long productId, Principal principal) {
 
+        log.info("inside deleteProductBySeller method");
+
+
         String loggedInSeller = principal.getName();
 
         if (!productRepository.findById(productId).isPresent())
@@ -406,6 +449,7 @@ public class ProductService {
         productRepository.save(product);
 
         auditService.deleteObject("Product",product.getId(),principal.getName());
+        log.info("Product is deleted successfully by seller");
 
         return new ResponseEntity("Product deleted with mentioned productId.", HttpStatus.OK);
     }
@@ -414,6 +458,8 @@ public class ProductService {
 
     @Secured("ROLE_SELLER")
     public ResponseEntity viewAllProductsBySeller(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection, Principal principal) {
+
+        log.info("inside viewAllProductsBySeller method");
 
         Sort.Direction sortingDirection = sortDirection.get().equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         String loggedInSeller = principal.getName();
@@ -453,6 +499,9 @@ public class ProductService {
     @Secured("ROLE_SELLER")
     public ResponseEntity updateProductBySeller(ProductUpdateBySellerCo productUpdateBySellerCo, Long productId, Principal principal) {
 
+        log.info("inside updateProductBySeller method");
+
+
         if (!productRepository.findById(productId).isPresent())
             throw new ResourceNotFoundException("Product with mentioned ProductId is not exist.");
 
@@ -475,7 +524,7 @@ public class ProductService {
             else {
                 String productNewName = productUpdateBySellerCo.getProductName();
                 if (productRepository.findByName(productNewName).isPresent())
-                    throw new ResourceAlreadyExistException("Product with " + productNewName + " is already exist. Kindly uodate with another name.");
+                    throw new ResourceAlreadyExistException("Product with " + productNewName + " is already exist. Kindly update with another name.");
 
                 if (productUpdateBySellerCo.getProductName() != null)
                     product.setName(productUpdateBySellerCo.getProductName());
@@ -492,6 +541,8 @@ public class ProductService {
 
                 auditService.updateObject("Product",product.getId(),principal.getName());
 
+                log.info("Product updated successfully by seller");
+
                 return new ResponseEntity("Product with productId : " + productId + " is updated successfully.", HttpStatus.OK);
             }
 
@@ -503,6 +554,10 @@ public class ProductService {
 
     @Secured("ROLE_USER")
     public ProductCustomerDto getProductByCustomer(Long productId,Principal principal) {
+
+        log.info("inside getProductByCustomer method");
+
+
         if (!productRepository.findById(productId).isPresent())
             throw new ResourceNotFoundException("Product with mentioned ProductId is not exist.");
 
@@ -526,6 +581,9 @@ public class ProductService {
     //=================================================Get a product By Customer =========================================================
     @Secured("ROLE_USER")
     public ResponseEntity getAllProductsByCustomer(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection,Long categoryId, Principal principal) {
+
+        log.info("inside getAllProductsByCustomer method");
+
 
         if (!productRepository.findById(categoryId).isPresent())
             throw new ResourceNotFoundException("Category Does not exist with mentioned categoryId");
@@ -554,6 +612,9 @@ public class ProductService {
     @Secured("ROLE_ADMIN")
     public ProductAdminDto viewProductByAdmin(Long productId, Principal principal) {
 
+        log.info("inside viewProductByAdmin method");
+
+
         if (!productRepository.findById(productId).isPresent())
             throw  new ResourceNotFoundException("Product does not exist with mentioned productId.");
 
@@ -571,6 +632,8 @@ public class ProductService {
 
     @Secured("ROLE_ADMIN")
     public ResponseEntity getAllProductsByAdmin(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection, Principal principal) {
+
+        log.info("inside getAllProductsByAdmin method");
 
 
         Sort.Direction sortingDirection = sortDirection.get().equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
@@ -597,6 +660,9 @@ public class ProductService {
 
     @Secured("ROLE_USER")
     public ResponseEntity getSimilarProductsByCustomer(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection, Long productId, Principal principal) {
+
+        log.info("inside getSimilarProductsByCustomer method");
+
 
         if (!productRepository.findById(productId).isPresent())
                 throw  new ResourceNotFoundException("Product with mentioned productId is not exist.");
