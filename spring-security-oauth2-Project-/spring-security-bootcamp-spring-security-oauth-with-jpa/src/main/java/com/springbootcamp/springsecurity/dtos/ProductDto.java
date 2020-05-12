@@ -1,25 +1,38 @@
 package com.springbootcamp.springsecurity.dtos;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@ApiModel(description = "Product DTO representation")
 public class ProductDto {
 
-    private Long id;
+    @ApiModelProperty(value = "Product Id")
+    Long id;
 
-    private String name;
+    @ApiModelProperty(value = "Product Name")
+    String name;
 
-    private String description;
+    @ApiModelProperty(value = "Product description")
+    String description;
 
-    private boolean isCancelable;
+    @ApiModelProperty(value = "Product is cancellable or not")
+    boolean isCancelable;
 
-    private boolean isReturnable;
+    @ApiModelProperty(value = "Product is returnable or not")
+    boolean isReturnable;
 
-    private String brand;
+    @ApiModelProperty(value = "Product's Brand")
+    String brand;
 
-    private String companyName;
+    @ApiModelProperty(value = "Product's Company Name")
+    String companyName;
 
     public ProductDto(String brand, String description, Long id, String name, String companyName, boolean cancelable, boolean returnable) {
 

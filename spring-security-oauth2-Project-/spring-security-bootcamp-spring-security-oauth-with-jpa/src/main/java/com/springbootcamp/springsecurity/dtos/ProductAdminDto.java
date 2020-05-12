@@ -1,5 +1,7 @@
 package com.springbootcamp.springsecurity.dtos;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,33 +12,44 @@ import java.util.List;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@ApiModel(description = "Product Admin DTO representation")
 public class ProductAdminDto {
+
+    @ApiModelProperty(value = "Product Id.")
     Long id;
 
+    @ApiModelProperty(value = "Product Name")
     String name;
 
+    @ApiModelProperty(value = "Description of Product ")
     String description;
 
+    @ApiModelProperty(value = "Brand of Product")
     String brand;
 
+    @ApiModelProperty(value = "Product's category Name.")
     String categoryName;
 
+    @ApiModelProperty(value = "Product is active/Inactive ")
     Boolean isActive;
 
+    @ApiModelProperty(value = "Product is cancellable or not")
     Boolean isCancelable;
 
+    @ApiModelProperty(value = "Product is returnable or not")
     Boolean isReturnable;
 
+    @ApiModelProperty(value = "Product is deleted  or not")
     Boolean isDeleted;
 
-
+    @ApiModelProperty(value = "Product's Category")
     CategoryDTO category;
 
-
+    @ApiModelProperty(value = "Product's productVariations List ")
     List<ProductVariantCustomerDto> productVariationList;
 
 
-    public ProductAdminDto(){
+    public ProductAdminDto() {
 
     }
 }

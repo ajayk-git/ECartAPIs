@@ -1,5 +1,7 @@
 package com.springbootcamp.springsecurity.dtos;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,40 +10,51 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@ApiModel(description = "Product Seller DTO representation")
 public class ProductSellerDto {
-     Long id;
 
-     String name;
+    @ApiModelProperty(value = "Product Id")
+    Long id;
 
-     String description;
+    @ApiModelProperty(value = "Product Name")
+    String name;
 
-     String brand;
+    @ApiModelProperty(value = "Product's Description")
+    String description;
 
-     String companyName;
+    @ApiModelProperty(value = "Product's Brand Name")
+    String brand;
 
-     String CategoryName;
+    @ApiModelProperty(value = "Product's Company Name")
+    String companyName;
 
-     boolean isActive;
+    @ApiModelProperty(value = "Product's category Name")
+    String CategoryName;
 
-     boolean isCancelable;
+    @ApiModelProperty(value = "Product is active or not")
+    boolean isActive;
 
-     boolean isReturnable;
+    @ApiModelProperty(value = "Product is cancellable or not")
+    boolean isCancelable;
+
+    @ApiModelProperty(value = "Product is returnable or not")
+    boolean isReturnable;
 
 
-     public ProductSellerDto(Long id, String name, String brand, String description, String companyName, String categoryName, boolean active, boolean cancelable, boolean returnable) {
+    public ProductSellerDto(Long id, String name, String brand, String description, String companyName, String categoryName, boolean active, boolean cancelable, boolean returnable) {
 
-          this.setId(id);
-          this.setName(name);
-          this.setBrand(brand);
-          this.setDescription(description);
-          this.setCompanyName(companyName);
-          this.setCategoryName(categoryName);
-          this.setActive(active);
-          this.setCancelable(cancelable);
-          this.setReturnable(returnable);
-     }
+        this.setId(id);
+        this.setName(name);
+        this.setBrand(brand);
+        this.setDescription(description);
+        this.setCompanyName(companyName);
+        this.setCategoryName(categoryName);
+        this.setActive(active);
+        this.setCancelable(cancelable);
+        this.setReturnable(returnable);
+    }
 
-     public ProductSellerDto() {
+    public ProductSellerDto() {
 
-     }
+    }
 }

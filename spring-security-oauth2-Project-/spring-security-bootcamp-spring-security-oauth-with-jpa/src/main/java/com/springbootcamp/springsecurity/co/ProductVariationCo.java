@@ -1,5 +1,7 @@
 package com.springbootcamp.springsecurity.co;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,13 +13,17 @@ import java.util.Map;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@ApiModel(description = "Command Object to add a new Product Variation.")
 public class ProductVariationCo {
 
-    @Min(value = 1,message ="Quantity Should be greater than 1." )
+    @ApiModelProperty(value = "Quantity of product (minimum = 1) ")
+    @Min(value = 1, message = "Quantity Should be greater than 1.")
     int quantityAvailable;
-    @Min(value = 1,message = "Price of product should be grater than 1.")
+
+    @ApiModelProperty(value = "Price of product (minimum = 1) ")
+    @Min(value = 1, message = "Price of product should be grater than 1.")
     float price;
-    Map<String,String>metaData;
+    Map<String, String> metaData;
 
 
 }

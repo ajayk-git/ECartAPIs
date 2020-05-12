@@ -3,8 +3,12 @@ package com.springbootcamp.springsecurity.co;
 
 import com.springbootcamp.springsecurity.annotations.IsValidGST;
 import com.springbootcamp.springsecurity.annotations.IsValidMobileNo;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -12,28 +16,46 @@ import javax.validation.constraints.Pattern;
 
 @Getter
 @Setter
-public class  SellerCO  extends UserCO{
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@ApiModel(description = "Command Object to add a new seller.")
+public class SellerCO extends UserCO {
+
     @NotNull
     @IsValidGST
-    private String gst;
+    @ApiModelProperty(value = "GST number  of seller", required = true)
+    String gst;
+
+
+    @ApiModelProperty(value = "Company Name of seller", required = true)
     @NotNull
-    private String companyName;
+    String companyName;
+
     @NotEmpty
     @IsValidMobileNo
-    private String companyContact;
+    @ApiModelProperty(value = "Contact number of seller", required = true)
+    String companyContact;
 
     @NotNull
-    private String city;
-    @NotNull
-    private String state;
+    @ApiModelProperty(value = "City of Seller", required = true)
+    String city;
 
+    @ApiModelProperty(value = "Country of Seller", required = true)
     @NotNull
-    private String country;
-    @NotNull
-    private String addressLine;
+    String state;
 
-    private String lable;
+    @ApiModelProperty(value = "Address line for address  of Seller", required = true)
+    @NotNull
+    String country;
+
+    @ApiModelProperty(value = "Address line for address  of Seller", required = true)
+    @NotNull
+    String addressLine;
+
+    @ApiModelProperty(value = "Type of Address (HOME/OFFICE) of Seller")
+    String lable;
+
+    @ApiModelProperty(value = "Address ZipCode  of seller", required = true)
     @NotNull
     @Pattern(regexp = "^[1-9][0-9]{5}$")
-    private String zipcode;
+    String zipcode;
 }

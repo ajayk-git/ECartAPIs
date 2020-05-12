@@ -1,5 +1,7 @@
 package com.springbootcamp.springsecurity.dtos;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,10 +10,20 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@ApiModel(description = "Category  DTO representation")
 public class CategoryDTO {
+
+
+    @ApiModelProperty(value = "Category Name ")
     String categoryName;
+
+    @ApiModelProperty(value = "Category Id ")
     Long categoryId;
+
+    @ApiModelProperty(value = "Parent Category ID ")
     Long parentId;
+
+    @ApiModelProperty(value = "Parent Category Name ")
     String parentCategoryName;
 
     public CategoryDTO(String categoryName, Long categoryId, Long parentId) {

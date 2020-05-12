@@ -1,21 +1,28 @@
 package com.springbootcamp.springsecurity.dtos;
+
 import com.springbootcamp.springsecurity.entities.users.Customer;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import com.springbootcamp.springsecurity.dto.UserDto;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
 
 @Getter
 @Setter
-@Slf4j
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@ApiModel(description = "Customer DTO representation")
 public class CustomerDto extends UserDto {
 
 
-    private String contact;
+    @ApiModelProperty(value = "Contact number of User.")
+    String contact;
 
-    public CustomerDto(Long id, String email, String firstName, String lastName, String contact,boolean isactive) {
+    public CustomerDto(Long id, String email, String firstName, String lastName, String contact, boolean isactive) {
 
         this.setLastName(lastName);
         this.setContact(contact);
@@ -25,11 +32,11 @@ public class CustomerDto extends UserDto {
         this.setActive(isactive);
     }
 
-    public CustomerDto(){
+    public CustomerDto() {
 
     }
 
-    public CustomerDto customerObjectToDTO(Customer customer){
+    public CustomerDto customerObjectToDTO(Customer customer) {
 
         CustomerDto dto = new CustomerDto();
         dto.setEmail(customer.getEmail());

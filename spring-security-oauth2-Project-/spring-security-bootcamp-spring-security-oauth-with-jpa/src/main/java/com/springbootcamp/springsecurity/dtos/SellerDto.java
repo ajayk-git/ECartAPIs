@@ -1,27 +1,47 @@
 package com.springbootcamp.springsecurity.dtos;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@ApiModel(description = "Product Variant DTO representation")
 public class SellerDto extends com.springbootcamp.springsecurity.dto.UserDto {
-        //@NotEmpty
-        private String gst;
-        //@NotEmpty
-        private String companyName;
-       // @NotEmpty
-        private String companyContact;
 
-        private String addressLine;
-        private String city;
-        private String country;
-        private String lable;
-        private String zipcode;
-        private String state;
+    @ApiModelProperty(value = "Seller's GST number")
+    String gst;
+
+    @ApiModelProperty(value = "Seller's Company Name")
+    String companyName;
+
+    @ApiModelProperty(value = "Seller's Contact Number")
+    String companyContact;
+
+    @ApiModelProperty(value = "Address line of Address")
+    String addressLine;
+
+    @ApiModelProperty(value = "Seller's city")
+    String city;
+
+    @ApiModelProperty(value = "Seller's State")
+    String state;
+
+    @ApiModelProperty(value = "Seller's Country")
+    String country;
+
+    @ApiModelProperty(value = "Address lable")
+    String lable;
+
+    @ApiModelProperty(value = "Area ZipCode of Seller")
+    String zipcode;
 
 
-    public SellerDto(String companyContact, String companyName,String lastName, String gst, String firstName, String email, long id) {
+    public SellerDto(String companyContact, String companyName, String lastName, String gst, String firstName, String email, long id) {
         this.setId(id);
         this.setFirstName(firstName);
         this.setCompanyName(companyName);
@@ -30,11 +50,12 @@ public class SellerDto extends com.springbootcamp.springsecurity.dto.UserDto {
         this.setLastName(lastName);
         this.setCompanyContact(companyContact);
     }
-    public SellerDto(){
+
+    public SellerDto() {
 
     }
 
-    public SellerDto(String companyContact, String companyName, String lastName, String gst, String firstName, String email, Long id, String addressLine, String city, String country, String lable, String zipcode, String state,boolean isactive) {
+    public SellerDto(String companyContact, String companyName, String lastName, String gst, String firstName, String email, Long id, String addressLine, String city, String country, String lable, String zipcode, String state, boolean isactive) {
 
         this.setCompanyName(companyName);
         this.setCompanyContact(companyContact);

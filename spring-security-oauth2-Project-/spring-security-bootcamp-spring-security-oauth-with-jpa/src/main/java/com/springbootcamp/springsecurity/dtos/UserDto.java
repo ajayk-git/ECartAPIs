@@ -1,29 +1,41 @@
 package com.springbootcamp.springsecurity.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.NotEmpty;
+
 @Getter
 @Setter
-
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@ApiModel(description = "Product Variant DTO representation")
 public class UserDto {
-    @NotEmpty
-    private Long id;
-    @NotEmpty
-    private String email;
-    @NotEmpty
-    @JsonIgnore  //Using Json ignore here will create internal server error at registration time
-  private String password;
-   @NotEmpty
-    private String firstName;
-   @NotEmpty
-    private String lastName;
 
-   private  boolean isActive;
 
-    public UserDto(){
+    @ApiModelProperty(value = "User's Id")
+    Long id;
+
+    @ApiModelProperty(value = "User's Email Id")
+    String email;
+
+    @ApiModelProperty(value = "User's Password")
+    String password;
+
+    @ApiModelProperty(value = "User's first Name")
+    String firstName;
+
+    @ApiModelProperty(value = "User's last Name")
+    String lastName;
+
+    @ApiModelProperty(value = "User is active or not")
+    boolean isActive;
+
+    public UserDto() {
 
     }
 
