@@ -110,13 +110,13 @@ public class EmailService {
 
     }
 
-    public void sendScheduleMailToActivateUserAndProduct(List<User> usersToActivate, List<Product> productListToActivate) {
+    public void sendScheduleMailToActivateProduct(List productIdList) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
 
-        mailMessage.setText("Kindly Activate following users and products."+usersToActivate+","+productListToActivate);
+        mailMessage.setText("Kindly Activate following product Ids."+productIdList);
         mailMessage.setTo("ajay.kumar1@tothenew.com");
         mailMessage.setFrom("imcoolajaykumar2010@gmail.com");
-        mailMessage.setSubject("Alert : Activate Users and Products");
+        mailMessage.setSubject("Alert : Activate Products");
         mailSender.send(mailMessage);
         log.info("Product/User  Activation  scheduled mail sent to admin successfully");
 

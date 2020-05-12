@@ -30,9 +30,11 @@ public class ProductAdminDto {
     Boolean isDeleted;
 
 
+    CategoryDTO category;
+
+
     List<ProductVariantCustomerDto> productVariationList;
 
-    CategoryDTO category;
 
     public ProductAdminDto(){
 

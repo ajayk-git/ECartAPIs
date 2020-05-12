@@ -35,7 +35,7 @@ public class CustomUserValidation extends DaoAuthenticationProvider {
                 Integer temp = user.getFalseAttemptCount();
                 user.setFalseAttemptCount(++temp);
                 if (temp == 3){
-                    user.setAccountNonLocked(false);
+                    user.setIsAccountNonLocked(false);
                     emailService.sendAccountLockedMail(user.getEmail());
                 }
                 userRepository.save(user);

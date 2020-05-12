@@ -2,8 +2,10 @@ package com.springbootcamp.springsecurity.entities.users;
 
 import com.springbootcamp.springsecurity.entities.Role;
 import io.swagger.annotations.ApiModel;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,12 +20,13 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @ApiModel(description="All details about User.")
 public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+     Long id;
 
     @Column(unique = true)
     private String email;
@@ -35,14 +38,14 @@ public class User implements UserDetails {
 
     private String password;
 
-    private boolean isDeleted;
+    private Boolean isDeleted;
 
-    private boolean isActive;
+    private Boolean isActive;
 
-    private boolean isAccountNotExpired;
-    private boolean isAccountNonLocked;
-    private boolean isCredentialsNonExpired;
-    private boolean isEnabled;
+    private Boolean isAccountNotExpired;
+    private Boolean isAccountNonLocked;
+    private Boolean isCredentialsNonExpired;
+    private Boolean isEnabled;
     private Integer falseAttemptCount=0;
 
     public User() {

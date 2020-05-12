@@ -59,11 +59,15 @@ public class AdminService {
     ProductRepository productRepository;
 
 
-    @Scheduled(cron = "0 0/15 20 * * ?")
+    //Scheduled task will be executed  at 11:00 PM everyday when  application server is up.
+    @Scheduled(cron = "0 0 23 * * ?")
     public void scheduleTaskSendEmailAdmin() {
-        List<User> usersToActivate = userRepository.findByIsNotActive();
+     //   List<User> usersToActivate = userRepository.findByIsNotActive();
         List<Product> productListToActivate = productRepository.findIsNotActiveProduct();
-        emailService.sendScheduleMailToActivateUserAndProduct(usersToActivate, productListToActivate);
+        List productIdList=new ArrayList() ;
+        productListToActivate.forEach(product -> productIdList.add(product.getId()));
+
+        emailService.sendScheduleMailToActivateProduct(productIdList);
 
     }
 
@@ -79,8 +83,8 @@ public class AdminService {
         } else {
             User user = userRepository.findById(id).get();
             if (user.isEnabled()) {
-                user.setEnabled(false);
-                user.setActive(false);
+                user.setIsEnabled(false);
+                user.setIsActive(false);
                 SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
                 simpleMailMessage.setText("Oppps,Your account has been deactivated by admin registered with mail id :" + user.getEmail());
                 simpleMailMessage.setTo(user.getEmail());
@@ -94,7 +98,6 @@ public class AdminService {
 
                 return new ResponseEntity<String>("User is deactivated", HttpStatus.OK);
 
-
             } else return new ResponseEntity<String>("User is already deactivated", HttpStatus.BAD_REQUEST);
         }
 
@@ -106,18 +109,17 @@ public class AdminService {
 
         log.info("inside activateAccountById method");
 
-
         if (!userRepository.findById(id).isPresent()) {
             log.warn("AccountDoesNotExistException may occur");
             throw new AccountDoesNotExistException(" User with given id is not registered.");
         }
         User user = userRepository.findById(id).get();
         if (!user.isEnabled()) {
-            user.setActive(true);
-            user.setEnabled(true);
-            user.setAccountNonLocked(true);
-            user.setCredentialsNonExpired(true);
-            user.setAccountNotExpired(true);
+            user.setIsActive(true);
+            user.setIsEnabled(true);
+            user.setIsAccountNonLocked(true);
+            user.setIsCredentialsNonExpired(true);
+            user.setIsAccountNotExpired(true);
             user.setFalseAttemptCount(0);
             userRepository.save(user);
             SimpleMailMessage mailMessage = new SimpleMailMessage();
@@ -179,7 +181,7 @@ public class AdminService {
                 customer.getFirstName(),
                 customer.getLastName(),
                 customer.getContact(),
-                customer.getEmail(), customer.isActive())));
+                customer.getEmail(), customer.getIsActive())));
         auditService.readAllObjects("User", principal.getName());
         return customerDtoList;
     }
@@ -193,7 +195,7 @@ public class AdminService {
         log.info("inside getSellerByid method");
         SellerDto sellerDto = new SellerDto();
         Seller seller = sellerRepository.findById(id).get();
-        if (seller==null){
+        if (seller == null) {
             log.warn("ResourceNotFoundException may occur.");
             throw new ResourceNotFoundException("Seller with mentioned SellerId is not exist.");
         }
@@ -228,7 +230,7 @@ public class AdminService {
                 seller.getLastName(), seller.getGst(), seller.getFirstName(), seller.getEmail(), seller.getId(),
                 seller.getAddress().getAddressLine(), seller.getAddress().getCity(),
                 seller.getAddress().getCountry(), seller.getAddress().getLable(),
-                seller.getAddress().getZipcode(), seller.getAddress().getState(), seller.isActive())));
+                seller.getAddress().getZipcode(), seller.getAddress().getState(), seller.getIsActive())));
 
         auditService.readAllObjects("Seller", principal.getName());
 

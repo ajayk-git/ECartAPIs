@@ -107,7 +107,7 @@ public class CustomerService {
         log.info("inside viewCustomerProfile method");
 
         Customer customer = customerRepository.findByEmail(email);
-        CustomerDto customerDto = new CustomerDto(customer.getId(), customer.getEmail(), customer.getFirstName(), customer.getLastName(), customer.getContact(), customer.isActive());
+        CustomerDto customerDto = new CustomerDto(customer.getId(), customer.getEmail(), customer.getFirstName(), customer.getLastName(), customer.getContact(), customer.getIsActive());
 
         auditService.readObject("Customer",customer.getId(),principal.getName());
 

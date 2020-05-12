@@ -1,5 +1,6 @@
 package com.springbootcamp.springsecurity.dtos;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,6 +11,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CategoryMetaDataFieldDTO {
     Long id;
+
     String fieldName;
 
     public CategoryMetaDataFieldDTO(Long id, String fieldName) {

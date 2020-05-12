@@ -154,7 +154,7 @@ public class ProductService {
         } else {
             Product product = productRepository.findById(productId).get();
             if (product.getIsActive())
-                throw new RuntimeException("Product with mentioned id is already activated.");
+                throw new ResourceAlreadyExistException("Product with mentioned id is already activated.");
 
             product.setIsActive(true);
             String email = product.getSeller().getEmail();
@@ -182,7 +182,7 @@ public class ProductService {
         } else {
             Product product = productRepository.findById(productId).get();
             if (!product.getIsActive())
-                throw new RuntimeException("Product with mentioned id is already deactivated.");
+                throw new ResourceAlreadyExistException("Product with mentioned id is already deactivated.");
             product.setIsActive(false);
             String email = product.getSeller().getEmail();
             emailService.mailNotificationSellerProductDeactivate(email, product);

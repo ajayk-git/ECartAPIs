@@ -15,9 +15,11 @@ public class CategorySellerDto {
     String categoryName;
     Long categoryId;
     String metaDataField;
-    List<String> fieldValues;
     List<String> fieldName;
-    public CategorySellerDto(Long id, String name,List<String>fieldName, List<String> valueList) {
+
+    List<String> fieldValues;
+
+    public CategorySellerDto(Long id, String name, List<String> fieldName, List<String> valueList) {
         this.setCategoryId(id);
         this.setCategoryName(name);
         this.setFieldName(fieldName);

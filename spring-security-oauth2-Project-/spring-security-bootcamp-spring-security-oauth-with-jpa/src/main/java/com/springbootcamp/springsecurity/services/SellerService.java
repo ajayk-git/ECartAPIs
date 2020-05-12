@@ -106,7 +106,7 @@ public class SellerService {
         if (ConfirmationToken.calculateExpiryDate().getTime()-calendar.getTime().getTime()<0) {
             return "token expired.";
         }
-        user.setActive(false);
+        user.setIsActive(false);
         userRepository.save(user);
         return "Congratulations......Your account have been created and registered as a Seller.Please wait for some time to get activated by admin.";
     }
@@ -156,7 +156,7 @@ public class SellerService {
                 seller.getLastName(),seller.getGst(),seller.getFirstName(),seller.getEmail(),seller.getId(),
                 seller.getAddress().getAddressLine(),seller.getAddress().getCity(),
                 seller.getAddress().getCountry(),seller.getAddress().getLable(),
-                seller.getAddress().getZipcode(),seller.getAddress().getState(),seller.isActive());
+                seller.getAddress().getZipcode(),seller.getAddress().getState(),seller.getIsActive());
 
         auditService.readObject("Seller",seller.getId(),principal.getName());
 

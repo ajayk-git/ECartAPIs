@@ -148,7 +148,7 @@ public class RegistrationService {
             return new ResponseEntity("Token Expired", HttpStatus.BAD_REQUEST);
 
         }
-        user.setActive(false);
+        user.setIsActive(false);
         userRepository.save(user);
         log.info("User registration activation done successfully");
         return new ResponseEntity("Congratulations......Your account have been created and Kindly wait to get activated your account by Admin", HttpStatus.CREATED);
