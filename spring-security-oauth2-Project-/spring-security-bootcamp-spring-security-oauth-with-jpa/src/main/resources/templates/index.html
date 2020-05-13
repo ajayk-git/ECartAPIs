@@ -1,0 +1,52 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+
+<!--<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">-->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<meta charset="UTF-8">
+
+<head>
+    <meta charset="UTF-8">
+    <title>/Welcome to ECart</title>
+    <!--      Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.1/examples/starter-template/">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+
+</head>
+
+<body>
+
+<p>Welcome to ECart</p>
+<div class="jumbotron">
+    <div>
+        <table>
+
+                <thead>
+                <tr>
+                    <th> CategoryId </th>
+                    <th> CategoryName </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="totalCategories :${totalCategories}">
+                    <td th:text="${totalCategories.id}"></td>
+                    <td th:text="${totalCategories.name}"></td>
+                </tr>
+                </tbody>
+            </table>
+
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

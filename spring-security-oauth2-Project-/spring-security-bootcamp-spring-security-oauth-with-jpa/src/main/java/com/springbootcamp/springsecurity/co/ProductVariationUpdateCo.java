@@ -1,14 +1,12 @@
 package com.springbootcamp.springsecurity.co;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-
-import javax.persistence.ElementCollection;
+;
 import javax.validation.constraints.Min;
 import java.util.Map;
 

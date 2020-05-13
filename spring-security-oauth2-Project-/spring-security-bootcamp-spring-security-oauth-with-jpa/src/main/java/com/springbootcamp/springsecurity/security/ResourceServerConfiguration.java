@@ -55,8 +55,12 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
             "/configuration/ui",
             "/configuration/security",
             "/swagger-ui.html",
-            "/webjars/**"
+            "/webjars/**",
+            "/index/**",
+            "/total-categories"
     };
+
+
 
     @Override
     public void configure(final HttpSecurity http) throws Exception {
