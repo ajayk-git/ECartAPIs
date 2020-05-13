@@ -28,23 +28,41 @@
     <div>
         <table>
 
-                <thead>
-                <tr>
-                    <th> CategoryId </th>
-                    <th> CategoryName </th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="totalCategories :${totalCategories}">
-                    <td th:text="${totalCategories.id}"></td>
-                    <td th:text="${totalCategories.name}"></td>
-                </tr>
-                </tbody>
-            </table>
+            <thead>
+            <tr>
+                <th> CategoryId</th>
+                <th> CategoryName</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="totalCategories :${totalCategories}">
+                <td th:text="${totalCategories.id}"></td>
+                <td th:text="${totalCategories.name}"></td>
+            </tr>
+            </tbody>
+        </table>
 
+
+        <table>
+            <thead>
+            <tr>
+                <th> UserId</th>
+                <th> UserName</th>
+                <th> IsActive</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="totalUsers :${totalUsers}">
+                <td th:text="${totalUsers.id}"></td>
+                <td th:text="${totalUsers.email}"></td>
+                <td th:text="${totalUsers.isActive}"></td>
+            </tr>
+            </tbody>
+
+        </table>
 
     </div>
-
 </div>
 
 </body>

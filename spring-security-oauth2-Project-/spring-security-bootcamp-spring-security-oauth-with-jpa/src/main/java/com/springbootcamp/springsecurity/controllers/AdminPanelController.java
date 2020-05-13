@@ -21,12 +21,16 @@ public class AdminPanelController {
     }
 
     @RequestMapping(value = "/total-categories",method = RequestMethod.GET)
-    public String getTotalNumberOfCategories(Model model){
+    public String getAllCategories(Model model){
          model.addAttribute("totalCategories", adminPanelService.getAllCategories());
          return "index";
     }
 
-//    @RequestMapping(value =)
+    @RequestMapping(value ="/total-users",method =RequestMethod.GET)
+    public String  getAllUsers(Model model){
+        model.addAttribute("totalUsers", adminPanelService.getAllUsers());
+        return "index";
+    }
 
 
 }

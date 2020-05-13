@@ -1,7 +1,9 @@
 package com.springbootcamp.springsecurity.services;
 
 import com.springbootcamp.springsecurity.dtos.CategoryAdminPanelDto;
+import com.springbootcamp.springsecurity.dtos.UserAdminPanelDto;
 import com.springbootcamp.springsecurity.entities.product.Category;
+import com.springbootcamp.springsecurity.entities.users.User;
 import com.springbootcamp.springsecurity.repositories.CategoryRepository;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -29,31 +31,54 @@ public class AdminPanelService {
     @PersistenceContext
     EntityManager entityManager;
 
-    public List<CategoryAdminPanelDto> getAllCategories(){
+    public List<CategoryAdminPanelDto> getAllCategories() {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 
-        CriteriaQuery<Object[]> criteriaQuery=criteriaBuilder.createQuery(Object[].class);
+        CriteriaQuery<Object[]> criteriaQuery = criteriaBuilder.createQuery(Object[].class);
 
-        Root<Category> categoryRoot=criteriaQuery.from(Category.class);
+        Root<Category> categoryRoot = criteriaQuery.from(Category.class);
 
-        criteriaQuery.multiselect(categoryRoot.get("id"),categoryRoot.get("name"));
+        criteriaQuery.multiselect(categoryRoot.get("id"), categoryRoot.get("name"));
 
-        Query<Object[]> categoryQuery= (Query<Object[]>) entityManager.createQuery(criteriaQuery);
+        Query<Object[]> categoryQuery = (Query<Object[]>) entityManager.createQuery(criteriaQuery);
 
-        List<Object[]> categoryList=categoryQuery.getResultList();
+        List<Object[]> categoryList = categoryQuery.getResultList();
 
-        List<CategoryAdminPanelDto> categoryAdminPanelDtos=new ArrayList<>();
-        for (Object[] objects:categoryList){
-            CategoryAdminPanelDto categoryAdminPanelDto=new CategoryAdminPanelDto();
+        List<CategoryAdminPanelDto> categoryAdminPanelDtos = new ArrayList<>();
+        for (Object[] objects : categoryList) {
+            CategoryAdminPanelDto categoryAdminPanelDto = new CategoryAdminPanelDto();
             categoryAdminPanelDto.setId((Long) objects[0]);
             categoryAdminPanelDto.setName((String) objects[1]);
             categoryAdminPanelDtos.add(categoryAdminPanelDto);
 
         }
-        return categoryAdminPanelDtos ;
+        return categoryAdminPanelDtos;
 
-//        List<Category> categories=categoryRepository.findAll();
-//        return categories.size();
     }
+
+    public List<UserAdminPanelDto> getAllUsers() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Object[]> criteriaQuery = criteriaBuilder.createQuery(Object[].class);
+        Root<User> userRoot = criteriaQuery.from(User.class);
+
+        criteriaQuery.multiselect(userRoot.get("id"), userRoot.get("email"), userRoot.get("isActive"));
+
+        Query<Object[]> userQuery = (Query<Object[]>) entityManager.createQuery(criteriaQuery);
+
+        List<Object[]> userList = userQuery.getResultList();
+
+        List<UserAdminPanelDto> userAdminPanelDtoList = new ArrayList<>();
+        for (Object[] objects : userList) {
+            UserAdminPanelDto userAdminPanelDto = new UserAdminPanelDto();
+            userAdminPanelDto.setId((Long) objects[0]);
+            userAdminPanelDto.setEmail((String) objects[1]);
+            userAdminPanelDto.setIsActive((Boolean) objects[2]);
+            userAdminPanelDtoList.add(userAdminPanelDto);
+        }
+
+        return userAdminPanelDtoList;
+    }
+
+
 }
