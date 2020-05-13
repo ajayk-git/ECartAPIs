@@ -59,7 +59,8 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
             "/index/**",
             "/all-categories",
             "/all-users",
-            "/all-products"
+            "/all-products",
+            "/product-count"
     };
 
 

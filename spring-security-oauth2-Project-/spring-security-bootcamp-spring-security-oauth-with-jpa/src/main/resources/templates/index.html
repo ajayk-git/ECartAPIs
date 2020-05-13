@@ -18,6 +18,27 @@
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
+    <style>
+<style>
+table {
+  width:25%;
+}
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+th, td {
+  padding: 15px;
+  text-align: left;
+}
+table#t01 tr:nth-child(even) {
+  background-color: #eee;
+}
+table#t01 tr:nth-child(odd) {
+ background-color: #fff;
+}
+
+    </style>
 
 </head>
 
@@ -25,68 +46,125 @@
 
 <p>Welcome to ECart</p>
 <div class="jumbotron">
+
+    <div class="col-md-3">
+        <div class="card border-info mx-sm-1 p-3">
+            <div class="text-info text-center mt-3"><h4>Total Categories</h4></div>
+            <div class="text-info text-center mt-2"><h1 >236</h1></div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-success mx-sm-1 p-3">
+            <div class="text-success text-center mt-3"><h4>Total Users</h4></div>
+            <div class="text-success text-center mt-2"><h1>932</h1></div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-danger mx-sm-1 p-3">
+            <div class="text-danger text-center mt-3"><h4>Total Products</h4></div>
+            <div class="text-danger text-center mt-2"><h1>346</h1></div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-warning mx-sm-1 p-3">
+            <div class="text-warning text-center mt-3"><h4>Inbox</h4></div>
+            <div class="text-warning text-center mt-2"><h1>346</h1></div>
+        </div>
+    </div>
+
+
     <div>
         <table>
-
-            <thead>
             <tr>
-                <th> CategoryId</th>
-                <th> CategoryName</th>
+                <td >
+                    <table>
+
+                        <thead>
+                        <tr>
+                            <th> CategoryId</th>
+                            <th> CategoryName</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="allCategories :${allCategories}">
+                            <td th:text="${allCategories.id}"></td>
+                            <td th:text="${allCategories.name}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+                <td>
+
+                    <table style="border: 1px solid black">
+                        <thead>
+                        <tr>
+                            <th> UserId</th>
+                            <th> UserName</th>
+                            <th> IsActive</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr th:each="allUsers :${allUsers}">
+                            <td th:text="${allUsers.id}"></td>
+                            <td th:text="${allUsers.email}"></td>
+                            <td th:text="${allUsers.isActive}"></td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+                </td>
+                <td >
+                    <table style="border: 1px solid black">
+                        <thead>
+                        <tr>
+                            <th> ProductId</th>
+                            <th> ProductName</th>
+                            <th> IsActive</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr th:each="allProducts :${allProducts}">
+                            <td th:text="${allProducts.id}"></td>
+                            <td th:text="${allProducts.productName}"></td>
+                            <td th:text="${allProducts.isActive}"></td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+                </td>
+                <td>
+                    <table style="border: 1px solid black">
+                        <thead>
+                        <tr>
+                            <th> Id</th>
+                            <th> Product Name</th>
+                            <th> Count</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr th:each="totalNumberOfProducts :${totalNumberOfProducts}">
+                            <td th:text="${totalNumberOfProducts.product.id}"></td>
+                            <td th:text="${totalNumberOfProducts.product.name}"></td>
+                            <td th:text="${totalNumberOfProducts.quantityAvailable}"></td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+
+                </td>
             </tr>
-            </thead>
-            <tbody>
-            <tr th:each="totalCategories :${totalCategories}">
-                <td th:text="${totalCategories.id}"></td>
-                <td th:text="${totalCategories.name}"></td>
-            </tr>
-            </tbody>
+
+
         </table>
 
 
-        <table>
-            <thead>
-            <tr>
-                <th> UserId</th>
-                <th> UserName</th>
-                <th> IsActive</th>
-            </tr>
-            </thead>
-
-            <tbody>
-            <tr th:each="totalUsers :${totalUsers}">
-                <td th:text="${totalUsers.id}"></td>
-                <td th:text="${totalUsers.email}"></td>
-                <td th:text="${totalUsers.isActive}"></td>
-            </tr>
-            </tbody>
-
-        </table>
-
-        <table>
-            <thead>
-            <tr>
-                <th> ProductId</th>
-                <th> ProductName</th>
-                <th> IsActive</th>
-            </tr>
-            </thead>
-
-            <tbody>
-            <tr th:each="totalProducts :${totalProducts}">
-                <td th:text="${totalProducts.id}"></td>
-                <td th:text="${totalProducts.productName}"></td>
-                <td th:text="${totalProducts.isActive}"></td>
-            </tr>
-            </tbody>
-
-        </table>
+    </div>
 
 
-
-
-
-
-
+    <div>
 
 
     </div>
@@ -95,3 +173,80 @@
 </body>
 
 </html>
+
+
+<!--        <table>-->
+
+<!--            <thead>-->
+<!--            <tr>-->
+<!--                <th> CategoryId</th>-->
+<!--                <th> CategoryName</th>-->
+<!--            </tr>-->
+<!--            </thead>-->
+<!--            <tbody>-->
+<!--            <tr th:each="allCategories :${allCategories}">-->
+<!--                <td th:text="${allCategories.id}"></td>-->
+<!--                <td th:text="${allCategories.name}"></td>-->
+<!--            </tr>-->
+<!--            </tbody>-->
+<!--        </table>-->
+
+
+<!--        <table>-->
+<!--            <thead>-->
+<!--            <tr>-->
+<!--                <th> UserId</th>-->
+<!--                <th> UserName</th>-->
+<!--                <th> IsActive</th>-->
+<!--            </tr>-->
+<!--            </thead>-->
+
+<!--            <tbody>-->
+<!--            <tr th:each="allUsers :${allUsers}">-->
+<!--                <td th:text="${allUsers.id}"></td>-->
+<!--                <td th:text="${allUsers.email}"></td>-->
+<!--                <td th:text="${allUsers.isActive}"></td>-->
+<!--            </tr>-->
+<!--            </tbody>-->
+
+<!--        </table>-->
+
+<!--        <table>-->
+<!--            <thead>-->
+<!--            <tr>-->
+<!--                <th> ProductId</th>-->
+<!--                <th> ProductName</th>-->
+<!--                <th> IsActive</th>-->
+<!--            </tr>-->
+<!--            </thead>-->
+
+<!--            <tbody>-->
+<!--            <tr th:each="allProducts :${allProducts}">-->
+<!--                <td th:text="${allProducts.id}"></td>-->
+<!--                <td th:text="${allProducts.productName}"></td>-->
+<!--                <td th:text="${allProducts.isActive}"></td>-->
+<!--            </tr>-->
+<!--            </tbody>-->
+
+<!--        </table>-->
+
+
+<!--        <table>-->
+<!--            <thead>-->
+<!--            <tr>-->
+<!--                <th> Id</th>-->
+<!--                <th> Product Name</th>-->
+<!--                <th> Count </th>-->
+<!--            </tr>-->
+<!--            </thead>-->
+
+<!--            <tbody>-->
+<!--            <tr th:each="totalNumberOfProducts :${totalNumberOfProducts}">-->
+<!--                <td th:text="${totalNumberOfProducts.product.id}"></td>-->
+<!--                <td th:text="${totalNumberOfProducts.product.name}"></td>-->
+<!--                <td th:text="${totalNumberOfProducts.quantityAvailable}"></td>-->
+<!--            </tr>-->
+<!--            </tbody>-->
+
+<!--        </table>-->
+
