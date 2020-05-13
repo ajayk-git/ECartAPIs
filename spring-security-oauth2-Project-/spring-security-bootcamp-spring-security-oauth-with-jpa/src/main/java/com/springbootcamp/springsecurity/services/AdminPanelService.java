@@ -1,8 +1,10 @@
 package com.springbootcamp.springsecurity.services;
 
 import com.springbootcamp.springsecurity.dtos.CategoryAdminPanelDto;
+import com.springbootcamp.springsecurity.dtos.ProductAdminPanelDto;
 import com.springbootcamp.springsecurity.dtos.UserAdminPanelDto;
 import com.springbootcamp.springsecurity.entities.product.Category;
+import com.springbootcamp.springsecurity.entities.product.Product;
 import com.springbootcamp.springsecurity.entities.users.User;
 import com.springbootcamp.springsecurity.repositories.CategoryRepository;
 import org.hibernate.Criteria;
@@ -24,6 +26,7 @@ import java.util.Objects;
 
 @Service
 public class AdminPanelService {
+
 
     @Autowired
     CategoryRepository categoryRepository;
@@ -79,6 +82,32 @@ public class AdminPanelService {
 
         return userAdminPanelDtoList;
     }
+
+    public List<ProductAdminPanelDto> getAllProducts(){
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Object[]> criteriaQuery = criteriaBuilder.createQuery(Object[].class);
+        Root<Product> productRoot = criteriaQuery.from(Product.class);
+
+        criteriaQuery.multiselect(productRoot.get("id"), productRoot.get("name"), productRoot.get("isActive"));
+
+        Query<Object[]> userQuery = (Query<Object[]>) entityManager.createQuery(criteriaQuery);
+
+        List<Object[]> productList = userQuery.getResultList();
+
+        List<ProductAdminPanelDto> productAdminPanelDtoList=new ArrayList<>();
+
+        for (Object[] objects : productList) {
+            ProductAdminPanelDto productAdminPanelDto = new ProductAdminPanelDto();
+            productAdminPanelDto.setId((Long) objects[0]);
+            productAdminPanelDto.setProductName((String) objects[1]);
+            productAdminPanelDto.setIsActive((Boolean) objects[2]);
+            productAdminPanelDtoList.add(productAdminPanelDto);
+        }
+        return productAdminPanelDtoList;
+
+
+    }
+
 
 
 }

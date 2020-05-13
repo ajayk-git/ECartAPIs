@@ -62,6 +62,33 @@
 
         </table>
 
+        <table>
+            <thead>
+            <tr>
+                <th> ProductId</th>
+                <th> ProductName</th>
+                <th> IsActive</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="totalProducts :${totalProducts}">
+                <td th:text="${totalProducts.id}"></td>
+                <td th:text="${totalProducts.productName}"></td>
+                <td th:text="${totalProducts.isActive}"></td>
+            </tr>
+            </tbody>
+
+        </table>
+
+
+
+
+
+
+
+
+
     </div>
 </div>
 

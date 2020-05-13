@@ -20,15 +20,21 @@ public class AdminPanelController {
             return "index";
     }
 
-    @RequestMapping(value = "/total-categories",method = RequestMethod.GET)
+    @RequestMapping(value = "/all-categories",method = RequestMethod.GET)
     public String getAllCategories(Model model){
          model.addAttribute("totalCategories", adminPanelService.getAllCategories());
          return "index";
     }
 
-    @RequestMapping(value ="/total-users",method =RequestMethod.GET)
+    @RequestMapping(value ="/all-users",method =RequestMethod.GET)
     public String  getAllUsers(Model model){
         model.addAttribute("totalUsers", adminPanelService.getAllUsers());
+        return "index";
+    }
+
+    @RequestMapping(value = "/all-products",method = RequestMethod.GET)
+    public String getAllProducts(Model model){
+        model.addAttribute("totalProducts",adminPanelService.getAllProducts());
         return "index";
     }
 
