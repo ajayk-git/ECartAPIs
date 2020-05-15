@@ -1,12 +1,9 @@
 package com.springbootcamp.springsecurity.services;
 
-import com.springbootcamp.springsecurity.AuditHistory;
-import com.springbootcamp.springsecurity.AuditHistoryRepository;
-import com.springbootcamp.springsecurity.AuditHistoryService;
+import com.springbootcamp.springsecurity.*;
 import com.springbootcamp.springsecurity.co.CustomerCO;
 import com.springbootcamp.springsecurity.co.PasswordUpdateCO;
 import com.springbootcamp.springsecurity.co.SellerCO;
-import com.springbootcamp.springsecurity.ConfirmationToken;
 import com.springbootcamp.springsecurity.entities.Address;
 import com.springbootcamp.springsecurity.entities.Role;
 import com.springbootcamp.springsecurity.entities.users.Customer;
@@ -47,7 +44,7 @@ public class RegistrationService {
     EmailService emailService;
 
     @Autowired
-    AuditHistoryService auditService;
+    AuditLogsMongoDBService auditService;
     @Autowired
     JavaMailSender javaMailSender;
 

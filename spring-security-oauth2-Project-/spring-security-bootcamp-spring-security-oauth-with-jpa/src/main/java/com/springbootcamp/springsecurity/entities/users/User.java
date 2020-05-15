@@ -8,11 +8,15 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 
@@ -21,32 +25,43 @@ import java.util.List;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@ApiModel(description="All details about User.")
+@EntityListeners(AuditingEntityListener.class)
+@ApiModel(description = "All details about User.")
 public class User implements UserDetails {
+
+
+    @CreatedDate
+    Date createdDate;
+
+    @LastModifiedDate
+    Date lastModifiedDate;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-     Long id;
+    Long id;
 
     @Column(unique = true)
-    private String email;
+    String email;
 
-    private String firstName;
+    String firstName;
 
-    private String lastName;
+    String lastName;
 
+    String password;
 
-    private String password;
+    Boolean isDeleted;
 
-    private Boolean isDeleted;
+    Boolean isActive;
 
-    private Boolean isActive;
+    Boolean isAccountNotExpired;
 
-    private Boolean isAccountNotExpired;
-    private Boolean isAccountNonLocked;
-    private Boolean isCredentialsNonExpired;
-    private Boolean isEnabled;
-    private Integer falseAttemptCount=0;
+    Boolean isAccountNonLocked;
+
+    Boolean isCredentialsNonExpired;
+
+    Boolean isEnabled;
+
+    Integer falseAttemptCount = 0;
 
     public User() {
 
@@ -96,15 +111,5 @@ public class User implements UserDetails {
     List<Role> roleList;
 
 
-
 }
-
-    //    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-//    private List<Seller> sellers;
-//
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-//    private List<Customer> customers;
-
-//    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-//    private Cart cart;
 

@@ -2,6 +2,7 @@ package com.springbootcamp.springsecurity.services;
 
 import com.springbootcamp.springsecurity.AuditHistoryRepository;
 import com.springbootcamp.springsecurity.AuditHistoryService;
+import com.springbootcamp.springsecurity.AuditLogsMongoDBService;
 import com.springbootcamp.springsecurity.co.*;
 import com.springbootcamp.springsecurity.ConfirmationToken;
 import com.springbootcamp.springsecurity.dtos.AddressDto;
@@ -49,7 +50,7 @@ public class SellerService {
     EmailService emailService;
 
     @Autowired
-    AuditHistoryService auditService;
+    AuditLogsMongoDBService auditService;
 
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 

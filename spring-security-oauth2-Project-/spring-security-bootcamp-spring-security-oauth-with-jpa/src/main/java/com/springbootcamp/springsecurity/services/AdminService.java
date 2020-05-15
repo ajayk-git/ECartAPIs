@@ -3,6 +3,7 @@ package com.springbootcamp.springsecurity.services;
 import com.springbootcamp.springsecurity.AuditHistory;
 import com.springbootcamp.springsecurity.AuditHistoryRepository;
 import com.springbootcamp.springsecurity.AuditHistoryService;
+import com.springbootcamp.springsecurity.AuditLogsMongoDBService;
 import com.springbootcamp.springsecurity.dtos.CustomerDto;
 import com.springbootcamp.springsecurity.dtos.SellerDto;
 import com.springbootcamp.springsecurity.entities.product.Product;
@@ -53,7 +54,7 @@ public class AdminService {
     EmailService emailService;
 
     @Autowired
-    AuditHistoryRepository auditRepository;
+    AuditLogsMongoDBService auditRepository;
 
     @Autowired
     ProductRepository productRepository;

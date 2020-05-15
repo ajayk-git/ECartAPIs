@@ -4,34 +4,48 @@ package com.springbootcamp.springsecurity.entities.users;
 import com.springbootcamp.springsecurity.entities.Address;
 import com.springbootcamp.springsecurity.entities.product.Product;
 import io.swagger.annotations.ApiModel;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.Set;
 @Getter
 @Setter
 @Entity
-//@Table(name = "SELLER")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @PrimaryKeyJoinColumn(name = "UserID")
+@EntityListeners(AuditingEntityListener.class)
 @ApiModel(description="All details about Seller.")
 public class Seller extends User {
 
 
-    private String gst;
 
-    private String companyName;
+    @CreatedDate
+    Date createdDate;
 
-    private String companyContact;
+    @LastModifiedDate
+    Date lastModifiedDate;
+
+     String gst;
+
+     String companyName;
+
+     String companyContact;
 
     @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Fetch(value= FetchMode.SUBSELECT)
-    private Set<Product> productSet;
+     Set<Product> productSet;
 
     @OneToOne(cascade = CascadeType.ALL)
-    private Address address;
+     Address address;
 
 
 }

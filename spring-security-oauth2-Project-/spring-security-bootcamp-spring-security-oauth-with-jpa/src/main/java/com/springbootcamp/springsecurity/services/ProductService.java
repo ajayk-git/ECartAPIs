@@ -1,6 +1,7 @@
 package com.springbootcamp.springsecurity.services;
 
 import com.springbootcamp.springsecurity.AuditHistoryService;
+import com.springbootcamp.springsecurity.AuditLogsMongoDBService;
 import com.springbootcamp.springsecurity.co.ProductCo;
 import com.springbootcamp.springsecurity.co.ProductUpdateBySellerCo;
 import com.springbootcamp.springsecurity.co.ProductVariationCo;
@@ -53,7 +54,8 @@ public class ProductService {
     EmailService emailService;
 
     @Autowired
-    AuditHistoryService auditService;
+    AuditLogsMongoDBService auditService;
+
     ModelMapper modelMapper=new ModelMapper();
 
     //===============================Get a  Product by seller================================================================

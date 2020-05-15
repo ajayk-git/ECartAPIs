@@ -12,14 +12,19 @@ package com.springbootcamp.springsecurity.entities;
 //    Long categoryId;
 //    Long categoryMetaDataFieldId;
 //}
+
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Embeddable
 public class CategoryMetadataCompositeKey  implements Serializable{
 
-    private Long categoryId;
-    private Long categoryMetadataFieldId;
+     Long categoryId;
+     Long categoryMetadataFieldId;
 
     public CategoryMetadataCompositeKey(){
 

@@ -1,6 +1,7 @@
 package com.springbootcamp.springsecurity.services;
 
 import com.springbootcamp.springsecurity.AuditHistoryService;
+import com.springbootcamp.springsecurity.AuditLogsMongoDBService;
 import com.springbootcamp.springsecurity.co.AddressCO;
 import com.springbootcamp.springsecurity.co.CustomerProfileUpdateCo;
 import com.springbootcamp.springsecurity.co.PasswordUpdateCO;
@@ -42,7 +43,7 @@ public class CustomerService {
     EmailService emailService;
 
     @Autowired
-    AuditHistoryService auditService;
+    AuditLogsMongoDBService auditService;
 
     @Autowired
     ConfirmationToken confirmationToken;

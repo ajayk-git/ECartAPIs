@@ -50,27 +50,22 @@ table#t01 tr:nth-child(odd) {
     <div class="col-md-3">
         <div class="card border-info mx-sm-1 p-3">
             <div class="text-info text-center mt-3"><h4>Total Categories</h4></div>
-            <div class="text-info text-center mt-2"><h1 >236</h1></div>
+            <div class="text-info text-center mt-2"><h1 th:text=${getStats.get(0)}></h1></div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card border-success mx-sm-1 p-3">
-            <div class="text-success text-center mt-3"><h4>Total Users</h4></div>
-            <div class="text-success text-center mt-2"><h1>932</h1></div>
+        <div class="card border-info mx-sm-1 p-3">
+            <div class="text-info text-center mt-3"><h4>Total Users</h4></div>
+            <div class="text-info text-center mt-2"><h1 th:text=${getStats.get(1)}></h1></div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card border-danger mx-sm-1 p-3">
-            <div class="text-danger text-center mt-3"><h4>Total Products</h4></div>
-            <div class="text-danger text-center mt-2"><h1>346</h1></div>
+        <div class="card border-info mx-sm-1 p-3">
+            <div class="text-info text-center mt-3"><h4>Total Products</h4></div>
+            <div class="text-info text-center mt-2"><h1 th:text=${getStats.get(2)}></h1></div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card border-warning mx-sm-1 p-3">
-            <div class="text-warning text-center mt-3"><h4>Inbox</h4></div>
-            <div class="text-warning text-center mt-2"><h1>346</h1></div>
-        </div>
-    </div>
+
 
 
     <div>

@@ -2,8 +2,10 @@ package com.springbootcamp.springsecurity.entities.order;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -11,13 +13,14 @@ import java.io.Serializable;
 @Entity
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 //@Table(name = "ORDER_STATUS")
 @ApiModel(description = "All details about the Order Status in transition ")
 public class OrderStatus implements Serializable {
     @Id
     @OneToOne
     @JoinColumn(name="order_product_id")
-    private OrderProduct orderProduct;
+     OrderProduct orderProduct;
 //
 //    @Enumerated(EnumType.STRING)
 //    private FROM_STATUS from_status;
@@ -26,7 +29,7 @@ public class OrderStatus implements Serializable {
 //    private TO_STATUS to_status;
 
     @ApiModelProperty(notes = "Transition notes like handle with care etc..")
-    private String transition_notes_comments;
+     String transition_notes_comments;
 
     public OrderProduct getOrderProduct() {
         return orderProduct;

@@ -17,15 +17,17 @@ public class AdminPanelController {
 
 
     @RequestMapping(value ="/index",method =RequestMethod.GET)
-    public String  getAllUsers(Model model,Model model1,Model model2,Model model3){
+    public String  getAllUsers(Model model,Model model1,Model model2,Model model3,Model model4){
 
-        model.addAttribute("allUsers", adminPanelService.getAllUsers());
+        model.addAttribute("allCategories", adminPanelService.getAllCategories());
 
-        model1.addAttribute("allProducts",adminPanelService.getAllProducts());
+        model1.addAttribute("allUsers", adminPanelService.getAllUsers());
 
-        model2.addAttribute("allCategories", adminPanelService.getAllCategories());
-        
+        model2.addAttribute("allProducts",adminPanelService.getAllProducts());
+
         model3.addAttribute("totalNumberOfProducts",adminPanelService.getTotalNumberOfProductCount());
+
+        model4.addAttribute("getStats",adminPanelService.getStats);
         return "index";
     }
 

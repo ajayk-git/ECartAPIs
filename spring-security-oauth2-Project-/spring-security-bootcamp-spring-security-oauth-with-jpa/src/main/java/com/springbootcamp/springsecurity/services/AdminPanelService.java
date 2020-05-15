@@ -23,11 +23,7 @@ import java.util.List;
 @Service
 public class AdminPanelService {
 
-    public static Integer totalUsers=0;
-    public static Integer totalCategories=0;
-
-    @Autowired
-    CategoryRepository categoryRepository;
+    public  List<Integer> getStats=new ArrayList<Integer>();
 
     @PersistenceContext
     EntityManager entityManager;
@@ -45,7 +41,6 @@ public class AdminPanelService {
         Query<Object[]> categoryQuery = (Query<Object[]>) entityManager.createQuery(criteriaQuery);
 
         List<Object[]> categoryList = categoryQuery.getResultList();
-        categoryList.size();
 
         List<CategoryAdminPanelDto> categoryAdminPanelDtos = new ArrayList<>();
 
@@ -56,6 +51,9 @@ public class AdminPanelService {
             categoryAdminPanelDtos.add(categoryAdminPanelDto);
 
         }
+        System.out.println("category");
+        getStats.add(categoryList.size());
+        System.out.println(categoryQuery.getResultList().size());
         return categoryAdminPanelDtos;
 
     }
@@ -80,6 +78,11 @@ public class AdminPanelService {
             userAdminPanelDto.setIsActive((Boolean) objects[2]);
             userAdminPanelDtoList.add(userAdminPanelDto);
         }
+
+        System.out.println("user");
+        getStats.add(userList.size());
+        System.out.println(userQuery.getResultList().size());
+
         return userAdminPanelDtoList;
     }
 
@@ -104,6 +107,10 @@ public class AdminPanelService {
             productAdminPanelDto.setIsActive((Boolean) objects[2]);
             productAdminPanelDtoList.add(productAdminPanelDto);
         }
+
+        System.out.println("product");
+        getStats.add(productList.size());
+        System.out.println(userQuery.getResultList().size());
 
         return productAdminPanelDtoList;
     }
@@ -130,6 +137,9 @@ public class AdminPanelService {
             productCountAdminPanelDtoList.add(productAdminPanelDto);
         }
 
+        System.out.println("toat;p[rodfuccvt");
+        getStats.add(productList.size());
+        System.out.println(productQuery.getResultList().size());
         return productCountAdminPanelDtoList;
 
     }
