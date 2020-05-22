@@ -21,6 +21,7 @@ import com.springbootcamp.springsecurity.repositories.CategoryRepository;
 import com.springbootcamp.springsecurity.repositories.MetaDataFieldValuesRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -68,7 +69,7 @@ public class CategoryService {
         CategoryMetaDataField metaDataField = new CategoryMetaDataField(fieldName);
         categoryMetaDataFieldRepository.save(metaDataField);
 
-        auditService.saveNewObject("CategoryMetaDataField", metaDataField.getId(), principal.getName());
+       // auditService.saveNewObject("CategoryMetaDataField", metaDataField.getId(), principal.getName());
 
         log.info("CategoryMetaDataField Added successfully");
         return new ResponseEntity<String>("MetaData field " + fieldName + " is added.", HttpStatus.CREATED);
@@ -106,7 +107,7 @@ public class CategoryService {
         log.info("inside addNewCategory method");
 
         if (categoryCO.getParentId() == null) {
-            if (categoryRepository.findByName(categoryCO.getCategoryName()) == null) {
+            if (!categoryRepository.findByName(categoryCO.getCategoryName()).isPresent()) {
 
                 Category category = new Category();
                 category.setName(categoryCO.getCategoryName());
@@ -114,7 +115,7 @@ public class CategoryService {
                 category.setId(categoryCO.getParentId());
                 categoryRepository.save(category);
 
-                auditService.saveNewObject("Category", category.getId(), principal.getName());
+              //  auditService.saveNewObject("Category", category.getId(), principal.getName(),category);
 
                 return new ResponseEntity("New category " + categoryCO.getCategoryName() + " is Added as a Root category because it has null Id. ", HttpStatus.CREATED);
             } else {
@@ -130,7 +131,7 @@ public class CategoryService {
         }
         String categoryName = categoryCO.getCategoryName();
 
-        if (categoryRepository.findByName(categoryName) != null) {
+        if (categoryRepository.findByName(categoryName).isPresent()) {
             throw new ResourceAlreadyExistException("Category with " + categoryName + " already exist.");
         }
         Category subCategory = new Category();
@@ -142,7 +143,7 @@ public class CategoryService {
         parentCategory.addCategory(subCategory);
         categoryRepository.save(subCategory);
 
-        auditService.saveNewObject("Category", subCategory.getId(), principal.getName());
+       // auditService.saveNewObject("Category", subCategory.getId(), principal.getName());
         log.info("Category Added successfully");
 
         return new ResponseEntity("New category " + categoryName + " is added having Parent id is : " + categoryCO.getParentId() + ".", HttpStatus.CREATED);
@@ -276,7 +277,7 @@ public class CategoryService {
 
             metaDataFieldValuesRepository.save(metadataFieldValues);
 
-            auditService.saveNewObject("CategoryMetaDataFieldValues", metaDataField.getId(), principal.getName());
+        //    auditService.saveNewObject("CategoryMetaDataFieldValues", metaDataField.getId(), principal.getName());
 
             log.info("CategoryMetaDataFieldValues added successfully");
             return new ResponseEntity("MetaData Field Values are successfully added.", HttpStatus.CREATED);
@@ -329,7 +330,9 @@ public class CategoryService {
 //===================================to get all categories by seller=======================================================
 
     @Secured("ROLE_SELLER")
+    @Cacheable(cacheNames = "CategoryViewBySeller")
     public List<CategorySellerDto> viewAllCategoriesBySeller(Principal principal) {
+
 
         log.info("inside viewAllCategoriesBySeller method");
 
@@ -366,7 +369,9 @@ public class CategoryService {
 
     //===================================to get all categories by Customer=======================================================
 
+
     @Secured("ROLE_USER")
+    @Cacheable(cacheNames = "CategoryViewByCustomer")
     public List<CategoryDTO> getCategoriesByCustomer(Long categoryId, Principal principal) {
 
         log.info("inside getCategoriesByCustomer method");

@@ -24,6 +24,7 @@ import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -138,6 +139,8 @@ public class ProductService {
         productRepository.save(product);
 
         log.info("Product added successfully by seller");
+
+
         auditService.saveNewObject("Product",product.getId(),principal.getName());
 
         return new ResponseEntity("Product added successfully.Product will  be activated  soon by admin,", HttpStatus.CREATED);
@@ -309,7 +312,7 @@ public class ProductService {
                     productVariation.setMetaData(productVariationCo.getMetaData());
                     variationRepository.save(productVariation);
                     log.info("Product variant is added successfully by seller");
-                    auditService.saveNewObject("ProductVariation",productVariation.getId(),principal.getName());
+                   auditService.saveNewObject("ProductVariation",productVariation.getId(),principal.getName());
 
                 }
             }
@@ -459,7 +462,8 @@ public class ProductService {
     //=================================================View all products By seller Account==================================
 
     @Secured("ROLE_SELLER")
-    public ResponseEntity viewAllProductsBySeller(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection, Principal principal) {
+    @Cacheable(cacheNames = "getAllProductsBySeller")
+    public List<ProductSellerDto> viewAllProductsBySeller(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection, Principal principal) {
 
         log.info("inside viewAllProductsBySeller method");
 
@@ -491,7 +495,9 @@ public class ProductService {
             }
         }
         auditService.readAllObjects("Product",principal.getName());
-        return new ResponseEntity(productSellerDtoList, null, HttpStatus.OK);
+
+        return productSellerDtoList;
+      //  return new ResponseEntity(productSellerDtoList, null, HttpStatus.OK);
 
     }
 
@@ -582,7 +588,8 @@ public class ProductService {
 
     //=================================================Get a product By Customer =========================================================
     @Secured("ROLE_USER")
-    public ResponseEntity getAllProductsByCustomer(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection,Long categoryId, Principal principal) {
+    @Cacheable(cacheNames =  "getAllProductsByCustomer")
+    public List<ProductCustomerDto> getAllProductsByCustomer(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection,Long categoryId, Principal principal) {
 
         log.info("inside getAllProductsByCustomer method");
 
@@ -605,7 +612,9 @@ public class ProductService {
         auditService.readAllObjects("Product",principal.getName());
 
 
-        return new ResponseEntity(productCustomerDtoList, null, HttpStatus.OK);
+
+        return productCustomerDtoList;
+   //     return new ResponseEntity(productCustomerDtoList, null, HttpStatus.OK);
 
     }
 

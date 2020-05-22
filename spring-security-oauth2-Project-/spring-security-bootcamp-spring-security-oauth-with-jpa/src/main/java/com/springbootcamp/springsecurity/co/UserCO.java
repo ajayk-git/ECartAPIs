@@ -46,9 +46,4 @@ public class UserCO {
     String confirmPassword;
 
     Address address;
-
-
 }
-
-
-//  private List<Address> addressList;

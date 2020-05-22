@@ -20,7 +20,6 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Objects;
 
-
 @Log4j2
 @Api(value = "Registration Rest Controller",description = "Operations Related to Registration.")
 @RestController
@@ -30,7 +29,7 @@ public class RegistrationController {
     RegistrationService registrationService;
 
 
-    //=================================================Customer registration . =========================================================
+    //=================================================Customer registration Controller =========================================================
 
     @ApiOperation(value = "Customer registration .")
     @ApiResponses(value = {

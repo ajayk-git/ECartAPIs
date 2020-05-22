@@ -192,9 +192,9 @@ public class CustomerService {
         address.setUser(customer);
         addressList.add(address);
         customer.addAddress(address);
-        customerRepository.save(customer);
+       customerRepository.save(customer);
 
-        auditService.saveNewObject("Address",address.getId(),principal.getName());
+       auditService.saveNewObject("Address",address.getId(),principal.getName());
 
         log.info("Address is successfully added to customers address list");
 

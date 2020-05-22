@@ -212,7 +212,7 @@ public class SellerController {
             @ApiResponse(code = 401, message = "not authorized!"),
             @ApiResponse(code = 404, message = "not found!!!") })
     @GetMapping("/product")
-    public ResponseEntity viewAllProductsBySeller(@RequestParam(value = "page",defaultValue = GlobalVariables.DEFAULT_PAGE_OFFSET)Optional<Integer> page,
+    public List<ProductSellerDto> viewAllProductsBySeller(@RequestParam(value = "page",defaultValue = GlobalVariables.DEFAULT_PAGE_OFFSET)Optional<Integer> page,
                                                   @RequestParam(value = "size",defaultValue = GlobalVariables.DEFAULT_PAGE_SIZE) Optional<Integer> contentSize,
                                                   @RequestParam(value = "sort",defaultValue = GlobalVariables.DEFAULT_SORT_PROPERTY)Optional<String> sortProperty,
                                                   @RequestParam(value = "direction",defaultValue = GlobalVariables.DEFAULT_SORT_DIRECTION)Optional<String> sortDirection,

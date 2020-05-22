@@ -1,10 +1,21 @@
 package com.springbootcamp.springsecurity;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.Mongo;
 import com.springbootcamp.springsecurity.entities.AuditLogsMongoDB;
+import com.springbootcamp.springsecurity.entities.product.Product;
+import com.springbootcamp.springsecurity.entities.product.ProductReview;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class AuditLogsMongoDBService {
@@ -12,14 +23,14 @@ public class AuditLogsMongoDBService {
     @Autowired
     AuditLogsMongoDBRepository auditLogsMongoRepository;
 
-    public void saveNewObject (String tableName,Long id,String name){
+    public void saveNewObject (String tableName, Long id, String name){
         AuditLogsMongoDB  auditLogs =new AuditLogsMongoDB();
         Date date=new Date();
         auditLogs.setCreatedDate(date);
         auditLogs.setPerformedBy(name);
         auditLogs.setObjectId(id);
         auditLogs.setTableName(tableName);
-        auditLogs.setActivity("New Data is added in "+tableName+" table.");
+        auditLogs.setActivity(" Data is added in "+tableName+" table.");
         auditLogsMongoRepository.save(auditLogs);
     }
 
@@ -90,14 +101,17 @@ public class AuditLogsMongoDBService {
         auditLogs.setActivity("A object is deactivated from Table "+tableName+" at Id"+id);
         auditLogsMongoRepository.save(auditLogs);
     }
-    public void registerUser (String tableName,Long id,String doneBy){
+    public void registerUser (String tableName,Long id,String doneBy,Object metaData){
         AuditLogsMongoDB  auditLogs =new AuditLogsMongoDB();
         Date date=new Date();
         auditLogs.setCreatedDate(date);
         auditLogs.setPerformedBy(doneBy);
         auditLogs.setObjectId(id);
+        auditLogs.setMetaData(metaData);
         auditLogs.setTableName(tableName);
         auditLogs.setActivity("A new entry is added in "+tableName+" table.");
         auditLogsMongoRepository.save(auditLogs);
     }
+
+
 }

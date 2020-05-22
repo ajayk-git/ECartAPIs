@@ -1,7 +1,5 @@
-package com.springbootcamp.springsecurity.services;
 
-import com.springbootcamp.springsecurity.AuditHistory;
-import com.springbootcamp.springsecurity.AuditHistoryRepository;
+package com.springbootcamp.springsecurity.services;
 import com.springbootcamp.springsecurity.AuditHistoryService;
 import com.springbootcamp.springsecurity.AuditLogsMongoDBService;
 import com.springbootcamp.springsecurity.dtos.CustomerDto;
@@ -13,7 +11,6 @@ import com.springbootcamp.springsecurity.entities.users.User;
 import com.springbootcamp.springsecurity.exceptions.AccountDoesNotExistException;
 import com.springbootcamp.springsecurity.exceptions.ResourceNotFoundException;
 import com.springbootcamp.springsecurity.repositories.*;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +18,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
-
-
+import lombok.extern.log4j.Log4j2;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,14 +31,19 @@ public class AdminService {
 
     @Autowired
     UserRepository userRepository;
+
     @Autowired
     JavaMailSender javaMailSender;
+
     @Autowired
     CustomerRepository customerRepository;
+
     @Autowired
     SellerRepository sellerRepository;
+
     @Autowired
     MetaDataFieldRepository categoryMetaDataFieldRepository;
+
     @Autowired
     CategoryRepository categoryRepository;
 

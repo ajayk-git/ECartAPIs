@@ -32,11 +32,7 @@ public class Customer extends User {
 
      String contact;
 
-    @CreatedDate
-    Date createdDate;
 
-    @LastModifiedDate
-    Date lastModifiedDate;
 
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)

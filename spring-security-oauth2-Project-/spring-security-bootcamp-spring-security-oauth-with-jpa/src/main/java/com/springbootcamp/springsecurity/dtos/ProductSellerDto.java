@@ -6,12 +6,15 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
+
+import java.io.Serializable;
 
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @ApiModel(description = "Product Seller DTO representation")
-public class ProductSellerDto {
+public class ProductSellerDto extends JdkSerializationRedisSerializer implements Serializable {
 
     @ApiModelProperty(value = "Product Id")
     Long id;

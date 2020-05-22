@@ -7,13 +7,14 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+import java.io.Serializable;
 import java.util.Map;
 
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @ApiModel(description = "Product Variant Customer DTO representation")
-public class ProductVariantCustomerDto {
+public class ProductVariantCustomerDto implements Serializable {
 
     @ApiModelProperty(value = "Product's price")
     Float price;

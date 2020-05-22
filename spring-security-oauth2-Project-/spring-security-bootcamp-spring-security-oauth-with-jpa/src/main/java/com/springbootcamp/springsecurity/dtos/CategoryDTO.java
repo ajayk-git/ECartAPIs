@@ -7,11 +7,13 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+import java.io.Serializable;
+
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @ApiModel(description = "Category  DTO representation")
-public class CategoryDTO {
+public class CategoryDTO implements Serializable {
 
 
     @ApiModelProperty(value = "Category Name ")

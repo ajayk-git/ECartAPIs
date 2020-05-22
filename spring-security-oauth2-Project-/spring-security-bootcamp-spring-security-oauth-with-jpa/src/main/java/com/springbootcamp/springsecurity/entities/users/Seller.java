@@ -28,11 +28,6 @@ public class Seller extends User {
 
 
 
-    @CreatedDate
-    Date createdDate;
-
-    @LastModifiedDate
-    Date lastModifiedDate;
 
      String gst;
 

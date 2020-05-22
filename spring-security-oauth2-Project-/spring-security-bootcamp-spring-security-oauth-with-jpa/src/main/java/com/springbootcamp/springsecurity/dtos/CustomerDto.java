@@ -11,6 +11,8 @@ import com.springbootcamp.springsecurity.dto.UserDto;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.Serializable;
+
 
 @Getter
 @Setter

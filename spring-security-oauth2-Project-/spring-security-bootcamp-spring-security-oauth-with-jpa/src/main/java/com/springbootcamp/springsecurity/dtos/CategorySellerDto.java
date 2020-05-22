@@ -7,14 +7,16 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @ApiModel(description = "Category Seller DTO representation")
-public class CategorySellerDto {
+public class CategorySellerDto implements Serializable {
 
 
     @ApiModelProperty(value = "Category Name ")

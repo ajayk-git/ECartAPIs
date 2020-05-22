@@ -28,6 +28,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Log4j2
@@ -74,13 +75,10 @@ public class RegistrationService {
         List<Role> roleList = new ArrayList<>();
         roleList.add(role);
         customerRepository.save(customer);
-
         ConfirmationToken confirmationToken = new ConfirmationToken(customer);
-
         confirmationTokenRepository.save(confirmationToken);
         emailService.sendEmailToCustomer(customer.getEmail(), confirmationToken.getConfirmationToken());
-
-        auditService.registerUser("User", customer.getId(), customer.getEmail());
+        auditService.registerUser("User", customer.getId(), customer.getEmail(),customer);
 
         log.info("User registered successfully");
         return new ResponseEntity("Verification mail is send to registered mail id.", HttpStatus.OK);
@@ -121,7 +119,7 @@ public class RegistrationService {
         emailService.sendEmailToSeller(seller.getEmail(), confirmationToken.getConfirmationToken());
 
 
-        auditService.registerUser("User", seller.getId(), seller.getEmail());
+        auditService.registerUser("User", seller.getId(), seller.getEmail(),seller);
         log.info("User registered successfully");
         return new ResponseEntity("Verification mail is send to registered mail id.", HttpStatus.OK);
 

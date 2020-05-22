@@ -1,5 +1,6 @@
 package com.springbootcamp.springsecurity.entities.product;
 
+import com.mongodb.ReflectionDBObject;
 import com.springbootcamp.springsecurity.entities.Cart;
 import com.springbootcamp.springsecurity.entities.order.OrderProduct;
 import lombok.AccessLevel;
@@ -22,7 +23,7 @@ import java.util.Map;
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EntityListeners(AuditingEntityListener.class)
-public class ProductVariation {
+public class ProductVariation{
 
     @CreatedDate
     Date createdDate;
