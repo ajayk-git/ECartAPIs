@@ -642,7 +642,8 @@ public class ProductService {
     //=================================================View a all products By Admin Account==================================
 
     @Secured("ROLE_ADMIN")
-    public ResponseEntity getAllProductsByAdmin(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection, Principal principal) {
+    @Cacheable(cacheNames = "getAllProductsByAdmin")
+    public  List<ProductAdminDto> getAllProductsByAdmin(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection, Principal principal) {
 
         log.info("inside getAllProductsByAdmin method");
 
@@ -663,7 +664,8 @@ public class ProductService {
         auditService.readAllObjects("Product",principal.getName());
 
 
-        return new ResponseEntity(productAdminDtoList, null, HttpStatus.OK);
+        return productAdminDtoList;
+     //   return new ResponseEntity(productAdminDtoList, null, HttpStatus.OK);
 
     }
 

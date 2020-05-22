@@ -154,6 +154,7 @@ public class CategoryService {
 
 
     @Secured("ROLE_ADMIN")
+    @Cacheable(cacheNames = "GetCategoryListByAdmin")
     public List<CategoryDTO> getAllCategories(Principal principal) {
 
         log.info("inside getAllCategories method");

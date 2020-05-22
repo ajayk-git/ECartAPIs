@@ -7,13 +7,14 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @ApiModel(description = "Product Admin DTO representation")
-public class ProductAdminDto {
+public class ProductAdminDto implements Serializable {
 
     @ApiModelProperty(value = "Product Id.")
     Long id;
