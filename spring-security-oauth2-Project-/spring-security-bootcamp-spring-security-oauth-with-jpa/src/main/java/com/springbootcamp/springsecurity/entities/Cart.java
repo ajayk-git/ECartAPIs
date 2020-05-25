@@ -37,7 +37,7 @@ public class Cart {
     Boolean isWishListItem;
 
     @OneToOne
-    @JoinColumn(name = "customer_id")
+    @JoinColumn(name = "CartId")
     Customer customer;
 
     @ManyToOne

@@ -9,6 +9,7 @@ import com.springbootcamp.springsecurity.dtos.CustomerDto;
 import com.springbootcamp.springsecurity.dtos.ProductCustomerDto;
 import com.springbootcamp.springsecurity.entities.product.Category;
 import com.springbootcamp.springsecurity.entities.product.Product;
+import com.springbootcamp.springsecurity.services.CartService;
 import com.springbootcamp.springsecurity.services.CategoryService;
 import com.springbootcamp.springsecurity.services.CustomerService;
 import com.springbootcamp.springsecurity.services.ProductService;
@@ -36,6 +37,8 @@ public class CustomerController {
     CategoryService categoryService;
     @Autowired
     ProductService productService;
+    @Autowired
+    CartService cartService;
 
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -140,6 +143,14 @@ public class CustomerController {
                                                    @PathVariable(name = "productId") Long productId,Principal principal){
         return productService.getSimilarProductsByCustomer(page,contentSize,sortProperty,sortDirection,productId,principal);
     }
+
+    //=================================================Get Cart details Customer =========================================================
+    @ApiOperation(value = "Get Cart details by Customer")
+    @GetMapping("/cart")
+    public ResponseEntity getCartDetailsByCustomer(Principal principal){
+        return cartService.getCartDetailsByCustomer(principal);
+    }
+
 
 }
 

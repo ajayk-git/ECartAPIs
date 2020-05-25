@@ -267,6 +267,7 @@ public class Bootstrap {
 
             Product product=productRepository.findById(2L).get();
             ProductVariation productVariation=new ProductVariation();
+            ProductVariation productVariation1=new ProductVariation();
 
             HashMap<String,String> metaDataValues =new HashMap<>();
             metaDataValues.put("size","L");
@@ -278,18 +279,42 @@ public class Bootstrap {
             productVariation.setQuantityAvailable(25);
             productVariation.setProduct(product);
             productVariation.setPrimaryImage_Name("product/2/1");
+
+
+            HashMap<String,String> metaDataValues1 =new HashMap<>();
+            metaDataValues1.put("size","M");
+            metaDataValues1.put("Color","Red");
+            metaDataValues1.put("fabric","Dri-Fit");
+            productVariation1.setMetaData(metaDataValues1);
+            productVariation1.setIsActive(true);
+            productVariation1.setPrice(250f);
+            productVariation1.setQuantityAvailable(10);
+            productVariation1.setProduct(product);
+            productVariation1.setPrimaryImage_Name("product/2/1");
+
+            productVariationRepository.save(productVariation1);
             productVariationRepository.save(productVariation);
 
         }
 
 
-
         if (cartRepository.count() < 1){
             Cart cart = new Cart();
+            Cart cart1 = new Cart();
+
             cart.setCustomer(customerRepository.findByEmail("ajay.mca17.du@gmail.com"));
             cart.setProductVariation(productVariationRepository.findById(1L).get());
+
+            cart1.setCustomer(customerRepository.findByEmail("ajay.mca17.du@gmail.com"));
+            cart1.setProductVariation(productVariationRepository.findById(2L).get());
+
             cart.setQuantity(2);
+            cart1.setQuantity(4);
+
+            cart1.setIsWishListItem(false);
             cart.setIsWishListItem(true);
+
+            cartRepository.save(cart1);
             cartRepository.save(cart);
         }
 
