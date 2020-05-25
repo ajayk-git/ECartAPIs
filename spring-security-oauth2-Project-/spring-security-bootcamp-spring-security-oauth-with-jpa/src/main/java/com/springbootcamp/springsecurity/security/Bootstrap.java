@@ -263,32 +263,6 @@ public class Bootstrap {
 
         }
 
-//
-//        if (cartRepository.count() < 1){
-//            Cart cart = new Cart();
-//            cart.setCustomer(customerRepository.findByEmail("ajay.mca17.du@gmail.com"));
-//            cart.setProductVariation(productVariationRepository.findById(1L).get());
-//            cart.setQuantity(2);
-//            cart.setWishListItem(true);
-//            cartRepository.save(cart);
-//        }
-
-
-        if (orderRepository.count() < 1) {
-            Order order = new Order();
-            order.setAmountPaid(10000);
-
-            Date date = new Date();
-            order.setDateCreated(date);
-            order.setPaymentMethod("Debit card");
-            order.setCustomer(customerRepository.findByEmail("ajay.mca17.du@gmail.com"));
-            Address address = new Address("Alwar", "Rajasthan", "India", "Home", "Near Income Tax Office", "301701");
-            Addresscopy addresscopy = new Addresscopy(address);
-            order.setAddresscopy(addresscopy);
-            orderRepository.save(order);
-        }
-
-
         if (productVariationRepository.count()<5){
 
             Product product=productRepository.findById(2L).get();
@@ -307,6 +281,34 @@ public class Bootstrap {
             productVariationRepository.save(productVariation);
 
         }
+
+
+
+        if (cartRepository.count() < 1){
+            Cart cart = new Cart();
+            cart.setCustomer(customerRepository.findByEmail("ajay.mca17.du@gmail.com"));
+            cart.setProductVariation(productVariationRepository.findById(1L).get());
+            cart.setQuantity(2);
+            cart.setIsWishListItem(true);
+            cartRepository.save(cart);
+        }
+
+
+        if (orderRepository.count() < 1) {
+            Order order = new Order();
+            order.setAmountPaid(10000);
+
+            Date date = new Date();
+            order.setDateCreated(date);
+            order.setPaymentMethod("Debit card");
+            order.setCustomer(customerRepository.findByEmail("ajay.mca17.du@gmail.com"));
+            Address address = new Address("Alwar", "Rajasthan", "India", "Home", "Near Income Tax Office", "301701");
+            Addresscopy addresscopy = new Addresscopy(address);
+            order.setAddresscopy(addresscopy);
+            orderRepository.save(order);
+        }
+
+
 
     }
 }

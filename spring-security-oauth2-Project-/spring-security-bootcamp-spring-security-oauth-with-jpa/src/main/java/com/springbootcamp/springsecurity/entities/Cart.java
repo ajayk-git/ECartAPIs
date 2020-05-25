@@ -29,31 +29,19 @@ public class Cart {
 
 
     @Id
-   @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-     int quantity;
+    Integer quantity;
 
-     boolean isWishListItem;
+    Boolean isWishListItem;
 
     @OneToOne
-    @JoinColumn(name="customer_id")
-     Customer customer;
+    @JoinColumn(name = "customer_id")
+    Customer customer;
 
     @ManyToOne
     @JoinColumn(name = "Product_variation_id")
-     ProductVariation productVariation;
-
-
-
-
-
-
-
-//    IS_WISHLIST_ITEM
-//            PRODUCT_VARIATION_ID
+    ProductVariation productVariation;
 
 }
-//    @OneToOne(cascade = CascadeType.ALL)//cascade = CascadeType.ALL
-//   @JoinColumn(name = "USER_ID")
-//    private User user;
