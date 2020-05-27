@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.lang.reflect.Type;
 import java.security.Principal;
 import java.util.List;
@@ -109,6 +110,7 @@ public class CartService {
     }
 
 
+    @Transactional
     public ResponseEntity removeProductFromCartByCustomer(Principal principal, Long productVariationId) {
 
         Customer customer = customerRepository.findByEmail(principal.getName());
