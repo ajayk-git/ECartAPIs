@@ -3,9 +3,11 @@ package com.springbootcamp.springsecurity.services;
 import com.springbootcamp.springsecurity.co.CartAddProductCo;
 import com.springbootcamp.springsecurity.dtos.CartDetailsDto;
 import com.springbootcamp.springsecurity.entities.Cart;
+import com.springbootcamp.springsecurity.entities.CartProductVariation;
 import com.springbootcamp.springsecurity.entities.product.ProductVariation;
 import com.springbootcamp.springsecurity.entities.users.Customer;
 import com.springbootcamp.springsecurity.exceptions.ResourceNotFoundException;
+import com.springbootcamp.springsecurity.repositories.CartProductVariationRepository;
 import com.springbootcamp.springsecurity.repositories.CartRepository;
 import com.springbootcamp.springsecurity.repositories.CustomerRepository;
 import com.springbootcamp.springsecurity.repositories.ProductVariationRepository;
@@ -31,20 +33,27 @@ public class CartService {
     @Autowired
     ProductVariationRepository variationRepository;
 
+    @Autowired
+    CartProductVariationRepository cartProductVariationRepository;
+
+
 
     ModelMapper modelMapper = new ModelMapper();
 
 
-    //=================================================Get Cart details Customer =========================================================
+    //=================================================Get Cart details by Customer =========================================================
 
     public ResponseEntity getCartDetailsByCustomer(Principal principal) {
-        Customer customer = customerRepository.findByEmail(principal.getName());
-        List<Cart> cartList = cartRepository.findByCustomer(customer);
+
+        Customer customer=customerRepository.findByEmail(principal.getName());
+        Cart cart= cartRepository.findByCustomer(customer);
+
+        List<CartProductVariation> cartProductVariationList=cartProductVariationRepository.findByCart(cart);
 
         Type listType = new TypeToken<List<CartDetailsDto>>() {
         }.getType();
 
-        List<CartDetailsDto> cartDetailsDtos = modelMapper.map(cartList, listType);
+        List<CartDetailsDto> cartDetailsDtos = modelMapper.map(cartProductVariationList, listType);
         return new ResponseEntity(cartDetailsDtos, null, HttpStatus.OK);
     }
 

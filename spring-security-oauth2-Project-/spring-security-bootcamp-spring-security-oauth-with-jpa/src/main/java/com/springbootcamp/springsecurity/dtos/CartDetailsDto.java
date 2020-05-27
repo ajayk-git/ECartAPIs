@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CartDetailsDto {
-    Long customerId;
     Long ProductVariationId;
     Integer quantity;
     Boolean isWishListItem;
