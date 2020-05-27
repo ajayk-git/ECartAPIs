@@ -11,6 +11,7 @@ import com.springbootcamp.springsecurity.repositories.CartProductVariationReposi
 import com.springbootcamp.springsecurity.repositories.CartRepository;
 import com.springbootcamp.springsecurity.repositories.CustomerRepository;
 import com.springbootcamp.springsecurity.repositories.ProductVariationRepository;
+import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import java.lang.reflect.Type;
 import java.security.Principal;
 import java.util.List;
 
+@Log4j2
 @Service
 public class CartService {
     @Autowired
@@ -35,7 +37,6 @@ public class CartService {
 
     @Autowired
     CartProductVariationRepository cartProductVariationRepository;
-
 
 
     ModelMapper modelMapper = new ModelMapper();
@@ -58,33 +59,52 @@ public class CartService {
     }
 
 
-    //=================================================Add product to Cart by Customer =========================================================
-//
-//    public ResponseEntity addProductInCartByCustomer(Principal principal, CartAddProductCo cartAddProductCo) {
-//
-//        if (!variationRepository.findById(cartAddProductCo.getProductVariationId()).isPresent()) {
-//            throw new ResourceNotFoundException("Product variation is not available");
-//        }
-//
-//        ProductVariation productVariation = variationRepository.findById(cartAddProductCo.getProductVariationId()).get();
-//
-//        if (!productVariation.getIsActive()) {
-//            throw new ResourceNotFoundException("Product variation is not active.");
-//        }
-//
-//        if (productVariation.getQuantityAvailable() - cartAddProductCo.getQuantity() < 0) {
-//            throw new ResourceNotFoundException("In sufficient stock.");
-//        }
-//
-//        Cart cart=new Cart();
-//
-//        cart.setIsWishListItem(false);
-//        cart.setCustomer(customerRepository.findByEmail(principal.getName()));
-//        cart.setQuantity(cartAddProductCo.getQuantity());
-//        cart.set
-//
-//        cartRepository.save(cart);
-//
-//            return new ResponseEntity("Product added successfully in Cart.", HttpStatus.OK);
-//    }
+    //=================================================Add product in Cart by Customer =========================================================
+
+    public ResponseEntity addProductInCartByCustomer(Principal principal, CartAddProductCo cartAddProductCo) {
+
+        if (!variationRepository.findById(cartAddProductCo.getProductVariationId()).isPresent()) {
+            throw new ResourceNotFoundException("Product variation is not available");
+        }
+
+        ProductVariation productVariation = variationRepository.findById(cartAddProductCo.getProductVariationId()).get();
+
+        if (!productVariation.getIsActive()) {
+            throw new ResourceNotFoundException("Product variation is not active.");
+        }
+
+        if (productVariation.getQuantityAvailable() - cartAddProductCo.getQuantity() < 0) {
+            throw new ResourceNotFoundException("In sufficient stock.");
+        }
+        Customer customer=customerRepository.findByEmail(principal.getName());
+        Cart cart=cartRepository.findByCustomer(customer);
+
+        CartProductVariation cartProductVariationFromDataBase=cartProductVariationRepository.findByProductVariantAndCart(productVariation.getId(),customer.getCart().getId());
+
+        System.out.println(cartProductVariationFromDataBase);
+        if (cartProductVariationFromDataBase!=null){
+
+            if(productVariation.getQuantityAvailable()-(cartAddProductCo.getQuantity()+cartProductVariationFromDataBase.getQuantity())<0){
+                throw new ResourceNotFoundException("In sufficient stock.");
+            }
+
+            Integer totalQuantity=cartAddProductCo.getQuantity()+cartProductVariationFromDataBase.getQuantity();
+
+            cartProductVariationFromDataBase.setQuantity(totalQuantity);
+            cartProductVariationRepository.save(cartProductVariationFromDataBase);
+            return new ResponseEntity("Product added successfully in Cart.", HttpStatus.OK);
+
+
+        }
+
+        CartProductVariation cartProductVariation=new CartProductVariation();
+        cartProductVariation.setQuantity(cartAddProductCo.getQuantity());
+        cartProductVariation.setProductVariation(productVariation);
+        cartProductVariation.setIsWishListItem(cartAddProductCo.getIsWishListItem());
+        cartProductVariation.setCart(cart);
+
+        cartProductVariationRepository.save(cartProductVariation);
+
+        return new ResponseEntity("Product added successfully in Cart.", HttpStatus.OK);
+    }
 }
