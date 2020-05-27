@@ -318,7 +318,7 @@ public class Bootstrap {
             cartProductVariation.setCart(cartRepository.findById(1L).get());
 
             cartProductVariation1.setProductVariation(productVariationRepository.findById(2L).get());
-            cartProductVariation1.setIsWishListItem(false);
+            cartProductVariation1.setIsWishListItem(true);
             cartProductVariation1.setQuantity(5);
             cartProductVariation1.setCart(cartRepository.findById(1L).get());
 

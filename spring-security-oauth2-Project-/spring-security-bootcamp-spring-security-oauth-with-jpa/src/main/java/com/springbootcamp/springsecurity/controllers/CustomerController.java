@@ -17,6 +17,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -134,6 +135,7 @@ public class CustomerController {
     }
 
     //=================================================Get similar products By Customer =========================================================
+    @Secured("ROLE_USER")
     @ApiOperation(value = "Get all products by Customer.")
     @GetMapping("/product-similar/{productId}")
     public ResponseEntity getSimilarProductsByCustomer(@RequestParam(value = "page",defaultValue = GlobalVariables.DEFAULT_PAGE_OFFSET)Optional<Integer> page,
@@ -145,6 +147,7 @@ public class CustomerController {
     }
 
     //=================================================Get Cart details Customer =========================================================
+    @Secured("ROLE_USER")
     @ApiOperation(value = "Get Cart details by Customer")
     @GetMapping("/cart")
     public ResponseEntity getCartDetailsByCustomer(Principal principal){
@@ -154,6 +157,7 @@ public class CustomerController {
 
 
     //=================================================Add product in Cart by Customer =========================================================
+    @Secured("ROLE_USER")
     @ApiOperation(value = "Add product to Cart by Customer")
     @PostMapping("/cart")
     public ResponseEntity addProductInCartByCustomer(Principal principal,@Valid @RequestBody CartAddProductCo cartAddProductCo){
@@ -161,11 +165,22 @@ public class CustomerController {
     }
 
     //=================================================Remove a product from Cart by Customer =========================================================
+    @Secured("ROLE_USER")
     @ApiOperation(value = "Remove product from Cart by Customer")
     @DeleteMapping("/cart/{productVariationId}")
     public ResponseEntity removeProductFromCartByCustomer(Principal principal,@PathVariable(name = "productVariationId") Long productVariationId){
         return cartService.removeProductFromCartByCustomer(principal,productVariationId);
     }
+
+    //=================================================Add product in wishList by Customer =========================================================
+    @Secured("ROLE_USER")
+    @ApiOperation(value = "Add product in wishList by Customer")
+    @PatchMapping("/cart/addWishList/{productVariationId}")
+    public ResponseEntity addProductToWishList(Principal principal,@PathVariable(name = "productVariationId") Long productVariationId){
+        return cartService.addProductToWishList(principal,productVariationId);
+    }
+
+
 
 
 

@@ -119,11 +119,33 @@ public class CartService {
         CartProductVariation cartProductVariationFromDataBase = cartProductVariationRepository.findByProductVariantAndCart(productVariationId, customer.getCart().getId());
 
         if (cartProductVariationFromDataBase==null){
-            throw new ResourceNotFoundException("Product variation is not available");
+            throw new ResourceNotFoundException("Product variation is not available in cart");
         }
 
         log.warn("deleting the object");
         cartProductVariationRepository.deleteByCartIdAndProductVariationId(customer.getCart().getId(),productVariationId);
         return new ResponseEntity("Product removed from cart.",null,HttpStatus.OK);
+    }
+
+    //=================================================Add product in wishList by Customer =========================================================
+    public ResponseEntity addProductToWishList(Principal principal, Long productVariationId) {
+
+        Customer customer = customerRepository.findByEmail(principal.getName());
+        Cart cart = cartRepository.findByCustomer(customer);
+
+        CartProductVariation cartProductVariationFromDataBase = cartProductVariationRepository.findByProductVariantAndCart(productVariationId, customer.getCart().getId());
+
+        if (cartProductVariationFromDataBase==null){
+            throw new ResourceNotFoundException("Product variation is not available in cart");
+        }
+
+        if (!cartProductVariationFromDataBase.getIsWishListItem()){
+            cartProductVariationFromDataBase.setIsWishListItem(true);
+            cartProductVariationRepository.save(cartProductVariationFromDataBase);
+            return new ResponseEntity("Product added to wishList in cart.",null,HttpStatus.OK);
+        }
+
+        return new ResponseEntity("Product already added to wishList in cart.",null,HttpStatus.BAD_REQUEST);
+
     }
 }
