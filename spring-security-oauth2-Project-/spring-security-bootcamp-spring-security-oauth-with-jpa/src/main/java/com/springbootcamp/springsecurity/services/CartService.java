@@ -46,10 +46,10 @@ public class CartService {
 
     public ResponseEntity getCartDetailsByCustomer(Principal principal) {
 
-        Customer customer=customerRepository.findByEmail(principal.getName());
-        Cart cart= cartRepository.findByCustomer(customer);
+        Customer customer = customerRepository.findByEmail(principal.getName());
+        Cart cart = cartRepository.findByCustomer(customer);
 
-        List<CartProductVariation> cartProductVariationList=cartProductVariationRepository.findByCart(cart);
+        List<CartProductVariation> cartProductVariationList = cartProductVariationRepository.findByCart(cart);
 
         Type listType = new TypeToken<List<CartDetailsDto>>() {
         }.getType();
@@ -76,19 +76,19 @@ public class CartService {
         if (productVariation.getQuantityAvailable() - cartAddProductCo.getQuantity() < 0) {
             throw new ResourceNotFoundException("In sufficient stock.");
         }
-        Customer customer=customerRepository.findByEmail(principal.getName());
-        Cart cart=cartRepository.findByCustomer(customer);
+        Customer customer = customerRepository.findByEmail(principal.getName());
+        Cart cart = cartRepository.findByCustomer(customer);
 
-        CartProductVariation cartProductVariationFromDataBase=cartProductVariationRepository.findByProductVariantAndCart(productVariation.getId(),customer.getCart().getId());
+        CartProductVariation cartProductVariationFromDataBase = cartProductVariationRepository.findByProductVariantAndCart(productVariation.getId(), customer.getCart().getId());
 
         System.out.println(cartProductVariationFromDataBase);
-        if (cartProductVariationFromDataBase!=null){
+        if (cartProductVariationFromDataBase != null) {
 
-            if(productVariation.getQuantityAvailable()-(cartAddProductCo.getQuantity()+cartProductVariationFromDataBase.getQuantity())<0){
+            if (productVariation.getQuantityAvailable() - (cartAddProductCo.getQuantity() + cartProductVariationFromDataBase.getQuantity()) < 0) {
                 throw new ResourceNotFoundException("In sufficient stock.");
             }
 
-            Integer totalQuantity=cartAddProductCo.getQuantity()+cartProductVariationFromDataBase.getQuantity();
+            Integer totalQuantity = cartAddProductCo.getQuantity() + cartProductVariationFromDataBase.getQuantity();
 
             cartProductVariationFromDataBase.setQuantity(totalQuantity);
             cartProductVariationRepository.save(cartProductVariationFromDataBase);
@@ -97,7 +97,7 @@ public class CartService {
 
         }
 
-        CartProductVariation cartProductVariation=new CartProductVariation();
+        CartProductVariation cartProductVariation = new CartProductVariation();
         cartProductVariation.setQuantity(cartAddProductCo.getQuantity());
         cartProductVariation.setProductVariation(productVariation);
         cartProductVariation.setIsWishListItem(cartAddProductCo.getIsWishListItem());
@@ -106,5 +106,22 @@ public class CartService {
         cartProductVariationRepository.save(cartProductVariation);
 
         return new ResponseEntity("Product added successfully in Cart.", HttpStatus.OK);
+    }
+
+
+    public ResponseEntity removeProductFromCartByCustomer(Principal principal, Long productVariationId) {
+
+        Customer customer = customerRepository.findByEmail(principal.getName());
+        Cart cart = cartRepository.findByCustomer(customer);
+
+        CartProductVariation cartProductVariationFromDataBase = cartProductVariationRepository.findByProductVariantAndCart(productVariationId, customer.getCart().getId());
+
+        if (cartProductVariationFromDataBase==null){
+            throw new ResourceNotFoundException("Product variation is not available");
+        }
+
+        log.warn("deleting the object");
+        cartProductVariationRepository.deleteByCartIdAndProductVariationId(customer.getCart().getId(),productVariationId);
+        return new ResponseEntity("Product removed from cart.",null,HttpStatus.OK);
     }
 }

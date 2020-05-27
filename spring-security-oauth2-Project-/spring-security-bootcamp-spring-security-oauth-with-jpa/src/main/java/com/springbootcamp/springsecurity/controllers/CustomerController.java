@@ -160,6 +160,15 @@ public class CustomerController {
         return cartService.addProductInCartByCustomer(principal,cartAddProductCo);
     }
 
+    //=================================================Remove a product from Cart by Customer =========================================================
+    @ApiOperation(value = "Remove product from Cart by Customer")
+    @DeleteMapping("/cart/{productVariationId}")
+    public ResponseEntity removeProductFromCartByCustomer(Principal principal,@PathVariable(name = "productVariationId") Long productVariationId){
+        return cartService.removeProductFromCartByCustomer(principal,productVariationId);
+    }
+
+
+
 
 
 }

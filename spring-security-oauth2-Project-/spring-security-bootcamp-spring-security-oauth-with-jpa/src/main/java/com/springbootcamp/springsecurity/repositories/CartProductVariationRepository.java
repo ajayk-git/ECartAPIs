@@ -15,4 +15,10 @@ public interface CartProductVariationRepository extends CrudRepository<CartProdu
 
     @Query(value = "select * from CartProductVariation where CartId=:cartId AND ProductVariationId=:productId",nativeQuery = true)
     CartProductVariation findByProductVariantAndCart(Long productId,Long cartId);
+
+//    @Query(value = " delete from CartProductVariation where id=:id",nativeQuery = true)
+//    void deleteByCartIdAndProductId(Long id);
+
+    @Query(value = " delete from CartProductVariation cpv where cpv.CartId=:cartId AND cpv.ProductVariationId=:productVariationId",nativeQuery = true)
+    void deleteByCartIdAndProductVariationId(Long cartId, Long productVariationId);
 }
