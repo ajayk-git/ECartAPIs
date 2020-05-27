@@ -180,6 +180,14 @@ public class CustomerController {
         return cartService.addProductToWishList(principal,productVariationId);
     }
 
+    //=================================================Remove product from wishList by Customer =========================================================
+    @Secured("ROLE_USER")
+    @ApiOperation(value = "Remove product from wishList by Customer")
+    @PatchMapping("/cart/removeWishList/{productVariationId}")
+    public ResponseEntity removeProductFromWishList(Principal principal,@PathVariable(name = "productVariationId") Long productVariationId){
+        return cartService.removeProductFromWishList(principal,productVariationId);
+    }
+
 
 
 
