@@ -6,12 +6,15 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -32,16 +35,19 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    Integer quantity;
-
-    Boolean isWishListItem;
-
     @OneToOne
-    @JoinColumn(name = "CartId")
+    @JoinColumn(name = "CustomerId")
     Customer customer;
 
-    @ManyToOne
-    @JoinColumn(name = "Product_variation_id")
-    ProductVariation productVariation;
+
+    @OneToMany(mappedBy = "cart",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
+    List<CartProductVariation> cartVariationList;
+
+
+
+//    @ManyToOne
+//    @JoinColumn(name = "Product_variation_id")
+//    ProductVariation productVariation;
 
 }

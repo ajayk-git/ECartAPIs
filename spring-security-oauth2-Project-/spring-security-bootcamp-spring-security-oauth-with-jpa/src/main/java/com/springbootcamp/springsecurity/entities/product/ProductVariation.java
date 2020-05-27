@@ -2,6 +2,7 @@ package com.springbootcamp.springsecurity.entities.product;
 
 import com.mongodb.ReflectionDBObject;
 import com.springbootcamp.springsecurity.entities.Cart;
+import com.springbootcamp.springsecurity.entities.CartProductVariation;
 import com.springbootcamp.springsecurity.entities.order.OrderProduct;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -47,16 +48,23 @@ public class ProductVariation{
      Map<String,String> metaData;
 
     @ManyToOne
-    //@JoinColumn(name = "product_id")
      Product product;
 
-    @OneToMany(mappedBy = "productVariation",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "productVariation",cascade = CascadeType.ALL)
     @Fetch(value= FetchMode.SUBSELECT)
      List<OrderProduct> orderProductList;
 
-    @OneToMany(mappedBy = "productVariation",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    @Fetch(value=FetchMode.SUBSELECT)
-     List<Cart> cartList;
+
+    @OneToMany(mappedBy = "productVariation",cascade = CascadeType.ALL)
+    @Fetch(FetchMode.SUBSELECT)
+    List<CartProductVariation> cartVariationList;
+//
+//    @OneToMany(mappedBy = "productVariation",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+//    @Fetch(value=FetchMode.SUBSELECT)
+//     List<Cart> cartList;
+
+
+
 
      public ProductVariation(){
 
@@ -69,6 +77,8 @@ public class ProductVariation{
         this.isActive = isActive;
         this.setMetaData(metadata);
     }
+
+
 }
 //    @OneToMany(mappedBy ="productVariationSet",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
 //    private Set<Cart> cartSet;

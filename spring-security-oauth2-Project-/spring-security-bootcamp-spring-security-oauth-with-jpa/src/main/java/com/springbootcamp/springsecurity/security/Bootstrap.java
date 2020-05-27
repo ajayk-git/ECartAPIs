@@ -11,6 +11,7 @@ import com.springbootcamp.springsecurity.entities.users.Seller;
 import com.springbootcamp.springsecurity.entities.users.User;
 import com.springbootcamp.springsecurity.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -44,6 +45,8 @@ public class Bootstrap {
     MetaDataFieldRepository categoryMetaDataFieldRepository;
     @Autowired
     MetaDataFieldValuesRepository metaDataFieldValuesRepository;
+    @Autowired
+    CartProductVariationRepository cartProductVariationRepository;
 
 
     public void initialize() {
@@ -297,25 +300,32 @@ public class Bootstrap {
 
         }
 
-
-        if (cartRepository.count() < 1){
-            Cart cart = new Cart();
-            Cart cart1 = new Cart();
-
+        if(cartRepository.count()<3){
+            Cart cart=new Cart();
             cart.setCustomer(customerRepository.findByEmail("ajay.mca17.du@gmail.com"));
-            cart.setProductVariation(productVariationRepository.findById(1L).get());
-
-            cart1.setCustomer(customerRepository.findByEmail("ajay.mca17.du@gmail.com"));
-            cart1.setProductVariation(productVariationRepository.findById(2L).get());
-
-            cart.setQuantity(2);
-            cart1.setQuantity(4);
-
-            cart1.setIsWishListItem(false);
-            cart.setIsWishListItem(true);
-
-            cartRepository.save(cart1);
             cartRepository.save(cart);
+
+        }
+
+        if (cartProductVariationRepository.count() < 3){
+//
+            CartProductVariation cartProductVariation=new CartProductVariation();
+            CartProductVariation cartProductVariation1=new CartProductVariation();
+
+            cartProductVariation.setProductVariation(productVariationRepository.findById(1L).get());
+            cartProductVariation.setIsWishListItem(false);
+            cartProductVariation.setQuantity(5);
+            cartProductVariation.setCart(cartRepository.findById(1L).get());
+
+            cartProductVariation1.setProductVariation(productVariationRepository.findById(2L).get());
+            cartProductVariation1.setIsWishListItem(false);
+            cartProductVariation1.setQuantity(5);
+            cartProductVariation1.setCart(cartRepository.findById(1L).get());
+
+            cartProductVariationRepository.save(cartProductVariation);
+            cartProductVariationRepository.save(cartProductVariation1);
+
+
         }
 
 
@@ -337,6 +347,21 @@ public class Bootstrap {
 
     }
 }
+
+//
+//            List<ProductVariation> productVariationList=new ArrayList<>();
+//
+//            productVariationList.add(productVariationRepository.findById(1L).get());
+//            productVariationList.add(productVariationRepository.findById(2L).get());
+//
+//            cart.setCustomer(customerRepository.findByEmail("ajay.mca17.du@gmail.com"));
+//
+//            cart.setQuantity(2);
+//
+//            cart.setIsWishListItem(true);
+//
+//            cartRepository.save(cart);
+
 
 
 

@@ -151,6 +151,16 @@ public class CustomerController {
         return cartService.getCartDetailsByCustomer(principal);
     }
 
+//
+//
+//    //=================================================Add product to Cart by Customer =========================================================
+//    @ApiOperation(value = "Add product to Cart by Customer")
+//    @PostMapping("/cart")
+//    public ResponseEntity addProductInCartByCustomer(Principal principal,@Valid @RequestBody CartAddProductCo cartAddProductCo){
+//        return cartService.addProductInCartByCustomer(principal,cartAddProductCo);
+//    }
+
+
 
 }
 
