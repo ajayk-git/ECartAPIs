@@ -39,7 +39,7 @@ public class Order {
     //  @Column(name = "ORDER_ID")
      Long id;
     //    @Column(name = "AMOUNT_PAID")
-    @ApiModelProperty(notes = "Amount to be paid.")
+     @ApiModelProperty(notes = "Amount to be paid.")
      float amountPaid;
 
     @Temporal(value = TemporalType.DATE)

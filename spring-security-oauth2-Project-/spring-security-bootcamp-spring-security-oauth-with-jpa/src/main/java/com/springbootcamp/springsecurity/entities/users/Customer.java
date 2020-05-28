@@ -32,9 +32,6 @@ public class Customer extends User {
 
      String contact;
 
-
-
-
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Fetch(value= FetchMode.SUBSELECT)
      Set<Order> orderSet;

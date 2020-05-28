@@ -9,10 +9,7 @@ import com.springbootcamp.springsecurity.dtos.CustomerDto;
 import com.springbootcamp.springsecurity.dtos.ProductCustomerDto;
 import com.springbootcamp.springsecurity.entities.product.Category;
 import com.springbootcamp.springsecurity.entities.product.Product;
-import com.springbootcamp.springsecurity.services.CartService;
-import com.springbootcamp.springsecurity.services.CategoryService;
-import com.springbootcamp.springsecurity.services.CustomerService;
-import com.springbootcamp.springsecurity.services.ProductService;
+import com.springbootcamp.springsecurity.services.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +37,8 @@ public class CustomerController {
     ProductService productService;
     @Autowired
     CartService cartService;
+    @Autowired
+    OrderService orderService;
 
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -188,7 +187,13 @@ public class CustomerController {
         return cartService.removeProductFromWishList(principal,productVariationId);
     }
 
-
+    //=================================================Order Place  by Customer =========================================================
+    @Secured("ROLE_USER")
+    @ApiOperation(value = "Order place by Customer")
+    @GetMapping("/cart/order/address/{addressId}")
+    public ResponseEntity orderPlaceByCustomer(Principal principal,@PathVariable(name = "addressId")Long addressId,@RequestParam(value = "paymentMethod",required = true) String paymentMethod){
+        return orderService.orderPlaceByCustomer(principal,addressId,paymentMethod);
+    }
 
 
 

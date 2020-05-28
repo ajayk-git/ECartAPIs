@@ -17,13 +17,13 @@ public interface CartProductVariationRepository extends CrudRepository<CartProdu
     @Query(value = "select * from CartProductVariation where CartId=:cartId AND ProductVariationId=:productId",nativeQuery = true)
     CartProductVariation findByProductVariantAndCart(Long productId,Long cartId);
 
-//    @Query(value = " delete from CartProductVariation where id=:id",nativeQuery = true)
-//    void deleteByCartIdAndProductId(Long id);
-
     @Modifying
     @Query(value = " delete from CartProductVariation  where CartId=:cartId AND ProductVariationId=:productVariationId",nativeQuery = true)
     void deleteByCartIdAndProductVariationId(Long cartId, Long productVariationId);
 
     @Query(value = "select * from CartProductVariation where isWishListItem= true",nativeQuery = true)
     List<CartProductVariation> findByIsWishListItem();
+
+    @Query(value = "select * from CartProductVariation where CartId=:cartId AND isWishListItem= true",nativeQuery = true)
+    List<CartProductVariation> findByCartIdAndWislIstProducts(Long cartId);
 }

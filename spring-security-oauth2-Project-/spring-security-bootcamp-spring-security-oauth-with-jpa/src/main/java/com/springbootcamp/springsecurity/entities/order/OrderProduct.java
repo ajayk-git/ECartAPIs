@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.util.Map;
 
 @Entity
 @Getter
@@ -30,9 +31,10 @@ public class OrderProduct {
     @Column(name = "QUANTITY")
      int quantity;
 
+//    @ElementCollection(targetClass = String.class)
     @ApiModelProperty(notes = "MetaData of products .")
     @Column(name = "METADATA")
-     String metadata;
+    String metadata;
 
     @ApiModelProperty(notes = "Price of product.")
      float price;
@@ -49,16 +51,4 @@ public class OrderProduct {
     @OneToOne(mappedBy = "orderProduct")
      OrderStatus orderStatus;
 
-
-
-
-
-
-
-    //    ID.
-//            ORDER_ID.
-//    QUANTITY.
-//            PRICE.
-//    PRODUCT_VARIATION_ID
-//            PRODUCT_VARIATION_METADATA
 }
