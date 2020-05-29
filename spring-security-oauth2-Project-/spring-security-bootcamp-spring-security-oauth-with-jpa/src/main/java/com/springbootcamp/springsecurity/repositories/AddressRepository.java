@@ -1,6 +1,6 @@
 package com.springbootcamp.springsecurity.repositories;
 
-import com.springbootcamp.springsecurity.entities.Address;
+import com.springbootcamp.springsecurity.entities.users.Address;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

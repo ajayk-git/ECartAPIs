@@ -1,5 +1,6 @@
 package com.springbootcamp.springsecurity.entities;
 
+import com.springbootcamp.springsecurity.entities.users.Address;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 

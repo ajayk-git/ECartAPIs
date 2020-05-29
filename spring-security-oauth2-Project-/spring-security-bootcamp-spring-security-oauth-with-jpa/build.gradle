@@ -44,6 +44,13 @@ dependencies {
 	// https://mvnrepository.com/artifact/io.springfox/springfox-swagger-ui
 	compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
 
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-amqp
+	compile group: 'org.springframework.boot', name: 'spring-boot-starter-amqp', version: '2.3.0.RELEASE'
+
+	// https://mvnrepository.com/artifact/org.springframework/spring-jms
+	compile group: 'org.springframework', name: 'spring-jms', version: '5.2.6.RELEASE'
+
+
 	compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '2.2.7.RELEASE'
 
 	compileOnly 'org.projectlombok:lombok'

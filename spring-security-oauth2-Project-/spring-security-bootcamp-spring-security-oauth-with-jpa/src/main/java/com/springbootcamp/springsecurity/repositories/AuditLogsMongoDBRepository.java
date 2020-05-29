@@ -1,4 +1,4 @@
-package com.springbootcamp.springsecurity;
+package com.springbootcamp.springsecurity.repositories;
 
 import com.springbootcamp.springsecurity.entities.AuditLogsMongoDB;
 import org.springframework.data.mongodb.repository.MongoRepository;

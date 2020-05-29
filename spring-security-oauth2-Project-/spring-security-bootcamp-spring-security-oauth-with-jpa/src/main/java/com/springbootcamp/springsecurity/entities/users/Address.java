@@ -1,4 +1,4 @@
-package com.springbootcamp.springsecurity.entities;
+package com.springbootcamp.springsecurity.entities.users;
 
 import com.springbootcamp.springsecurity.entities.users.User;
 import lombok.AccessLevel;

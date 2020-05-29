@@ -1,9 +1,8 @@
 package com.springbootcamp.springsecurity.co;
 
 import com.springbootcamp.springsecurity.annotations.ConfirmPasswordMatcher;
-import com.springbootcamp.springsecurity.annotations.IsValidEmail;
 import com.springbootcamp.springsecurity.annotations.IsValidPassword;
-import com.springbootcamp.springsecurity.entities.Address;
+import com.springbootcamp.springsecurity.entities.users.Address;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AccessLevel;

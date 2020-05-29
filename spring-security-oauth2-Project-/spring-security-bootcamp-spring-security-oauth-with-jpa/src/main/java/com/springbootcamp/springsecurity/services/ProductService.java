@@ -1,7 +1,5 @@
 package com.springbootcamp.springsecurity.services;
 
-import com.springbootcamp.springsecurity.AuditHistoryService;
-import com.springbootcamp.springsecurity.AuditLogsMongoDBService;
 import com.springbootcamp.springsecurity.co.ProductCo;
 import com.springbootcamp.springsecurity.co.ProductUpdateBySellerCo;
 import com.springbootcamp.springsecurity.co.ProductVariationCo;
@@ -19,7 +17,6 @@ import com.springbootcamp.springsecurity.repositories.CategoryRepository;
 import com.springbootcamp.springsecurity.repositories.ProductRepository;
 import com.springbootcamp.springsecurity.repositories.ProductVariationRepository;
 import com.springbootcamp.springsecurity.repositories.SellerRepository;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -33,7 +30,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.security.Principal;
 import java.util.*;

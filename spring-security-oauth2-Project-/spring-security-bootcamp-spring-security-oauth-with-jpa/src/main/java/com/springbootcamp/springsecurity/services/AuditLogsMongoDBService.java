@@ -1,21 +1,11 @@
-package com.springbootcamp.springsecurity;
+package com.springbootcamp.springsecurity.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.Mongo;
 import com.springbootcamp.springsecurity.entities.AuditLogsMongoDB;
-import com.springbootcamp.springsecurity.entities.product.Product;
-import com.springbootcamp.springsecurity.entities.product.ProductReview;
+import com.springbootcamp.springsecurity.repositories.AuditLogsMongoDBRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Objects;
 
 @Service
 public class AuditLogsMongoDBService {

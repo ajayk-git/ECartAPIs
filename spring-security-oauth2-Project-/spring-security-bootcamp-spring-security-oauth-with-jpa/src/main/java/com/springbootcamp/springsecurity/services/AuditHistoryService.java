@@ -1,5 +1,7 @@
-package com.springbootcamp.springsecurity;
+package com.springbootcamp.springsecurity.services;
 
+import com.springbootcamp.springsecurity.AuditHistory;
+import com.springbootcamp.springsecurity.repositories.AuditHistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

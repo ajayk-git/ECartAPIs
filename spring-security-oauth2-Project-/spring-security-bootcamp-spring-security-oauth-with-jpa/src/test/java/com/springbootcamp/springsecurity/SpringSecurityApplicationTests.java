@@ -1,6 +1,6 @@
 //package com.springbootcamp.springsecurity;
 //
-//import com.springbootcamp.springsecurity.entities.Address;
+//import com.springbootcamp.springsecurity.entities.users.Address;
 //import com.springbootcamp.springsecurity.entities.product.Category;
 //import com.springbootcamp.springsecurity.entities.Role;
 //import com.springbootcamp.springsecurity.entities.users.Customer;

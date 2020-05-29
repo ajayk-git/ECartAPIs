@@ -1,12 +1,15 @@
 package com.springbootcamp.springsecurity;
 
+import com.springbootcamp.springsecurity.rabbitMqConfigurations.RabbitMqMessageReceiver;
 import com.springbootcamp.springsecurity.security.Bootstrap;
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -20,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @EnableAsync
 @EnableScheduling
+@EnableRabbit
 @SpringBootApplication(exclude = {RedisRepositoriesAutoConfiguration.class})
 @EnableJpaAuditing
 @EnableMongoRepositories
@@ -30,6 +34,14 @@ public class SpringSecurityApplication {
 
 	@Autowired
 	private TokenStore tokenStore;
+
+
+
+	@Bean
+	RabbitMqMessageReceiver rabbitMqMessageReceiver(){
+		return new RabbitMqMessageReceiver();
+	}
+
 
 	@GetMapping("/doLogout")
 	public String logout(HttpServletRequest request){

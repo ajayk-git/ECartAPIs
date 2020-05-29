@@ -1,7 +1,6 @@
 package com.springbootcamp.springsecurity.entities.users;
 //table per class is implemented
 
-import com.springbootcamp.springsecurity.entities.Address;
 import com.springbootcamp.springsecurity.entities.product.Product;
 import io.swagger.annotations.ApiModel;
 import lombok.AccessLevel;
@@ -10,12 +9,9 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.util.Date;
 import java.util.Set;
 @Getter
 @Setter

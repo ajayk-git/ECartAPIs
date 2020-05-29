@@ -1,6 +1,6 @@
 package com.springbootcamp.springsecurity.services;
 
-import com.springbootcamp.springsecurity.entities.Address;
+import com.springbootcamp.springsecurity.entities.users.Address;
 import com.springbootcamp.springsecurity.entities.Addresscopy;
 import com.springbootcamp.springsecurity.entities.Cart;
 import com.springbootcamp.springsecurity.entities.CartProductVariation;
@@ -9,7 +9,9 @@ import com.springbootcamp.springsecurity.entities.order.OrderProduct;
 import com.springbootcamp.springsecurity.entities.product.ProductVariation;
 import com.springbootcamp.springsecurity.entities.users.Customer;
 import com.springbootcamp.springsecurity.exceptions.ResourceNotFoundException;
+import com.springbootcamp.springsecurity.rabbitMqConfigurations.RabbitMqConfig;
 import com.springbootcamp.springsecurity.repositories.*;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +46,10 @@ public class OrderService {
     @Autowired
     CartProductVariationRepository cartProductVariationRepository;
 
+    @Autowired
+    RabbitTemplate rabbitTemplate;
+
+
     List<CartProductVariation> getWishListProducts() {
         return cartProductVariationRepository.findByIsWishListItem();
     }
@@ -73,35 +79,42 @@ public class OrderService {
 
         if (!cartProductVariationFromDataBaseList.isEmpty()) {
 
+
             Iterator<CartProductVariation> cartProductVariationIterator = cartProductVariationFromDataBaseList.iterator();
+
             while (cartProductVariationIterator.hasNext()) {
 
                 OrderProduct orderProduct = new OrderProduct();
                 CartProductVariation currentCartProduct = cartProductVariationIterator.next();
                 if ((!currentCartProduct.getProductVariation().getProduct().getIsActive()) || (!currentCartProduct.getProductVariation().getIsActive())) {
                     throw new ResourceNotFoundException("Product(Product Variation) is not active.");
-                } else {
-                    orderProduct.setProductVariation(currentCartProduct.getProductVariation());
                 }
                 if (currentCartProduct.getProductVariation().getQuantityAvailable() - currentCartProduct.getQuantity() < 0) {
                     throw new ResourceNotFoundException("Insufficient Stock for productId :" + currentCartProduct.getProductVariation().getId());
                 }
-                else {
-                    Integer stockLeft = currentCartProduct.getProductVariation().getQuantityAvailable() - currentCartProduct.getQuantity();
-                    orderProduct.setQuantity(currentCartProduct.getQuantity());
-                    ProductVariation productVariation = currentCartProduct.getProductVariation();
-                    productVariation.setQuantityAvailable(stockLeft);
-                    productVariationRepository.save(productVariation);
-                }
-            orderProduct.setMetadata(currentCartProduct.getProductVariation().getMetaData().toString());
+                orderProduct.setProductVariation(currentCartProduct.getProductVariation());
+                Integer stockLeft = currentCartProduct.getProductVariation().getQuantityAvailable() - currentCartProduct.getQuantity();
+                orderProduct.setQuantity(currentCartProduct.getQuantity());
+                ProductVariation productVariation = currentCartProduct.getProductVariation();
+                productVariation.setQuantityAvailable(stockLeft);
+                productVariationRepository.save(productVariation);
+
+                orderProduct.setMetadata(currentCartProduct.getProductVariation().getMetaData().toString());
                 orderProduct.setPrice(currentCartProduct.getProductVariation().getPrice());
                 totalAmountPaid = totalAmountPaid + (currentCartProduct.getProductVariation().getPrice() * currentCartProduct.getQuantity());
                 orderProduct.setOrder(savedOrder);
                 orderProductRepository.save(orderProduct);
             }
-            savedOrder.setAmountPaid(totalAmountPaid);
-            orderRepository.save(savedOrder);
+
+            if (totalAmountPaid > 0) {
+                savedOrder.setAmountPaid(totalAmountPaid);
+                orderRepository.save(savedOrder);
+                rabbitTemplate.convertAndSend(RabbitMqConfig.topicExchangeName,"routing_Key","OrderPlaced by customer");
+
+            }
+
             return new ResponseEntity("Order Placed successfully", null, HttpStatus.OK);
+
         }
 
         else

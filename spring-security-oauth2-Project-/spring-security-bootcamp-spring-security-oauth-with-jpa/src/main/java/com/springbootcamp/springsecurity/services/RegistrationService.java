@@ -4,17 +4,14 @@ import com.springbootcamp.springsecurity.*;
 import com.springbootcamp.springsecurity.co.CustomerCO;
 import com.springbootcamp.springsecurity.co.PasswordUpdateCO;
 import com.springbootcamp.springsecurity.co.SellerCO;
-import com.springbootcamp.springsecurity.entities.Address;
+import com.springbootcamp.springsecurity.entities.users.Address;
 import com.springbootcamp.springsecurity.entities.Role;
 import com.springbootcamp.springsecurity.entities.users.Customer;
 import com.springbootcamp.springsecurity.entities.users.Seller;
 import com.springbootcamp.springsecurity.entities.users.User;
 import com.springbootcamp.springsecurity.exceptions.AccountAreadyExistException;
 import com.springbootcamp.springsecurity.exceptions.ResourceNotFoundException;
-import com.springbootcamp.springsecurity.repositories.ConfirmationTokenRepository;
-import com.springbootcamp.springsecurity.repositories.CustomerRepository;
-import com.springbootcamp.springsecurity.repositories.SellerRepository;
-import com.springbootcamp.springsecurity.repositories.UserRepository;
+import com.springbootcamp.springsecurity.repositories.*;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,7 +25,6 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @Log4j2

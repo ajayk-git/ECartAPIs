@@ -1,13 +1,11 @@
 package com.springbootcamp.springsecurity.services;
 
-import com.springbootcamp.springsecurity.AuditHistoryRepository;
-import com.springbootcamp.springsecurity.AuditHistoryService;
-import com.springbootcamp.springsecurity.AuditLogsMongoDBService;
+import com.springbootcamp.springsecurity.repositories.AuditHistoryRepository;
 import com.springbootcamp.springsecurity.co.*;
 import com.springbootcamp.springsecurity.ConfirmationToken;
 import com.springbootcamp.springsecurity.dtos.AddressDto;
 import com.springbootcamp.springsecurity.dtos.SellerDto;
-import com.springbootcamp.springsecurity.entities.Address;
+import com.springbootcamp.springsecurity.entities.users.Address;
 import com.springbootcamp.springsecurity.entities.users.Seller;
 import com.springbootcamp.springsecurity.entities.users.User;
 import com.springbootcamp.springsecurity.exceptions.AccountDoesNotExistException;

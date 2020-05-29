@@ -28,6 +28,8 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
         super();
     }
 
+
+
     @Bean
     public static BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
