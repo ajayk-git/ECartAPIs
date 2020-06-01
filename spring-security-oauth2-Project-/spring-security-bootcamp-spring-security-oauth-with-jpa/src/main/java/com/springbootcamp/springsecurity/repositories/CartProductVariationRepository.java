@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
@@ -25,5 +26,12 @@ public interface CartProductVariationRepository extends CrudRepository<CartProdu
     List<CartProductVariation> findByIsWishListItem();
 
     @Query(value = "select * from CartProductVariation where CartId=:cartId AND isWishListItem= true",nativeQuery = true)
-    List<CartProductVariation> findByCartIdAndWislIstProducts(Long cartId);
+    List<CartProductVariation> findByCartIdAndWishListProducts(Long cartId);
+
+
+
+    @Transactional
+    @Modifying
+    @Query(value = " delete from CartProductVariation  where CartId=:cartId AND ProductVariationId=:productVariationId",nativeQuery = true)
+    void deleteByCartProductVariation(Long cartId, Long productVariationId);
 }

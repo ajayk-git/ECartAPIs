@@ -75,7 +75,7 @@ public class OrderService {
 
         List<OrderProduct> orderProductList = new ArrayList<>();
 
-        List<CartProductVariation> cartProductVariationFromDataBaseList = cartProductVariationRepository.findByCartIdAndWislIstProducts(customer.getCart().getId());
+        List<CartProductVariation> cartProductVariationFromDataBaseList = cartProductVariationRepository.findByCartIdAndWishListProducts(customer.getCart().getId());
 
         if (!cartProductVariationFromDataBaseList.isEmpty()) {
 
@@ -101,24 +101,25 @@ public class OrderService {
 
                 orderProduct.setMetadata(currentCartProduct.getProductVariation().getMetaData().toString());
                 orderProduct.setPrice(currentCartProduct.getProductVariation().getPrice());
-                totalAmountPaid = totalAmountPaid + (currentCartProduct.getProductVariation().getPrice() * currentCartProduct.getQuantity());
+                totalAmountPaid += (currentCartProduct.getProductVariation().getPrice() * currentCartProduct.getQuantity());
                 orderProduct.setOrder(savedOrder);
+                cartProductVariationRepository.deleteByCartProductVariation(cart.getId(),productVariation.getId());
                 orderProductRepository.save(orderProduct);
             }
 
-            if (totalAmountPaid > 0) {
+            if (totalAmountPaid > 0L) {
                 savedOrder.setAmountPaid(totalAmountPaid);
                 orderRepository.save(savedOrder);
-                rabbitTemplate.convertAndSend(RabbitMqConfig.topicExchangeName,"routing_Key","OrderPlaced by customer");
-
+                rabbitTemplate.convertAndSend(RabbitMqConfig.topicExchangeName, "routing_Key", savedOrder.getId());
+            }
+            if (totalAmountPaid<=0){
+                orderRepository.deleteById(savedOrder.getId());
             }
 
             return new ResponseEntity("Order Placed successfully", null, HttpStatus.OK);
 
         }
-
         else
             throw new ResourceNotFoundException("No product is in wishList please add to place order");
-
     }
 }

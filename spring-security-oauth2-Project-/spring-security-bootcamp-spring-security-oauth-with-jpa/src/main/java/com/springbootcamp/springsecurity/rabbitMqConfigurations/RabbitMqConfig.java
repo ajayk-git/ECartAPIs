@@ -13,7 +13,7 @@ public class RabbitMqConfig {
 
     public static final String topicExchangeName = "spring-boot-exchange";
 
-    public static final String queueName = "messageQueue";
+    public static final String queueName = "orderQueue";
 
     @Bean
     Queue queue() {
@@ -24,8 +24,6 @@ public class RabbitMqConfig {
     TopicExchange exchange() {
         return new TopicExchange(topicExchangeName);
     }
-
-
 
     @Bean
     Declarables binding(TopicExchange exchange, Queue queue) {
@@ -53,7 +51,7 @@ public class RabbitMqConfig {
 
     @Bean
     MessageListenerAdapter listenerAdapter(RabbitMqMessageReceiver rabbitMqMessageReceiver) {
-        return new MessageListenerAdapter(rabbitMqMessageReceiver, "receiveMessageFromMessageQueue");
+        return new MessageListenerAdapter(rabbitMqMessageReceiver, "receiveMessageFromOrderQueue");
     }
 
 }

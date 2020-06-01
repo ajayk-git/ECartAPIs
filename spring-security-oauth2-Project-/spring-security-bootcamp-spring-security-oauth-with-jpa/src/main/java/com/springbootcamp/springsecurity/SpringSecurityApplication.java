@@ -35,13 +35,10 @@ public class SpringSecurityApplication {
 	@Autowired
 	private TokenStore tokenStore;
 
-
-
 	@Bean
 	RabbitMqMessageReceiver rabbitMqMessageReceiver(){
 		return new RabbitMqMessageReceiver();
 	}
-
 
 	@GetMapping("/doLogout")
 	public String logout(HttpServletRequest request){
@@ -53,7 +50,6 @@ public class SpringSecurityApplication {
 		}
 		return "Logged out successfully";
 	}
-
 
 	public static void main(String[] args) {
 		ApplicationContext applicationContext = SpringApplication.run(SpringSecurityApplication.class, args);
