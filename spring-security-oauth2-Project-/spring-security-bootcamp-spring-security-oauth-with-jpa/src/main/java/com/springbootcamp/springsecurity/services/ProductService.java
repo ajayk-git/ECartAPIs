@@ -145,7 +145,6 @@ public class ProductService {
 
     //===========================================to activate product ===========================================================
 
-    @Secured("ROLE_ADMIN")
     public ResponseEntity activateProduct(Long productId,Principal principal) {
 
         log.info("inside activateProduct method");
@@ -171,8 +170,6 @@ public class ProductService {
 
     //===========================================to deactivate product ===========================================================
 
-
-    @Secured("ROLE_ADMIN")
     public ResponseEntity deactivateProduct(Long productId,Principal principal) {
 
         log.info("inside deactivateProduct method");
@@ -614,11 +611,9 @@ public class ProductService {
 
     //=================================================View a Product By Admin Account==================================
 
-    @Secured("ROLE_ADMIN")
     public ProductAdminDto viewProductByAdmin(Long productId, Principal principal) {
 
         log.info("inside viewProductByAdmin method");
-
 
         if (!productRepository.findById(productId).isPresent())
             throw  new ResourceNotFoundException("Product does not exist with mentioned productId.");
@@ -627,7 +622,6 @@ public class ProductService {
         ProductAdminDto productAdminDto=modelMapper.map(product,ProductAdminDto.class);
 
         auditService.readObject("Product",product.getId(),principal.getName());
-
         return productAdminDto;
 
     }
@@ -635,7 +629,6 @@ public class ProductService {
 
     //=================================================View a all products By Admin Account==================================
 
-    @Secured("ROLE_ADMIN")
     @Cacheable(cacheNames = "getAllProductsByAdmin")
     public  List<ProductAdminDto> getAllProductsByAdmin(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection, Principal principal) {
 
@@ -656,7 +649,6 @@ public class ProductService {
         List<ProductAdminDto>  productAdminDtoList = modelMapper.map(products,listType);
 
         auditService.readAllObjects("Product",principal.getName());
-
 
         return productAdminDtoList;
      //   return new ResponseEntity(productAdminDtoList, null, HttpStatus.OK);

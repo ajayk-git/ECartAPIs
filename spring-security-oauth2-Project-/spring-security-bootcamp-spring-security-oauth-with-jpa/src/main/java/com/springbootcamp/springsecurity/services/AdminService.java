@@ -1,5 +1,6 @@
 
 package com.springbootcamp.springsecurity.services;
+
 import com.springbootcamp.springsecurity.dtos.CustomerDto;
 import com.springbootcamp.springsecurity.dtos.SellerDto;
 import com.springbootcamp.springsecurity.entities.product.Product;
@@ -18,6 +19,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import lombok.extern.log4j.Log4j2;
+
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,20 +63,20 @@ public class AdminService {
     //Scheduled task will be executed  at 11:00 PM everyday when  application server is up.
     @Scheduled(cron = "0 0 23 * * ?")
     public void scheduleTaskSendEmailAdmin() {
-     //   List<User> usersToActivate = userRepository.findByIsNotActive();
+        //   List<User> usersToActivate = userRepository.findByIsNotActive();
         List<Product> productListToActivate = productRepository.findIsNotActiveProduct();
-        List productIdList=new ArrayList() ;
+        List productIdList = new ArrayList();
         productListToActivate.forEach(product -> productIdList.add(product.getId()));
 
         emailService.sendScheduleMailToActivateProduct(productIdList);
 
     }
 
-    @Secured("ROLE_ADMIN")
+    //===============================================To activate a user ======================================================================
+
     public ResponseEntity<String> deactivateAccountById(Long id, Principal principal) {
 
         log.info("inside deactivateAccountById method");
-
 
         if (!userRepository.findById(id).isPresent()) {
             log.warn("AccountDoesNotExistException may occur");
@@ -102,8 +104,8 @@ public class AdminService {
 
     }
 
+    //===============================================To deactivate a user ======================================================================
 
-    @Secured("ROLE_ADMIN")
     public ResponseEntity<String> activateAccountById(Long id, Principal principal) {
 
         log.info("inside activateAccountById method");
@@ -141,7 +143,6 @@ public class AdminService {
 
     //=================================to get a customer by id from repository===========================
 
-    @Secured("ROLE_ADMIN")
     public CustomerDto getCustomerById(long id, Principal principal) throws AccountDoesNotExistException {
 
         log.info("inside getCustomerById method");
@@ -149,19 +150,16 @@ public class AdminService {
         CustomerDto customerDTO = new CustomerDto();
         Customer customer;
 
-
         if (!customerRepository.findById(id).isPresent()) {
             log.warn("AccountDoesNotExistException may occur");
             throw new AccountDoesNotExistException("Customer does not exist having Customer Id : " + id);
         }
         customer = customerRepository.findById(id).get();
-
         customerDTO.setId(customer.getId());
         customerDTO.setContact(customer.getContact());
         customerDTO.setFirstName(customer.getFirstName());
         customerDTO.setEmail(customer.getEmail());
         customerDTO.setLastName(customer.getLastName());
-
 
         auditService.readObject("User", customer.getId(), principal.getName());
 
@@ -171,7 +169,6 @@ public class AdminService {
 
     //==============================to get all customers from repository==============================
 
-    @Secured("ROLE_ADMIN")
     public List<CustomerDto> getAllCustomers(Principal principal) {
         log.info("inside getAllCustomers method");
         List<CustomerDto> customerDtoList = new ArrayList<>();
@@ -188,16 +185,18 @@ public class AdminService {
 
 //====================================get details of   a given seller===========================================
 
-    @Secured("ROLE_ADMIN")
-    public SellerDto getSellerByid(long id, Principal principal) {
+    public SellerDto getSellerByid(long sellerId, Principal principal) {
 
         log.info("inside getSellerByid method");
         SellerDto sellerDto = new SellerDto();
-        Seller seller = sellerRepository.findById(id).get();
-        if (seller == null) {
-            log.warn("ResourceNotFoundException may occur.");
+
+        log.warn("ResourceNotFoundException may occur.");
+        if (!sellerRepository.findById(sellerId).isPresent()) {
             throw new ResourceNotFoundException("Seller with mentioned SellerId is not exist.");
         }
+
+        Seller seller = sellerRepository.findById(sellerId).get();
+
         sellerDto.setId(seller.getId());
         sellerDto.setFirstName(seller.getFirstName());
         sellerDto.setLastName(seller.getLastName());
@@ -213,13 +212,13 @@ public class AdminService {
         sellerDto.setZipcode(seller.getAddress().getZipcode());
         auditService.readObject("Seller", seller.getId(), principal.getName());
         return sellerDto;
+
+
     }
 
 
 //==============================get all seller details================================
 
-
-    @Secured("ROLE_ADMIN")
     public List<SellerDto> getAllSellers(Principal principal) {
 
         log.info("inside getAllSellers method");

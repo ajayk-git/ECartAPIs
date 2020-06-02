@@ -53,8 +53,8 @@ public class CategoryService {
         return stringSet;
     }
 
+    //===============================================To add a new metadata field ======================================================================
 
-    @Secured("ROLE_ADMIN")
     public ResponseEntity<String> addMetaDataField(String fieldName, Principal principal) {
 
         log.info("inside addMetaDataField method");
@@ -67,7 +67,7 @@ public class CategoryService {
         CategoryMetaDataField metaDataField = new CategoryMetaDataField(fieldName);
         categoryMetaDataFieldRepository.save(metaDataField);
 
-       // auditService.saveNewObject("CategoryMetaDataField", metaDataField.getId(), principal.getName());
+        // auditService.saveNewObject("CategoryMetaDataField", metaDataField.getId(), principal.getName());
 
         log.info("CategoryMetaDataField Added successfully");
         return new ResponseEntity<String>("MetaData field " + fieldName + " is added.", HttpStatus.CREATED);
@@ -76,8 +76,6 @@ public class CategoryService {
 
     //===============================================To get a metadata field list======================================================================
 
-
-    @Secured("ROLE_ADMIN")
     public List<CategoryMetaDataFieldDTO> getAllMetaDataFieldList(Principal principal) {
 
         log.info("inside getAllMetaDataFieldList method");
@@ -98,8 +96,6 @@ public class CategoryService {
 
     //===============================================To Add a new category======================================================================
 
-
-    @Secured("ROLE_ADMIN")
     public ResponseEntity addNewCategory(CategoryCO categoryCO, Principal principal) {
 
         log.info("inside addNewCategory method");
@@ -113,7 +109,7 @@ public class CategoryService {
                 category.setId(categoryCO.getParentId());
                 categoryRepository.save(category);
 
-              //  auditService.saveNewObject("Category", category.getId(), principal.getName(),category);
+                //  auditService.saveNewObject("Category", category.getId(), principal.getName(),category);
 
                 return new ResponseEntity("New category " + categoryCO.getCategoryName() + " is Added as a Root category because it has null Id. ", HttpStatus.CREATED);
             } else {
@@ -141,7 +137,7 @@ public class CategoryService {
         parentCategory.addCategory(subCategory);
         categoryRepository.save(subCategory);
 
-       // auditService.saveNewObject("Category", subCategory.getId(), principal.getName());
+        // auditService.saveNewObject("Category", subCategory.getId(), principal.getName());
         log.info("Category Added successfully");
 
         return new ResponseEntity("New category " + categoryName + " is added having Parent id is : " + categoryCO.getParentId() + ".", HttpStatus.CREATED);
@@ -150,8 +146,6 @@ public class CategoryService {
     }
     //===============================================To get all categories======================================================================
 
-
-    @Secured("ROLE_ADMIN")
     @Cacheable(cacheNames = "GetCategoryListByAdmin")
     public List<CategoryDTO> getAllCategories(Principal principal) {
 
@@ -193,11 +187,9 @@ public class CategoryService {
 
     //===============================================To get a category======================================================================
 
-
     public List<CategoryDTO> getCategory(Long id, Principal principal) {
 
         log.info("inside getCategory method");
-
 
         if (!categoryRepository.findById(id).isPresent()) {
             log.warn("ResourceNotFoundException Occurred");
@@ -247,6 +239,8 @@ public class CategoryService {
 
     }
 
+    //===============================================To add a metadata field value ======================================================================
+
     public ResponseEntity addMetaDataValues(MetaDataFieldValueCo metaDataFieldValueCo, Principal principal) {
 
         log.info("inside addMetaDataValues method");
@@ -276,7 +270,7 @@ public class CategoryService {
 
             metaDataFieldValuesRepository.save(metadataFieldValues);
 
-        //    auditService.saveNewObject("CategoryMetaDataFieldValues", metaDataField.getId(), principal.getName());
+            //    auditService.saveNewObject("CategoryMetaDataFieldValues", metaDataField.getId(), principal.getName());
 
             log.info("CategoryMetaDataFieldValues added successfully");
             return new ResponseEntity("MetaData Field Values are successfully added.", HttpStatus.CREATED);
@@ -286,7 +280,6 @@ public class CategoryService {
 
     //===========================================Update MetaDataFiledValues======================================================
 
-    @Secured("ROLE_ADMIN")
     public ResponseEntity updateMetaDataValues(MetaDataFieldValueCo metaDataFieldValueCo, Principal principal) {
 
         log.info("inside updateMetaDataValues method");
@@ -328,10 +321,8 @@ public class CategoryService {
 
 //===================================to get all categories by seller=======================================================
 
-    @Secured("ROLE_SELLER")
     @Cacheable(cacheNames = "CategoryViewBySeller")
     public List<CategorySellerDto> viewAllCategoriesBySeller(Principal principal) {
-
 
         log.info("inside viewAllCategoriesBySeller method");
 
@@ -367,7 +358,6 @@ public class CategoryService {
 
 
     //===================================to get all categories by Customer=======================================================
-
 
     @Cacheable(cacheNames = "CategoryViewByCustomer")
     public List<CategoryDTO> getCategoriesByCustomer(Long categoryId, Principal principal) {
