@@ -241,7 +241,7 @@ public class Bootstrap {
 
             Product product = new Product();
             product.setName("One Plus 7");
-            product.setSeller( sellerRepository.findByEmail("vijaysharma@gmail.com"));
+            product.setSeller( sellerRepository.findByEmail("aasharma246@gmail.com"));
             product.setDescription("India's smartest mobile phone....");
             product.setCategory(categoryRepository.findByName("Mobile Phones").get());
             product.setIsReturnable(false);
@@ -253,7 +253,7 @@ public class Bootstrap {
 
             Product product1 = new Product();
             product1.setName("Dri-Fit TShirts");
-            product1.setSeller( sellerRepository.findByEmail("vijaysharma@gmail.com"));
+            product1.setSeller( sellerRepository.findByEmail("aasharma246@gmail.com"));
             product1.setDescription("First choice of every Sportsman.");
             product1.setCategory(categoryRepository.findByName("T-Shirt").get());
             product1.setIsCancelable(false);
