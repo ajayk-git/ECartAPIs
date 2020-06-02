@@ -369,7 +369,6 @@ public class CategoryService {
     //===================================to get all categories by Customer=======================================================
 
 
-    @Secured("ROLE_USER")
     @Cacheable(cacheNames = "CategoryViewByCustomer")
     public List<CategoryDTO> getCategoriesByCustomer(Long categoryId, Principal principal) {
 

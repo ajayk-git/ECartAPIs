@@ -58,7 +58,6 @@ public class CustomerService {
 
     //=============================update a customer details ================================
 
-    @Secured("ROLE_USER")
     public ResponseEntity<String> updateCustomerProfile(String email, CustomerProfileUpdateCo customerProfileUpdateCo, Principal principal) {
 
         log.info("inside updateCustomerProfile method");
@@ -82,7 +81,6 @@ public class CustomerService {
 
     }
 
-    @Secured("ROLE_USER")
     public ResponseEntity<String> updateCustomerPassword(PasswordUpdateCO passwordUpdateCO, String email,Principal principal) {
 
         log.info("inside updateCustomerPassword method");
@@ -100,7 +98,6 @@ public class CustomerService {
     }
 
 
-    @Secured("ROLE_USER")
     public CustomerDto viewCustomerProfile(String email,Principal principal) {
 
         log.info("inside viewCustomerProfile method");
@@ -116,7 +113,6 @@ public class CustomerService {
 
 //===========================================Get addressList  by customer===============================
 
-    @Secured("ROLE_USER")
     public List<AddressDto> getAddressListCustomer(String email,Principal principal) {
 
         log.info("inside getAddressListCustomer method");
@@ -140,7 +136,6 @@ public class CustomerService {
 
     //============================================Delete Address by Customer========================================================
 
-    @Secured("ROLE_USER")
     public ResponseEntity<String> deleteAddressById(Long id,String email,Principal principal){
 
         log.info("inside deleteAddressById method");
@@ -170,7 +165,6 @@ public class CustomerService {
 
     //============================================Add new Address by Customer========================================================
 
-    @Secured("ROLE_USER")
     public ResponseEntity<String> addCustomerAddress(AddressCO addressCO, String email,Principal principal) {
 
         log.info("inside addCustomerAddress method");
@@ -203,7 +197,6 @@ public class CustomerService {
 
     //============================================Update Address by Customer========================================================
 
-    @Secured("ROLE_USER")
     public ResponseEntity<String> updateCustomerAddress(AddressCO addressCO,Long id,String email,Principal principal) {
 
         log.info("inside updateCustomerAddress method");

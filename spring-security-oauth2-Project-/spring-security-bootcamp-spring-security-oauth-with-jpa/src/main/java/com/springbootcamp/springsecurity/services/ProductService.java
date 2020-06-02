@@ -556,7 +556,6 @@ public class ProductService {
 
     //=================================================Get a product By Customer =========================================================
 
-    @Secured("ROLE_USER")
     public ProductCustomerDto getProductByCustomer(Long productId,Principal principal) {
 
         log.info("inside getProductByCustomer method");
@@ -583,7 +582,6 @@ public class ProductService {
 
 
     //=================================================Get a product By Customer =========================================================
-    @Secured("ROLE_USER")
     @Cacheable(cacheNames =  "getAllProductsByCustomer")
     public List<ProductCustomerDto> getAllProductsByCustomer(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection,Long categoryId, Principal principal) {
 
@@ -667,7 +665,6 @@ public class ProductService {
 
     //=================================================Get similar products By Customer =========================================================
 
-    @Secured("ROLE_USER")
     public ResponseEntity getSimilarProductsByCustomer(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection, Long productId, Principal principal) {
 
         log.info("inside getSimilarProductsByCustomer method");

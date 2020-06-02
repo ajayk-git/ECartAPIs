@@ -11,6 +11,8 @@ import com.springbootcamp.springsecurity.entities.product.Category;
 import com.springbootcamp.springsecurity.entities.product.Product;
 import com.springbootcamp.springsecurity.services.*;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +47,10 @@ public class CustomerController {
 
     //=============================Update Customer's password=====================================================
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @Secured("ROLE_USER")
     @ApiOperation(value = "Update Password by Customer.")
     @PatchMapping("/update-password")
     public ResponseEntity<String> updateCustomerPassword(@Valid @RequestBody PasswordUpdateCO passwordUpdateCO,Principal principal){
@@ -54,6 +60,10 @@ public class CustomerController {
 
     //===========================View Profile  of Customer Account==================================================
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @Secured("ROLE_USER")
     @ApiOperation(value = "Get profile by Customer.")
     @GetMapping("/profile")
     public CustomerDto viewCustomerProfile(Principal principal){
@@ -62,6 +72,10 @@ public class CustomerController {
 
     //============================Update Profile  of Customer Account===============================================
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @Secured("ROLE_USER")
     @ApiOperation(value = "Update profile by Customer.")
     @PatchMapping("/profile")
     public ResponseEntity<String> updateCustomerProfile(Principal principal, @Valid @RequestBody CustomerProfileUpdateCo customerProfileUpdateCo){
@@ -71,6 +85,10 @@ public class CustomerController {
 
     //============================Get Address list of Customer=======================================================
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @Secured("ROLE_USER")
     @ApiOperation(value = "Get address list by Customer.")
     @GetMapping("/address")                   // id=customer id
     public List<AddressDto> getAllAddressCustomer(Principal principal ){
@@ -80,42 +98,62 @@ public class CustomerController {
 
     //=========================Delete a address of Customer=============================================================
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @Secured("ROLE_USER")
     @ApiOperation(value = "Delete address by Customer.")
-    @DeleteMapping("/address/{id}")               //id=address id
-    public ResponseEntity<String> deleteAddressById(@PathVariable(name = "id") Long id, Principal principal) {
-        return customerService.deleteAddressById(id,principal.getName(),principal);
+    @DeleteMapping("/address/{addressId}")               //id=address id
+    public ResponseEntity<String> deleteAddressById(@PathVariable(name = "addressId") Long addressId, Principal principal) {
+        return customerService.deleteAddressById(addressId,principal.getName(),principal);
     }
 
 
     //========================Add a new Address in address list of Customer============================================
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @Secured("ROLE_USER")
     @ApiOperation(value = "Add new address by Customer.")
     @PostMapping("/address")
-    public ResponseEntity<String> addCustomerNewAddress(@RequestBody AddressCO addressCO, Principal principal){
+    public ResponseEntity<String> addCustomerNewAddress(@Valid @RequestBody AddressCO addressCO, Principal principal){
         return customerService.addCustomerAddress(addressCO,principal.getName(),principal);
     }
 
 
     //============================Update a customers address==========================================================
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @Secured("ROLE_USER")
     @ApiOperation(value = "Update a address by Customer.")
-    @PatchMapping("/address/{id}")
-    public ResponseEntity<String> updateCustomerAddress(@PathVariable("id") Long id,
+    @PatchMapping("/address/{addressId}")
+    public ResponseEntity<String> updateCustomerAddress(@PathVariable("id") Long addressId,
                                                         @Valid @RequestBody AddressCO addressCO,Principal principal){
-        return customerService.updateCustomerAddress(addressCO,id,principal.getName(),principal);
+        return customerService.updateCustomerAddress(addressCO,addressId,principal.getName(),principal);
     }
 
     //=================================================Get category List By Customer =========================================================
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @Secured("ROLE_USER")
     @ApiOperation(value = "Get category list by Customer.")
     @GetMapping("/categories")
-    public List<CategoryDTO> getCategoriesByCustomer(@RequestParam(value = "id",required = false) Long categoryId,
+    public List<CategoryDTO> getCategoriesByCustomer(@RequestParam(value = "categoryId",required = false) Long categoryId,
                                                      Principal principal){
         return categoryService.getCategoriesByCustomer(categoryId,principal);
     }
 
     //=================================================Get a product By Customer =========================================================
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @Secured("ROLE_USER")
     @ApiOperation(value = "Get a product by Customer.")
     @GetMapping("product/{productId}")
     public ProductCustomerDto getProductByCustomer(@PathVariable(name = "productId") Long productId,Principal principal){
@@ -123,6 +161,11 @@ public class CustomerController {
     }
 
     //=================================================Get all products By Customer =========================================================
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @Secured("ROLE_USER")
     @ApiOperation(value = "Get all products by Customer.")
     @GetMapping("/product/category/{categoryId}")
     public List<ProductCustomerDto> getAllProductsByCustomer(@RequestParam(value = "page",defaultValue = GlobalVariables.DEFAULT_PAGE_OFFSET)Optional<Integer> page,
@@ -134,6 +177,10 @@ public class CustomerController {
     }
 
     //=================================================Get similar products By Customer =========================================================
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @Secured("ROLE_USER")
     @ApiOperation(value = "Get all products by Customer.")
     @GetMapping("/product-similar/{productId}")
@@ -146,6 +193,10 @@ public class CustomerController {
     }
 
     //=================================================Get Cart details Customer =========================================================
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @Secured("ROLE_USER")
     @ApiOperation(value = "Get Cart details by Customer")
     @GetMapping("/cart")
@@ -156,6 +207,10 @@ public class CustomerController {
 
 
     //=================================================Add product in Cart by Customer =========================================================
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @Secured("ROLE_USER")
     @ApiOperation(value = "Add product to Cart by Customer")
     @PostMapping("/cart")
@@ -164,6 +219,10 @@ public class CustomerController {
     }
 
     //=================================================Remove a product from Cart by Customer =========================================================
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @Secured("ROLE_USER")
     @ApiOperation(value = "Remove product from Cart by Customer")
     @DeleteMapping("/cart/{productVariationId}")
@@ -172,6 +231,10 @@ public class CustomerController {
     }
 
     //=================================================Add product in wishList by Customer =========================================================
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @Secured("ROLE_USER")
     @ApiOperation(value = "Add product in wishList by Customer")
     @PatchMapping("/cart/addWishList/{productVariationId}")
@@ -180,6 +243,10 @@ public class CustomerController {
     }
 
     //=================================================Remove product from wishList by Customer =========================================================
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @Secured("ROLE_USER")
     @ApiOperation(value = "Remove product from wishList by Customer")
     @PatchMapping("/cart/removeWishList/{productVariationId}")
@@ -188,6 +255,10 @@ public class CustomerController {
     }
 
     //=================================================Order Place  by Customer =========================================================
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @Secured("ROLE_USER")
     @ApiOperation(value = "Order place by Customer")
     @GetMapping("/cart/order/address/{addressId}")
