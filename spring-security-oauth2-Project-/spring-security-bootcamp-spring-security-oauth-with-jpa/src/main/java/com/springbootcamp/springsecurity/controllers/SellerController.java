@@ -7,12 +7,10 @@ import com.springbootcamp.springsecurity.repositories.SellerRepository;
 import com.springbootcamp.springsecurity.services.CategoryService;
 import com.springbootcamp.springsecurity.services.ProductService;
 import com.springbootcamp.springsecurity.services.SellerService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -36,6 +34,11 @@ public class SellerController {
 
 
 
+
+    @ApiImplicitParams(
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @Secured("ROLE_SELLER")
     @ApiOperation(value = "To view a seller's profile .")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success|OK"),
@@ -48,6 +51,10 @@ public class SellerController {
 
     //==============================================get seller Address==================================================================
 
+    @ApiImplicitParams(
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @Secured("ROLE_SELLER")
     @ApiOperation(value = "To view seller's  address,")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success|OK"),
@@ -61,6 +68,10 @@ public class SellerController {
 
     //==================================update seller password===========================================================
 
+    @ApiImplicitParams(
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @Secured("ROLE_SELLER")
     @ApiOperation(value = "To update seller's password")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success|OK"),
@@ -74,6 +85,10 @@ public class SellerController {
 
     //=================================================Update Profile  of seller Account==================================
 
+    @ApiImplicitParams(
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @Secured("ROLE_SELLER")
     @ApiOperation(value = "To update seller's  profile")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success|OK"),
@@ -87,6 +102,10 @@ public class SellerController {
 
     //=================================================Update Address  of seller Account==================================
 
+    @ApiImplicitParams(
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @Secured("ROLE_SELLER")
     @ApiOperation(value = "To update seller's  Address")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success|OK"),
@@ -100,8 +119,11 @@ public class SellerController {
     }
 
     //=================================================Add a new Product By seller Account==================================
-
-    @ApiOperation(value = "To Add new product byu seller")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @Secured("ROLE_SELLER")
+    @ApiOperation(value = "To Add new product by seller")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success|OK"),
             @ApiResponse(code = 400, message = "Bad Request"),
@@ -113,7 +135,10 @@ public class SellerController {
     }
 
     //=================================================View Category(ies) by seller==================================
-
+    @ApiImplicitParams(
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @Secured("ROLE_SELLER")
     @ApiOperation(value = "View Category(ies) by seller")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success|OK"),
@@ -126,7 +151,10 @@ public class SellerController {
     }
 
     //=================================================View  Product-Variant By seller Account==================================
-
+    @ApiImplicitParams(
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @Secured("ROLE_SELLER")
     @ApiOperation(value = "View Product Variant by seller")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success|OK"),
@@ -139,7 +167,10 @@ public class SellerController {
     }
 
     //=================================================View all product Variants of a product By seller Account==================================
-
+    @ApiImplicitParams(
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @Secured("ROLE_SELLER")
     @ApiOperation(value = "View all product Variants of a product By seller.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success|OK"),
@@ -158,7 +189,10 @@ public class SellerController {
 
 
     //=================================================Add a new  Product-Variant By seller Account==================================
-
+    @ApiImplicitParams(
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @Secured("ROLE_SELLER")
     @ApiOperation(value = "To add a new  Product-Variant By seller")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success|OK"),
@@ -174,7 +208,10 @@ public class SellerController {
 
 
     //=====================================================Update a Product Variant  By seller ===============================================
-
+    @ApiImplicitParams(
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @Secured("ROLE_SELLER")
     @ApiOperation(value = "To update a Product Variant  By seller")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success|OK"),
@@ -189,9 +226,11 @@ public class SellerController {
     }
 
 
-
     //=================================================View a Product By seller Account==================================
-
+    @ApiImplicitParams(
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @Secured("ROLE_SELLER")
     @ApiOperation(value = "To View a Product By seller.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success|OK"),
@@ -204,7 +243,10 @@ public class SellerController {
     }
 
     //=================================================View all products By seller Account==================================
-
+    @ApiImplicitParams(
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @Secured("ROLE_SELLER")
     @ApiOperation(value = "To View all products By seller Account")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success|OK"),
@@ -221,7 +263,10 @@ public class SellerController {
     }
 
     //=================================================Update a product By seller =========================================================
-
+    @ApiImplicitParams(
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @Secured("ROLE_SELLER")
     @ApiOperation(value = "To Update a product By seller")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success|OK"),
@@ -235,7 +280,10 @@ public class SellerController {
     }
 
     //=================================================Delete a Product By seller Account=====================================================
-
+    @ApiImplicitParams(
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @Secured("ROLE_SELLER")
     @ApiOperation(value = "To Delete a Product By seller Account")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success|OK"),
