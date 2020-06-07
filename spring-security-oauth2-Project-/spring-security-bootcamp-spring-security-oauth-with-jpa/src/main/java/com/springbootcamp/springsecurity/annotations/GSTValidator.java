@@ -14,7 +14,6 @@ public class GSTValidator implements ConstraintValidator<IsValidGST,String> {
     @Override
     public void initialize(IsValidGST constraintAnnotation) {
 
-//        System.out.println("GST Number is invalid,Please enter a valid GST Number.");
     }
 
     @Override

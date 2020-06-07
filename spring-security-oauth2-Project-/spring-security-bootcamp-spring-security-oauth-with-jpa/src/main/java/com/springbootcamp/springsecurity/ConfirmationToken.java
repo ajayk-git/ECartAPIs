@@ -27,7 +27,7 @@ public class ConfirmationToken {
     private Date date;
 
 
-    private String confirmationToken;
+    private String token;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
@@ -40,7 +40,7 @@ public class ConfirmationToken {
     public ConfirmationToken(User user){
         this.user=user;
         createdDate=new Date();
-        confirmationToken= UUID.randomUUID().toString();
+        token= UUID.randomUUID().toString();
     }
 
 

@@ -16,10 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Component
 public class Bootstrap {
@@ -220,7 +217,10 @@ public class Bootstrap {
             CategoryMetadataFieldValues categoryMetadataFieldValues1 = new CategoryMetadataFieldValues();
 
 
+            if ( !categoryRepository.findById(2L).isPresent()) throw new NoSuchElementException("category not found.");
+
             Category category = categoryRepository.findById(2L).get();
+
             CategoryMetaDataField metaDataField = categoryMetaDataFieldRepository.findById(1L).get();
 
             categoryMetadataFieldValues.setCategory(category);

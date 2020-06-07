@@ -14,8 +14,6 @@ public class EmailValidator implements ConstraintValidator<IsValidEmail,String> 
                                                 //email pattern: ajay.mca17.du@ducs.co.in
     @Override
     public void initialize(IsValidEmail constraintAnnotation) {
-
-     //   System.out.println("Invalid Email-id ,Please enter valid Email-id");
     }
 
     @Override

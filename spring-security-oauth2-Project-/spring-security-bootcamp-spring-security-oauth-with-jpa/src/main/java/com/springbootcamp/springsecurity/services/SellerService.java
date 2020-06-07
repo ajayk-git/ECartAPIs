@@ -129,7 +129,7 @@ public class SellerService {
             simpleMailMessage.setTo(userFromDatabase.getEmail().toString());
             simpleMailMessage.setSubject("Reset Your Account Password");
             simpleMailMessage.setText("To complete the password reset process, please click here: "
-                    + "localhost:8080/seller/confirmReset?token=" + confirmationToken.getConfirmationToken());
+                    + "localhost:8080/seller/confirmReset?token=" + confirmationToken.getToken());
             javaMailSender.send(simpleMailMessage);
             log.info("Seller forgot password mail sent.");
 

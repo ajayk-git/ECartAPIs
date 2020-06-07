@@ -73,7 +73,7 @@ public class RegistrationService {
         customerRepository.save(customer);
         ConfirmationToken confirmationToken = new ConfirmationToken(customer);
         confirmationTokenRepository.save(confirmationToken);
-        emailService.sendEmailToCustomer(customer.getEmail(), confirmationToken.getConfirmationToken());
+        emailService.sendEmailToCustomer(customer.getEmail(), confirmationToken.getToken());
         auditService.registerUser("User", customer.getId(), customer.getEmail(),customer);
 
         log.info("User registered successfully");
@@ -112,7 +112,7 @@ public class RegistrationService {
 
         ConfirmationToken confirmationToken = new ConfirmationToken(seller);
         confirmationTokenRepository.save(confirmationToken);
-        emailService.sendEmailToSeller(seller.getEmail(), confirmationToken.getConfirmationToken());
+        emailService.sendEmailToSeller(seller.getEmail(), confirmationToken.getToken());
 
 
         auditService.registerUser("User", seller.getId(), seller.getEmail(),seller);
@@ -176,7 +176,7 @@ public class RegistrationService {
             simpleMailMessage.setTo(userFromDatabase.getEmail().toString());
             simpleMailMessage.setSubject("Reset Your Account Password");
             simpleMailMessage.setText("To complete the password reset process, please click here: "
-                    + "localhost:8080/register/confirm-reset?token=" + confirmationToken.getConfirmationToken());
+                    + "localhost:8080/register/confirm-reset?token=" + confirmationToken.getToken());
             //   System.out.println("password reset link has been sent to mail : "+userFromDatabase.getEmail());
             javaMailSender.send(simpleMailMessage);
             log.info("password reset link has been sent to mail");
@@ -225,7 +225,7 @@ public class RegistrationService {
             ConfirmationToken confirmationToken = new ConfirmationToken(user);
 
             confirmationTokenRepository.save(confirmationToken);
-            emailService.resendActivationLinkMail(email, confirmationToken.getConfirmationToken());
+            emailService.resendActivationLinkMail(email, confirmationToken.getToken());
             return new ResponseEntity("Verification mail is send to registered mail id.", HttpStatus.OK);
         }
     }

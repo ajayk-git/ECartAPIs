@@ -2,7 +2,8 @@ plugins {
 	id 'org.springframework.boot' version '2.2.5.RELEASE'
 	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
 	id 'java'
-//	id "io.freefair.lombok" version "5.0.0-rc6"
+	id "org.sonarqube" version "2.7"
+
 }
 
 group = 'com.spring-bootcamp'
@@ -36,11 +37,12 @@ dependencies {
 	//https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail
 	compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
-//	// https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf
-//	compile group: 'org.thymeleaf', name: 'thymeleaf', version: '2.0.5'
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter
+	compile group: 'org.springframework.boot', name: 'spring-boot-starter', version: '2.3.0.RELEASE'
 
 	// https://mvnrepository.com/artifact/io.springfox/springfox-swagger2
 	compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
+
 	// https://mvnrepository.com/artifact/io.springfox/springfox-swagger-ui
 	compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
 
@@ -49,7 +51,6 @@ dependencies {
 
 	// https://mvnrepository.com/artifact/org.springframework/spring-jms
 	compile group: 'org.springframework', name: 'spring-jms', version: '5.2.6.RELEASE'
-
 
 	compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '2.2.7.RELEASE'
 
