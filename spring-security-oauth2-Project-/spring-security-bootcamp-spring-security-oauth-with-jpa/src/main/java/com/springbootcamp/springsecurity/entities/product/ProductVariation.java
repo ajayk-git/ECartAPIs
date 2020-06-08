@@ -1,7 +1,5 @@
 package com.springbootcamp.springsecurity.entities.product;
 
-import com.mongodb.ReflectionDBObject;
-import com.springbootcamp.springsecurity.entities.Cart;
 import com.springbootcamp.springsecurity.entities.CartProductVariation;
 import com.springbootcamp.springsecurity.entities.order.OrderProduct;
 import lombok.AccessLevel;
@@ -58,13 +56,6 @@ public class ProductVariation{
     @OneToMany(mappedBy = "productVariation",cascade = CascadeType.ALL)
     @Fetch(FetchMode.SUBSELECT)
     List<CartProductVariation> cartVariationList;
-//
-//    @OneToMany(mappedBy = "productVariation",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-//    @Fetch(value=FetchMode.SUBSELECT)
-//     List<Cart> cartList;
-
-
-
 
      public ProductVariation(){
 
@@ -78,20 +69,4 @@ public class ProductVariation{
         this.setMetaData(metadata);
     }
 
-
 }
-//    @OneToMany(mappedBy ="productVariationSet",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-//    private Set<Cart> cartSet;
-
-
-
-    //    ID
-//            PRODUCT_ID
-//    QUANTITY_AVAILABLE
-//            PRICE
-//"METADATA (Type: JSON - available in mysql to store a JSON as it is.)
-//        (Note: will contain all the information regarding variations in JSON format)
-//            (All variations of same category will have a fixed similar JSON structure)"
-//    PRIMARY_IMAGE_NAME
-
-

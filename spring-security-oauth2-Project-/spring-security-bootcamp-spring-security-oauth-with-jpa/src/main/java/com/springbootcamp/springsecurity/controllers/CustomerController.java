@@ -7,8 +7,6 @@ import com.springbootcamp.springsecurity.dtos.AddressDto;
 import com.springbootcamp.springsecurity.dtos.CategoryDTO;
 import com.springbootcamp.springsecurity.dtos.CustomerDto;
 import com.springbootcamp.springsecurity.dtos.ProductCustomerDto;
-import com.springbootcamp.springsecurity.entities.product.Category;
-import com.springbootcamp.springsecurity.entities.product.Product;
 import com.springbootcamp.springsecurity.services.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -25,7 +23,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
-@Api(value = "Customer Rest Controller",description = "Operations Related to Customers")
+@Api(value = "Customer Rest Controller performs operations related to Customers")
 @RequestMapping("/customer")
 @RestController
 public class CustomerController {

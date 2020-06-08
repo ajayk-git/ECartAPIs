@@ -124,7 +124,7 @@ public class RegistrationService {
 
     public ResponseEntity registrationConfirm(String token) {
 
-        ConfirmationToken confirmationToken = confirmationTokenRepository.findByConfirmationToken(token);
+        ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(token);
 
         if (confirmationToken == null) {
             log.error("Invalid Token is entered by customer");
@@ -189,11 +189,11 @@ public class RegistrationService {
 
 
     public ResponseEntity updateForgotPassword(String token, PasswordUpdateCO passwordUpdateCO, Principal principal) {
-        if (confirmationTokenRepository.findByConfirmationToken(token) == null) {
+        if (confirmationTokenRepository.findByToken(token) == null) {
             log.warn(" Invalid/Expired token exception may occur");
             throw new ResourceNotFoundException("Invalid/ Token");
         }
-        ConfirmationToken confirmationToken = confirmationTokenRepository.findByConfirmationToken(token);
+        ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(token);
 
         Customer customer = (Customer) confirmationToken.getUser();
         customer.setPassword(encoder.encode(passwordUpdateCO.getPassword()));

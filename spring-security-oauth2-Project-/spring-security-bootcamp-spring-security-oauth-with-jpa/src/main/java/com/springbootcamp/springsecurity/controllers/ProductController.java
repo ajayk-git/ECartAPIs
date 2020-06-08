@@ -14,7 +14,7 @@ import java.security.Principal;
 import java.util.List;
 
 
-@Api(value = "Product Rest Controller",description = "Operations Related to Products")
+@Api(value = "Product Rest Controller performs operations related to Products")
 @RequestMapping("/Product")
 @RestController
 public class ProductController {
@@ -30,7 +30,6 @@ public class ProductController {
             @ApiResponse(code = 404, message = "not found!!!") })
     @GetMapping("/{id}")
     public ProductDto getProductByid(@PathVariable long id,Principal principal) {
-        System.out.println("Product Details are :");
         return productService.getProductByid(id,principal);
     }
 

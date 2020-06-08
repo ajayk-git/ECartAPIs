@@ -9,7 +9,6 @@ import com.springbootcamp.springsecurity.services.AdminService;
 import com.springbootcamp.springsecurity.services.CategoryService;
 import com.springbootcamp.springsecurity.services.ProductService;
 import io.swagger.annotations.*;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;

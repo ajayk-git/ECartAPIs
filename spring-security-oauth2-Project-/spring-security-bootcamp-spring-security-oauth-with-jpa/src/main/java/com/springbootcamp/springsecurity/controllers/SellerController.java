@@ -18,7 +18,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
-@Api(value = "Seller Rest Controller",description = "Operations Related to Seller")
+@Api(value = "Seller Rest Controller performs operations related to Seller")
 @RestController
 @RequestMapping("/seller")
 public class SellerController {

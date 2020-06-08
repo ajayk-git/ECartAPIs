@@ -11,7 +11,7 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @ApiModel(description = "Product Variant DTO representation")
-public class SellerDto extends com.springbootcamp.springsecurity.dto.UserDto {
+public class SellerDto extends AddressDto.UserDto {
 
     @ApiModelProperty(value = "Seller's GST number")
     String gst;

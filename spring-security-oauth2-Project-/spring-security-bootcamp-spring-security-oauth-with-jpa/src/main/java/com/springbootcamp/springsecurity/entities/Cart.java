@@ -40,14 +40,9 @@ public class Cart {
     Customer customer;
 
 
-    @OneToMany(mappedBy = "cart",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
     List<CartProductVariation> cartVariationList;
 
-
-
-//    @ManyToOne
-//    @JoinColumn(name = "Product_variation_id")
-//    ProductVariation productVariation;
 
 }

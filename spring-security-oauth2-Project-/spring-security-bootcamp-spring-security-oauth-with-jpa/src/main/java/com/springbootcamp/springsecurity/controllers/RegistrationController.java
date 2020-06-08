@@ -11,17 +11,14 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.Objects;
 
 @Log4j2
-@Api(value = "Registration Rest Controller",description = "Operations Related to Registration.")
+@Api(value = "Registration Rest Controller performs operations related to Registration.")
 @RestController
 @RequestMapping("/register")
 public class RegistrationController {
@@ -65,16 +62,6 @@ public class RegistrationController {
         return registrationService.registrationConfirm(token);
     }
 
-//    //=================================================Seller registration confirmation . =========================================================
-//
-//    @ApiOperation(value = "Seller registration confirmation .")
-//    @ApiResponses(value = {
-//            @ApiResponse(code = 200, message = "Success|OK"),
-//            @ApiResponse(code = 400, message = "Bad Request")})
-//    @GetMapping("/confirm-seller")
-//    public ResponseEntity registrationConfirmSeller(@RequestParam("token") String token) {
-//        return registrationService.sellerRegistrationConfirm(token);
-//    }
 
     //=================================================Forgot password activation link mail send =======================================================
 

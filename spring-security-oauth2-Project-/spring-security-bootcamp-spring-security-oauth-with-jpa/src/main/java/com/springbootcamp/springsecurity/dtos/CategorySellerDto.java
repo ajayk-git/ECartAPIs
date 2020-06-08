@@ -1,13 +1,11 @@
 package com.springbootcamp.springsecurity.dtos;
 
-import com.springbootcamp.springsecurity.entities.CategoryMetadataFieldValues;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 
 import java.io.Serializable;
 import java.util.List;

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 
 
-@Api(value = "LogoutRest Controller",description = "To Logout the Users")
+@Api(value = "LogoutRest Controller performs thr task Logout the Users")
 @RestController
 @RequestMapping("/logout")
 public class UserLogoutController {
