@@ -219,21 +219,28 @@ public class Bootstrap {
 
             if ( !categoryRepository.findById(2L).isPresent()) throw new NoSuchElementException("category not found.");
 
-            Category category = categoryRepository.findById(2L).get();
+            Optional<Category> optionalCategory=categoryRepository.findById(2L);
 
-            CategoryMetaDataField metaDataField = categoryMetaDataFieldRepository.findById(1L).get();
+            if (optionalCategory.isPresent()){
 
-            categoryMetadataFieldValues.setCategory(category);
-            categoryMetadataFieldValues.setCategoryMetaDataField(metaDataField);
-            categoryMetadataFieldValues.setFieldValues("S,M,L,XL");
+                Category category = optionalCategory.get();
 
-            CategoryMetaDataField metaDataField1 = categoryMetaDataFieldRepository.findById(2L).get();
-            categoryMetadataFieldValues1.setCategory(category);
-            categoryMetadataFieldValues1.setCategoryMetaDataField(metaDataField1);
-            categoryMetadataFieldValues1.setFieldValues("Yellow,Red,Black");
+                CategoryMetaDataField metaDataField = categoryMetaDataFieldRepository.findById(1L).get();
 
-            metaDataFieldValuesRepository.save(categoryMetadataFieldValues);
-            metaDataFieldValuesRepository.save(categoryMetadataFieldValues1);
+                categoryMetadataFieldValues.setCategory(category);
+                categoryMetadataFieldValues.setCategoryMetaDataField(metaDataField);
+                categoryMetadataFieldValues.setFieldValues("S,M,L,XL");
+
+                CategoryMetaDataField metaDataField1 = categoryMetaDataFieldRepository.findById(2L).get();
+                categoryMetadataFieldValues1.setCategory(category);
+                categoryMetadataFieldValues1.setCategoryMetaDataField(metaDataField1);
+                categoryMetadataFieldValues1.setFieldValues("Yellow,Red,Black");
+
+                metaDataFieldValuesRepository.save(categoryMetadataFieldValues);
+                metaDataFieldValuesRepository.save(categoryMetadataFieldValues1);
+            }
+            else throw new NoSuchElementException("Category not found.");
+
         }
 
 

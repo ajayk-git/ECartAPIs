@@ -16,13 +16,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import lombok.extern.log4j.Log4j2;
 
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Log4j2
@@ -78,29 +78,30 @@ public class AdminService {
 
         log.info("inside deactivateAccountById method");
 
-        if (!userRepository.findById(id).isPresent()) {
-            log.warn("AccountDoesNotExistException may occur");
-            throw new AccountDoesNotExistException("User with mentioned id is registered.So not able to deactivate.");
-        } else {
-            User user = userRepository.findById(id).get();
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
             if (user.isEnabled()) {
-                user.setIsEnabled(false);
-                user.setIsActive(false);
-                SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-                simpleMailMessage.setText("Oppps,Your account has been deactivated by admin registered with mail id :" + user.getEmail());
-                simpleMailMessage.setTo(user.getEmail());
-                simpleMailMessage.setFrom("imcoolajaykumar2010@gmail.com");
-                simpleMailMessage.setSubject("Alert : Account Deactivated by admin");
-                javaMailSender.send(simpleMailMessage);
-                userRepository.save(user);
+                if (user.getIsActive()) {
+                    user.setIsEnabled(false);
+                    user.setIsActive(false);
+                    SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+                    simpleMailMessage.setText("Oppps,Your account has been deactivated by admin registered with mail id :" + user.getEmail());
+                    simpleMailMessage.setTo(user.getEmail());
+                    simpleMailMessage.setFrom("imcoolajaykumar2010@gmail.com");
+                    simpleMailMessage.setSubject("Alert : Account Deactivated by admin");
+                    javaMailSender.send(simpleMailMessage);
+                    userRepository.save(user);
 
-                log.info("Account deactivated by Admin.");
-                auditService.deactivateObject("User", user.getId(), principal.getName());
+                    log.info("Account deactivated by Admin.");
+                    auditService.deactivateObject("User", user.getId(), principal.getName());
 
-                return new ResponseEntity<String>("User is deactivated", HttpStatus.OK);
+                    return new ResponseEntity<String>("User is deactivated", HttpStatus.OK);
 
-            } else return new ResponseEntity<String>("User is already deactivated", HttpStatus.BAD_REQUEST);
+                } else return new ResponseEntity<String>("User is already deactivated", HttpStatus.BAD_REQUEST);
+            }
         }
+        throw new AccountDoesNotExistException("User with mentioned id is registered.So not able to deactivate.");
 
     }
 
@@ -110,60 +111,62 @@ public class AdminService {
 
         log.info("inside activateAccountById method");
 
-        if (!userRepository.findById(id).isPresent()) {
-            log.warn("AccountDoesNotExistException may occur");
-            throw new AccountDoesNotExistException(" User with given id is not registered.");
+        Optional<User> optionalUser = userRepository.findById(id);
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+
+            if (!user.isEnabled()) {
+                if (!user.getIsActive()) {
+
+                    user.setIsActive(true);
+                    user.setIsEnabled(true);
+                    user.setIsAccountNonLocked(true);
+                    user.setIsCredentialsNonExpired(true);
+                    user.setIsAccountNotExpired(true);
+                    user.setFalseAttemptCount(0);
+                    userRepository.save(user);
+
+                    SimpleMailMessage mailMessage = new SimpleMailMessage();
+                    mailMessage.setText("Congratulations,Your account has been activated by admin.");
+                    mailMessage.setTo(user.getEmail());
+                    mailMessage.setFrom("imcoolajaykumar2010@gmail.com");
+                    mailMessage.setSubject("Alert : Account Activated by admin.");
+                    javaMailSender.send(mailMessage);
+                    log.info("Account activated by Admin.");
+                    auditService.activateObject("User", user.getId(), principal.getName());
+                    return new ResponseEntity<String>("User's Account associated email id : " + user.getEmail() + "is activated.", HttpStatus.CREATED);
+                }
+                return new ResponseEntity<String>("User's Account associated with email id  " + user.getEmail() + "is already Activated", HttpStatus.BAD_REQUEST);
+            }
         }
-        User user = userRepository.findById(id).get();
-        if (!user.isEnabled()) {
-            user.setIsActive(true);
-            user.setIsEnabled(true);
-            user.setIsAccountNonLocked(true);
-            user.setIsCredentialsNonExpired(true);
-            user.setIsAccountNotExpired(true);
-            user.setFalseAttemptCount(0);
-            userRepository.save(user);
-            SimpleMailMessage mailMessage = new SimpleMailMessage();
-            mailMessage.setText("Congratulations,Your account has been activated by admin.");
-            mailMessage.setTo(user.getEmail());
-            mailMessage.setFrom("imcoolajaykumar2010@gmail.com");
-            mailMessage.setSubject("Alert : Account Activated by admin.");
-            javaMailSender.send(mailMessage);
-
-            log.info("Account deactivated by Admin.");
-
-            auditService.activateObject("User", user.getId(), principal.getName());
-
-            return new ResponseEntity<String>("User's Account associated email id : " + user.getEmail() + "is activated.", HttpStatus.CREATED);
-        } else
-            return new ResponseEntity<String>("User's Account associated with email id  " + user.getEmail() + "is already Activated", HttpStatus.BAD_REQUEST);
+        log.warn("AccountDoesNotExistException may occur");
+        throw new AccountDoesNotExistException(" User with given id is not registered.");
 
     }
 
 
-    //=================================to get a customer by id from repository===========================
+    //===============================================To get customer details by Admin==============================================
 
     public CustomerDto getCustomerById(long id, Principal principal) throws AccountDoesNotExistException {
 
         log.info("inside getCustomerById method");
 
-        CustomerDto customerDTO = new CustomerDto();
-        Customer customer;
+        Optional<Customer> optionalCustomer = customerRepository.findById(id);
 
-        if (!customerRepository.findById(id).isPresent()) {
-            log.warn("AccountDoesNotExistException may occur");
+        if (optionalCustomer.isPresent()) {
+
+            CustomerDto customerDTO = new CustomerDto();
+            Customer customer = optionalCustomer.get();
+            customerDTO.setId(customer.getId());
+            customerDTO.setContact(customer.getContact());
+            customerDTO.setFirstName(customer.getFirstName());
+            customerDTO.setEmail(customer.getEmail());
+            customerDTO.setLastName(customer.getLastName());
+            auditService.readObject("User", customer.getId(), principal.getName());
+            return customerDTO;
+        } else
             throw new AccountDoesNotExistException("Customer does not exist having Customer Id : " + id);
-        }
-        customer = customerRepository.findById(id).get();
-        customerDTO.setId(customer.getId());
-        customerDTO.setContact(customer.getContact());
-        customerDTO.setFirstName(customer.getFirstName());
-        customerDTO.setEmail(customer.getEmail());
-        customerDTO.setLastName(customer.getLastName());
-
-        auditService.readObject("User", customer.getId(), principal.getName());
-
-        return customerDTO;
     }
 
 
@@ -187,33 +190,33 @@ public class AdminService {
 
     public SellerDto getSellerByid(long sellerId, Principal principal) {
 
-        log.info("inside getSellerByid method");
-        SellerDto sellerDto = new SellerDto();
-
+        log.info("inside getSellerById method");
         log.warn("ResourceNotFoundException may occur.");
-        if (!sellerRepository.findById(sellerId).isPresent()) {
+
+        Optional<Seller> optionalSeller = sellerRepository.findById(sellerId);
+        if (optionalSeller.isPresent()) {
+
+            SellerDto sellerDto = new SellerDto();
+            Seller seller = optionalSeller.get();
+
+            sellerDto.setId(seller.getId());
+            sellerDto.setFirstName(seller.getFirstName());
+            sellerDto.setLastName(seller.getLastName());
+            sellerDto.setCompanyName(seller.getCompanyName());
+            sellerDto.setCompanyContact(seller.getCompanyContact());
+            sellerDto.setGst(seller.getGst());
+            sellerDto.setEmail(seller.getEmail());
+            sellerDto.setAddressLine(seller.getAddress().getAddressLine());
+            sellerDto.setCity(seller.getAddress().getCity());
+            sellerDto.setState(seller.getAddress().getState());
+            sellerDto.setLable(seller.getAddress().getLable());
+            sellerDto.setCountry(seller.getAddress().getCountry());
+            sellerDto.setZipcode(seller.getAddress().getZipcode());
+
+            auditService.readObject("Seller", seller.getId(), principal.getName());
+            return sellerDto;
+        } else
             throw new ResourceNotFoundException("Seller with mentioned SellerId is not exist.");
-        }
-
-        Seller seller = sellerRepository.findById(sellerId).get();
-
-        sellerDto.setId(seller.getId());
-        sellerDto.setFirstName(seller.getFirstName());
-        sellerDto.setLastName(seller.getLastName());
-        sellerDto.setCompanyName(seller.getCompanyName());
-        sellerDto.setCompanyContact(seller.getCompanyContact());
-        sellerDto.setGst(seller.getGst());
-        sellerDto.setEmail(seller.getEmail());
-        sellerDto.setAddressLine(seller.getAddress().getAddressLine());
-        sellerDto.setCity(seller.getAddress().getCity());
-        sellerDto.setState(seller.getAddress().getState());
-        sellerDto.setLable(seller.getAddress().getLable());
-        sellerDto.setCountry(seller.getAddress().getCountry());
-        sellerDto.setZipcode(seller.getAddress().getZipcode());
-        auditService.readObject("Seller", seller.getId(), principal.getName());
-        return sellerDto;
-
-
     }
 
 
