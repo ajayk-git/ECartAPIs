@@ -15,6 +15,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Log4j2
@@ -123,7 +124,7 @@ public class EmailService {
     public void sendScheduleMailToActivateProduct(List productIdList) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
 
-        mailMessage.setText("Kindly Activate following product Ids."+productIdList);
+        mailMessage.setText("Kindly Activate following product Ids." + productIdList);
         mailMessage.setTo("ajay.kumar1@tothenew.com");
         mailMessage.setFrom("E-Cart");
         mailMessage.setSubject("Alert : Activate Products");
@@ -150,24 +151,30 @@ public class EmailService {
 
     public String sendOrderPlacedNotificationToCustomer(Long orderId) {
 
-        String message;
-        Order order=orderRepository.findById(orderId).get();
-        SimpleMailMessage mail = new SimpleMailMessage();
-        mail.setFrom("E-Cart");
-        mail.setSubject("Order Update");
-        mail.setText("Hey! , your order has been placed successfuly.");
-        mail.setTo(order.getCustomer().getEmail());
-        mailSender.send(mail);
-        message="Mail has been sent to customer.";
-        return  message;
+        Optional<Order> optionalOrder = orderRepository.findById(orderId);
+        if (optionalOrder.isPresent()) {
+
+            String message;
+            Order order = optionalOrder.get();
+            SimpleMailMessage mail = new SimpleMailMessage();
+            mail.setFrom("E-Cart");
+            mail.setSubject("Order Update");
+            mail.setText("Hey! , your order has been placed successfuly.");
+            mail.setTo(order.getCustomer().getEmail());
+            mailSender.send(mail);
+            message = "Mail has been sent to customer.";
+            return message;
+
+        } else return "An error occurred while placing the order.";
     }
+
+
 
     public void sendOrderPlacedNotificationToSeller(Long orderId) {
 
-        Order order=orderRepository.findById(orderId).get();
         log.info("Sending order placed notification mail to seller.");
 
-        List<OrderProduct>orderProductList=orderProductRepository.findByOrderId(orderId);
+        List<OrderProduct> orderProductList = orderProductRepository.findByOrderId(orderId);
 
         for (int i = 0; i < orderProductList.size(); i++) {
             System.out.println(orderProductList.get(i).getProductVariation().getProduct().getSeller().getEmail());
@@ -175,7 +182,7 @@ public class EmailService {
             SimpleMailMessage mail = new SimpleMailMessage();
             mail.setFrom("E-Cart");
             mail.setSubject("Order Update");
-            mail.setText("Hey! ,Order is placed of your product by customer and OrderId is : "+orderId);
+            mail.setText("Hey! ,Order is placed of your product by customer and OrderId is : " + orderId);
             mail.setTo(orderProductList.get(i).getProductVariation().getProduct().getSeller().getEmail());
             mailSender.send(mail);
         }
