@@ -23,6 +23,7 @@ import javax.transaction.Transactional;
 import java.lang.reflect.Type;
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 @Log4j2
 @Service
@@ -64,49 +65,51 @@ public class CartService {
 
     public ResponseEntity addProductInCartByCustomer(Principal principal, CartAddProductCo cartAddProductCo) {
 
-        if (!variationRepository.findById(cartAddProductCo.getProductVariationId()).isPresent()) {
-            throw new ResourceNotFoundException("Product variation is not available");
-        }
+        Optional<ProductVariation> optionalProductVariation = variationRepository.findById(cartAddProductCo.getProductVariationId());
 
-        ProductVariation productVariation = variationRepository.findById(cartAddProductCo.getProductVariationId()).get();
+        if (optionalProductVariation.isPresent()) {
 
-        if (!productVariation.getIsActive()) {
-            throw new ResourceNotFoundException("Product variation is not active.");
-        }
+            ProductVariation productVariation = optionalProductVariation.get();
 
-        if (productVariation.getQuantityAvailable() - cartAddProductCo.getQuantity() < 0) {
-            throw new ResourceNotFoundException("In sufficient stock.");
-        }
-        Customer customer = customerRepository.findByEmail(principal.getName());
-        Cart cart = cartRepository.findByCustomer(customer);
-
-        CartProductVariation cartProductVariationFromDataBase = cartProductVariationRepository.findByProductVariantAndCart(productVariation.getId(), customer.getCart().getId());
-
-        System.out.println(cartProductVariationFromDataBase);
-        if (cartProductVariationFromDataBase != null) {
-
-            if (productVariation.getQuantityAvailable() - (cartAddProductCo.getQuantity() + cartProductVariationFromDataBase.getQuantity()) < 0) {
-                throw new ResourceNotFoundException("In sufficient stock.");
+            if (!productVariation.getIsActive()) {
+                throw new ResourceNotFoundException("Product variation is not active.");
             }
 
-            Integer totalQuantity = cartAddProductCo.getQuantity() + cartProductVariationFromDataBase.getQuantity();
+            if (productVariation.getQuantityAvailable() - cartAddProductCo.getQuantity() < 0) {
+                throw new ResourceNotFoundException("In sufficient stock.");
+            }
+            Customer customer = customerRepository.findByEmail(principal.getName());
+            Cart cart = cartRepository.findByCustomer(customer);
 
-            cartProductVariationFromDataBase.setQuantity(totalQuantity);
-            cartProductVariationRepository.save(cartProductVariationFromDataBase);
+            CartProductVariation cartProductVariationFromDataBase = cartProductVariationRepository.findByProductVariantAndCart(productVariation.getId(), customer.getCart().getId());
+
+            System.out.println(cartProductVariationFromDataBase);
+            if (cartProductVariationFromDataBase != null) {
+
+                if (productVariation.getQuantityAvailable() - (cartAddProductCo.getQuantity() + cartProductVariationFromDataBase.getQuantity()) < 0) {
+                    throw new ResourceNotFoundException("In sufficient stock.");
+                }
+
+                Integer totalQuantity = cartAddProductCo.getQuantity() + cartProductVariationFromDataBase.getQuantity();
+
+                cartProductVariationFromDataBase.setQuantity(totalQuantity);
+                cartProductVariationRepository.save(cartProductVariationFromDataBase);
+                return new ResponseEntity("Product added successfully in Cart.", HttpStatus.OK);
+
+            }
+
+            CartProductVariation cartProductVariation = new CartProductVariation();
+            cartProductVariation.setQuantity(cartAddProductCo.getQuantity());
+            cartProductVariation.setProductVariation(productVariation);
+            cartProductVariation.setIsWishListItem(cartAddProductCo.getIsWishListItem());
+            cartProductVariation.setCart(cart);
+
+            cartProductVariationRepository.save(cartProductVariation);
+
             return new ResponseEntity("Product added successfully in Cart.", HttpStatus.OK);
+        } else
+            throw new ResourceNotFoundException("Product variation is not available");
 
-
-        }
-
-        CartProductVariation cartProductVariation = new CartProductVariation();
-        cartProductVariation.setQuantity(cartAddProductCo.getQuantity());
-        cartProductVariation.setProductVariation(productVariation);
-        cartProductVariation.setIsWishListItem(cartAddProductCo.getIsWishListItem());
-        cartProductVariation.setCart(cart);
-
-        cartProductVariationRepository.save(cartProductVariation);
-
-        return new ResponseEntity("Product added successfully in Cart.", HttpStatus.OK);
     }
 
 
@@ -118,13 +121,13 @@ public class CartService {
 
         CartProductVariation cartProductVariationFromDataBase = cartProductVariationRepository.findByProductVariantAndCart(productVariationId, customer.getCart().getId());
 
-        if (cartProductVariationFromDataBase==null){
+        if (cartProductVariationFromDataBase == null) {
             throw new ResourceNotFoundException("Product variation is not available in cart");
         }
 
         log.warn("deleting the object");
-        cartProductVariationRepository.deleteByCartIdAndProductVariationId(customer.getCart().getId(),productVariationId);
-        return new ResponseEntity("Product removed from cart.",null,HttpStatus.OK);
+        cartProductVariationRepository.deleteByCartIdAndProductVariationId(customer.getCart().getId(), productVariationId);
+        return new ResponseEntity("Product removed from cart.", null, HttpStatus.OK);
     }
 
     //=================================================Add product in wishList by Customer =========================================================
@@ -135,17 +138,17 @@ public class CartService {
 
         CartProductVariation cartProductVariationFromDataBase = cartProductVariationRepository.findByProductVariantAndCart(productVariationId, customer.getCart().getId());
 
-        if (cartProductVariationFromDataBase==null){
+        if (cartProductVariationFromDataBase == null) {
             throw new ResourceNotFoundException("Product variation is not available in cart");
         }
 
-        if (!cartProductVariationFromDataBase.getIsWishListItem()){
+        if (!cartProductVariationFromDataBase.getIsWishListItem()) {
             cartProductVariationFromDataBase.setIsWishListItem(true);
             cartProductVariationRepository.save(cartProductVariationFromDataBase);
-            return new ResponseEntity("Product added to wishList in cart.",null,HttpStatus.OK);
+            return new ResponseEntity("Product added to wishList in cart.", null, HttpStatus.OK);
         }
 
-        return new ResponseEntity("Product already added to wishList in cart.",null,HttpStatus.BAD_REQUEST);
+        return new ResponseEntity("Product already added to wishList in cart.", null, HttpStatus.BAD_REQUEST);
 
     }
 
@@ -156,15 +159,15 @@ public class CartService {
 
         CartProductVariation cartProductVariationFromDataBase = cartProductVariationRepository.findByProductVariantAndCart(productVariationId, customer.getCart().getId());
 
-        if (cartProductVariationFromDataBase==null){
+        if (cartProductVariationFromDataBase == null) {
             throw new ResourceNotFoundException("Product variation is not available in cart");
         }
-        if (cartProductVariationFromDataBase.getIsWishListItem()){
+        if (cartProductVariationFromDataBase.getIsWishListItem()) {
             cartProductVariationFromDataBase.setIsWishListItem(false);
             cartProductVariationRepository.save(cartProductVariationFromDataBase);
-            return new ResponseEntity("Product removed from wishList in cart.",null,HttpStatus.OK);
+            return new ResponseEntity("Product removed from wishList in cart.", null, HttpStatus.OK);
         }
-        return new ResponseEntity("Product already removed from wishList in cart.",null,HttpStatus.BAD_REQUEST);
+        return new ResponseEntity("Product already removed from wishList in cart.", null, HttpStatus.BAD_REQUEST);
 
     }
 }
