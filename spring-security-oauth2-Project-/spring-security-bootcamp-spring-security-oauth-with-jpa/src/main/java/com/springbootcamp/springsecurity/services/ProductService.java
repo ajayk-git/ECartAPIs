@@ -396,76 +396,76 @@ public class ProductService {
         log.info("inside viewProductBySeller method");
 
         String sellerLoggedIn = principal.getName();
-        ProductSellerDto productSellerDto = new ProductSellerDto();
+        Optional<Product> optionalProduct = productRepository.findById(productId);
 
-        if (!productRepository.findById(productId).isPresent())
+        if (optionalProduct.isPresent()) {
+
+            Product product = optionalProduct.get();
+
+            String sellerUserName = product.getSeller().getEmail();
+
+            if (!sellerUserName.equalsIgnoreCase(sellerLoggedIn))
+                throw new ResourceNotAccessibleException("Not Authorized  to view other seller's product.");
+
+            if (product.getIsDeleted())
+                throw new ResourceNotFoundException("Product with mentioned ProductId is deleted.Kindly enter existing productId.");
+
+            Category category = product.getCategory();
+
+            ProductSellerDto productSellerDto = new ProductSellerDto(product.getId(), product.getName(), product.getBrand(),
+                    product.getDescription(), product.getSeller().getCompanyName(), category.getName(),
+                    product.getIsActive(), product.getIsCancelable(), product.getIsReturnable());
+
+            auditService.readObject("Product", product.getId(), principal.getName());
+            return productSellerDto;
+        } else
             throw new ResourceNotFoundException("Product with mentioned ProductId is not exist.");
 
-
-        Product product = productRepository.findById(productId).get();
-        String sellerUserName = product.getSeller().getEmail();
-
-        if (!sellerUserName.equalsIgnoreCase(sellerLoggedIn))
-            throw new ResourceNotAccessibleException("Not Authorized  to view other seller's product.");
-
-        if (product.getIsDeleted())
-            throw new ResourceNotFoundException("Product with mentioned ProductId is deleted.Kindly enter existing productId.");
-
-        Category category = product.getCategory();
-
-        productSellerDto = new ProductSellerDto(product.getId(), product.getName(), product.getBrand(),
-                product.getDescription(), product.getSeller().getCompanyName(), category.getName(),
-                product.getIsActive(), product.getIsCancelable(), product.getIsReturnable());
-
-        auditService.readObject("Product", product.getId(), principal.getName());
-        return productSellerDto;
     }
 
     //=================================================Delete a Product By seller Account==================================
 
 
-    @Secured("ROLE_SELLER")
     public ResponseEntity deleteProductBySeller(Long productId, Principal principal) {
 
         log.info("inside deleteProductBySeller method");
 
+        Optional<Product> optionalProduct = productRepository.findById(productId);
+        if (optionalProduct.isPresent()) {
 
-        String loggedInSeller = principal.getName();
+            String loggedInSeller = principal.getName();
+            Product product = optionalProduct.get();
+            String sellerOfProduct = product.getSeller().getEmail();
 
-        if (!productRepository.findById(productId).isPresent())
-            throw new ResourceNotFoundException("Product with mentioned ProductId is not exist.");
+            if (product.getIsDeleted())
+                throw new ResourceNotFoundException("Product with mentioned productId is already deleted.");
 
-        Product product = productRepository.findById(productId).get();
-        String sellerOfProduct = product.getSeller().getEmail();
+            if (!product.getIsActive())
+                throw new ResourceNotFoundException("Product with mentioned productId is not active.");
 
+            if (!loggedInSeller.equalsIgnoreCase(sellerOfProduct))
+                throw new ResourceNotAccessibleException("Not Authorized  to delete other seller's product.");
 
-        if (product.getIsDeleted())
-            throw new ResourceNotFoundException("Product with mentioned productId is already deleted.");
+            if (product.getIsActive() && (!product.getIsDeleted())) {
 
-        if (!product.getIsActive())
-            throw new ResourceNotFoundException("Product with mentioned productId is not active.");
-
-        if (!loggedInSeller.equalsIgnoreCase(sellerOfProduct))
-            throw new ResourceNotAccessibleException("Not Authorized  to delete other seller's product.");
-
-        if (product.getIsActive() && (!product.getIsDeleted())) {
-
-            if (loggedInSeller.equalsIgnoreCase(sellerOfProduct)) {
-                product.setIsDeleted(true);
-                product.setIsActive(false);
+                if (loggedInSeller.equalsIgnoreCase(sellerOfProduct)) {
+                    product.setIsDeleted(true);
+                    product.setIsActive(false);
+                }
             }
-        }
-        productRepository.save(product);
+            productRepository.save(product);
 
-        auditService.deleteObject("Product", product.getId(), principal.getName());
-        log.info("Product is deleted successfully by seller");
+            auditService.deleteObject("Product", product.getId(), principal.getName());
+            log.info("Product is deleted successfully by seller");
 
-        return new ResponseEntity("Product deleted with mentioned productId.", HttpStatus.OK);
+            return new ResponseEntity("Product deleted with mentioned productId.", HttpStatus.OK);
+
+        } else
+            throw new ResourceNotFoundException("Product with mentioned ProductId is not exist.");
     }
 
     //=================================================View all products By seller Account==================================
 
-    @Secured("ROLE_SELLER")
     @Cacheable(cacheNames = "getAllProductsBySeller")
     public List<ProductSellerDto> viewAllProductsBySeller(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection, Principal principal) {
 
