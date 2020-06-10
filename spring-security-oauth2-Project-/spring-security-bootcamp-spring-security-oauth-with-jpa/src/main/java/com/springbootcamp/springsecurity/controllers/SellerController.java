@@ -162,8 +162,8 @@ public class SellerController {
             @ApiResponse(code = 401, message = "not authorized!"),
             @ApiResponse(code = 404, message = "not found!!!") })
     @GetMapping("/product/variation/{productVariantId}")
-    public ProductVariantDto viewProductVariant(@PathVariable(name = "productVariantId") Long productVariantId,Principal principal){
-        return productService.getProductVariant(productVariantId,principal);
+    public ProductVariantDto getProductVariantBySeller(@PathVariable(name = "productVariantId") Long productVariantId,Principal principal){
+        return productService.getProductVariantBySeller(productVariantId,principal);
     }
 
     //=================================================View all product Variants of a product By seller Account==================================

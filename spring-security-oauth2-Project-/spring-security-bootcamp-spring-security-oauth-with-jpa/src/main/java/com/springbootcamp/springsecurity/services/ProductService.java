@@ -206,30 +206,31 @@ public class ProductService {
     //=================================================View  Product-Variant By seller Account==================================
 
 
-    public ProductVariantDto getProductVariant(Long productVariantId, Principal principal) {
+    public ProductVariantDto getProductVariantBySeller(Long productVariantId, Principal principal) {
 
         log.info("inside getProductVariant method");
 
+        Optional<ProductVariation> optionalProductVariation = variationRepository.findById(productVariantId);
 
-        if (!variationRepository.findById(productVariantId).isPresent())
+        if (optionalProductVariation.isPresent()) {
+
+            ProductVariation productVariation = optionalProductVariation.get();
+            ProductVariantDto productVariantDto = new ProductVariantDto();
+            productVariantDto.setProductVariantId(productVariation.getId());
+            productVariantDto.setProductId(productVariation.getProduct().getId());
+            productVariantDto.setBrand(productVariation.getProduct().getBrand());
+            productVariantDto.setProductName(productVariation.getProduct().getName());
+            productVariantDto.setMetaData(productVariation.getMetaData());
+            productVariantDto.setPrice(productVariation.getPrice());
+            productVariantDto.setQuantityAvailable(productVariation.getQuantityAvailable());
+            productVariantDto.setActive(productVariation.getIsActive());
+            auditService.readObject("Product", productVariation.getId(), principal.getName());
+            return productVariantDto;
+        } else
             throw new ResourceNotFoundException("Product Variant is not found with mentioned productVariantId.Please enter existing productVariantId.");
-        ProductVariation productVariation = variationRepository.findById(productVariantId).get();
-
-        ProductVariantDto productVariantDto = new ProductVariantDto();
-        productVariantDto.setProductVariantId(productVariation.getId());
-        productVariantDto.setProductId(productVariation.getProduct().getId());
-        productVariantDto.setBrand(productVariation.getProduct().getBrand());
-        productVariantDto.setProductName(productVariation.getProduct().getName());
-        productVariantDto.setMetaData(productVariation.getMetaData());
-        productVariantDto.setPrice(productVariation.getPrice());
-        productVariantDto.setQuantityAvailable(productVariation.getQuantityAvailable());
-        productVariantDto.setActive(productVariation.getIsActive());
-
-        auditService.readObject("Product", productVariation.getId(), principal.getName());
-
-        return productVariantDto;
 
     }
+
     //=================================================View all product Variants of a product By seller Account==================================
 
 
@@ -285,57 +286,59 @@ public class ProductService {
 
         log.info("inside addNewProductVariant method");
 
-        if (!productRepository.findById(productId).isPresent())
-            throw new ResourceNotFoundException("Product with mentioned ProductId is not exist.");
-        Product product = productRepository.findById(productId).get();
-        if (!product.getIsActive())
-            throw new ResourceNotFoundException("Product with mentioned ProductId is not active.");
-        if (product.getIsDeleted())
-            throw new ResourceNotFoundException("Product with mentioned ProductId is deleted.");
+        Optional<Product> optionalProduct = productRepository.findById(productId);
+        if (optionalProduct.isPresent()) {
 
-        if (product.getIsActive() && (!product.getIsDeleted())) {
-            ProductVariation productVariation = new ProductVariation();
+            Product product = optionalProduct.get();
 
-            productVariation.setPrice(productVariationCo.getPrice());
-            productVariation.setQuantityAvailable(productVariationCo.getQuantityAvailable());
-            productVariation.setIsActive(true);
-            productVariation.setProduct(product);
+            if (!product.getIsActive())
+                throw new ResourceNotFoundException("Product with mentioned ProductId is not active.");
+            if (product.getIsDeleted())
+                throw new ResourceNotFoundException("Product with mentioned ProductId is deleted.");
 
-            List<ProductVariation> variationList = product.getProductVariationList();
+            if (product.getIsActive() && (!product.getIsDeleted())) {
+                ProductVariation productVariation = new ProductVariation();
 
-            Iterator<ProductVariation> iterator = variationList.iterator();
-            while (iterator.hasNext()) {
-                ProductVariation currentVariation = iterator.next();
-                if (productVariationCo.getMetaData().equals(currentVariation.getMetaData()))
-                    throw new ResourceAlreadyExistException("Product Variation Already exist.");
-                else {
-                    productVariation.setMetaData(productVariationCo.getMetaData());
-                    variationRepository.save(productVariation);
-                    log.info("Product variant is added successfully by seller");
-                    auditService.saveNewObject("ProductVariation", productVariation.getId(), principal.getName());
+                productVariation.setPrice(productVariationCo.getPrice());
+                productVariation.setQuantityAvailable(productVariationCo.getQuantityAvailable());
+                productVariation.setIsActive(true);
+                productVariation.setProduct(product);
 
+                List<ProductVariation> variationList = product.getProductVariationList();
+
+                Iterator<ProductVariation> iterator = variationList.iterator();
+                while (iterator.hasNext()) {
+                    ProductVariation currentVariation = iterator.next();
+                    if (productVariationCo.getMetaData().equals(currentVariation.getMetaData()))
+                        throw new ResourceAlreadyExistException("Product Variation Already exist.");
+                    else {
+                        productVariation.setMetaData(productVariationCo.getMetaData());
+                        variationRepository.save(productVariation);
+                        log.info("Product variant is added successfully by seller");
+                        auditService.saveNewObject("ProductVariation", productVariation.getId(), principal.getName());
+
+                    }
                 }
             }
-        }
-        return new ResponseEntity("Product variation added successfully.", HttpStatus.CREATED);
+            return new ResponseEntity("Product variation added successfully.", HttpStatus.CREATED);
+        } else
+            throw new ResourceNotFoundException("Product with mentioned ProductId is not exist.");
+
+
     }
 
 
     //=====================================================Update a Product Variant  By seller ===============================================
 
 
-    @Secured("ROLE_SELLER")
     public ResponseEntity updateProductVariantBySeller(Long variationId, Principal principal, ProductVariationUpdateCo variationUpdateCo) {
 
         log.info("inside updateProductVariantBySeller method");
 
+        Optional<ProductVariation> optionalProductVariation = variationRepository.findById(variationId);
+        if (optionalProductVariation.isPresent()) {
 
-        if (!variationRepository.findById(variationId).isPresent())
-
-            throw new ResourceNotFoundException("Product variant with mentioned ProductVariantId is not exist.");
-
-        else {
-            ProductVariation productVariation = variationRepository.findById(variationId).get();
+            ProductVariation productVariation = optionalProductVariation.get();
 
             Product product = productVariation.getProduct();
 
@@ -380,13 +383,14 @@ public class ProductService {
                 auditService.updateObject("ProductVariation", productVariation.getId(), principal.getName());
                 return new ResponseEntity("Product with productVariantId : " + variationId + " is updated successfully.", HttpStatus.OK);
             }
-        }
+        } else
+            throw new ResourceNotFoundException("Product variant with mentioned ProductVariantId is not exist.");
+
     }
 
 
     //=================================================View a Product By seller Account==================================
 
-    @Secured("ROLE_SELLER")
     public ProductSellerDto viewProductBySeller(Long productId, Principal principal) {
 
         log.info("inside viewProductBySeller method");
