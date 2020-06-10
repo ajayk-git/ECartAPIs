@@ -216,13 +216,10 @@ public class Bootstrap {
             CategoryMetadataFieldValues categoryMetadataFieldValues = new CategoryMetadataFieldValues();
             CategoryMetadataFieldValues categoryMetadataFieldValues1 = new CategoryMetadataFieldValues();
 
-
             if ( !categoryRepository.findById(2L).isPresent()) throw new NoSuchElementException("category not found.");
 
             Optional<Category> optionalCategory=categoryRepository.findById(2L);
-
             if (optionalCategory.isPresent()){
-
                 Category category = optionalCategory.get();
 
                 CategoryMetaDataField metaDataField = categoryMetaDataFieldRepository.findById(1L).get();
@@ -239,8 +236,6 @@ public class Bootstrap {
                 metaDataFieldValuesRepository.save(categoryMetadataFieldValues);
                 metaDataFieldValuesRepository.save(categoryMetadataFieldValues1);
             }
-            else throw new NoSuchElementException("Category not found.");
-
         }
 
 
