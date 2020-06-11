@@ -237,46 +237,46 @@ public class ProductService {
     public ResponseEntity viewAllProductVariationsBySeller(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection, Long productId, Principal principal) {
 
         log.info("inside viewAllProductVariationsBySeller method");
+        Optional<Product> optionalProduct = productRepository.findById(productId);
 
-        if (!productRepository.findById(productId).isPresent())
+        if (optionalProduct.isPresent()) {
+
+            Product product = optionalProduct.get();
+            String loggedInSeller = principal.getName();
+            String productSeller = product.getSeller().getEmail();
+
+            if (!loggedInSeller.equalsIgnoreCase(productSeller))
+                throw new ResourceNotAccessibleException("Not Authorized to access other seller's products.");
+
+            if (product.getIsDeleted())
+                throw new ResourceNotFoundException("Product with mentioned ProductId has been deleted by admin.");
+
+            ProductVariantDto productVariantDto = new ProductVariantDto();
+
+            List<ProductVariantDto> productVariantDtoList = new ArrayList<>();
+
+            List<ProductVariation> productVariations = product.getProductVariationList();
+
+            Iterator<ProductVariation> iterator = productVariations.iterator();
+
+            while (iterator.hasNext()) {
+
+                ProductVariation currentVariation = iterator.next();
+
+                productVariantDto = new ProductVariantDto(product.getId(), product.getBrand(), product.getName(),
+                        currentVariation.getId(), currentVariation.getMetaData(), currentVariation.getIsActive(),
+                        currentVariation.getQuantityAvailable(), currentVariation.getPrice());
+
+                productVariantDtoList.add(productVariantDto);
+
+            }
+            if (productVariantDtoList.size() < 1)
+                throw new ResourceNotFoundException("No product variation available for given product.");
+
+            auditService.readAllObjects("ProductVariation", principal.getName());
+            return new ResponseEntity(productVariantDtoList, null, HttpStatus.OK);
+        } else
             throw new ResourceNotFoundException("Product with mentioned ProductId is not exist.");
-
-        Product product = productRepository.findById(productId).get();
-
-        String loggedInSeller = principal.getName();
-        String productSeller = product.getSeller().getEmail();
-
-        if (!loggedInSeller.equalsIgnoreCase(productSeller))
-            throw new ResourceNotAccessibleException("Not Authorized to access other seller's products.");
-
-        if (product.getIsDeleted())
-            throw new ResourceNotFoundException("Product with mentioned ProductId has been deleted by admin.");
-
-        ProductVariantDto productVariantDto = new ProductVariantDto();
-        List<ProductVariantDto> productVariantDtoList = new ArrayList<>();
-
-        List<ProductVariation> productVariations = product.getProductVariationList();
-
-        Iterator<ProductVariation> iterator = productVariations.iterator();
-
-        while (iterator.hasNext()) {
-
-            ProductVariation currentVariation = iterator.next();
-
-            productVariantDto = new ProductVariantDto(product.getId(), product.getBrand(), product.getName(),
-                    currentVariation.getId(), currentVariation.getMetaData(), currentVariation.getIsActive(),
-                    currentVariation.getQuantityAvailable(), currentVariation.getPrice());
-
-            productVariantDtoList.add(productVariantDto);
-
-        }
-        if (productVariantDtoList.size() < 1)
-            throw new ResourceNotFoundException("No product variation available for given product.");
-
-        auditService.readAllObjects("ProductVariation", principal.getName());
-        return new ResponseEntity(productVariantDtoList, null, HttpStatus.OK);
-
-
     }
 
     //=================================================Add  new Product-Variant By seller Account==================================
