@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -128,9 +127,10 @@ public class CategoryService {
         if (categoryRepository.findByName(categoryName).isPresent()) {
             throw new ResourceAlreadyExistException("Category with " + categoryName + " already exist.");
         }
+
+
         Category subCategory = new Category();
         Category parentCategory = categoryRepository.findById(categoryCO.getParentId()).get();
-
 
         subCategory.setName(categoryCO.getCategoryName());
         subCategory.setParentCategory(parentCategory);
@@ -187,26 +187,30 @@ public class CategoryService {
 
     //===============================================To get a category======================================================================
 
-    public List<CategoryDTO> getCategory(Long id, Principal principal) {
+    public List<CategoryDTO> getCategoryByAdmin(Long id, Principal principal) {
 
         log.info("inside getCategory method");
 
-        if (!categoryRepository.findById(id).isPresent()) {
+        Optional<Category> optionalCategory = categoryRepository.findById(id);
+        if (optionalCategory.isPresent()) {
+            Category category1 = optionalCategory.get();
+
+            if (category1.getSubCategory().isEmpty())
+                throw new ResourceNotFoundException("No subcategory,since,given category is leaf node of a category.");
+            List<CategoryDTO> categoryDTOList = new ArrayList<>();
+            List<Category> subCategories = category1.getSubCategory();
+            subCategories.forEach(category -> categoryDTOList
+                    .add(new CategoryDTO(category.getName(), category.getId(), id, category.getParentCategory().getName())));
+
+            auditService.readObject("Category", category1.getId(), principal.getName());
+
+            return categoryDTOList;
+        }
+        else {
             log.warn("ResourceNotFoundException Occurred");
             throw new ResourceNotFoundException("Category does not exist with given category Id.");
-
         }
-        Category categoryList = categoryRepository.findById(id).get();
-        if (categoryList.getSubCategory().isEmpty())
-            throw new ResourceNotFoundException("No subcategory,since,given category is leaf node of a category.");
-        List<CategoryDTO> categoryDTOList = new ArrayList<>();
-        List<Category> subCategories = categoryList.getSubCategory();
-        subCategories.forEach(category -> categoryDTOList
-                .add(new CategoryDTO(category.getName(), category.getId(), id, category.getParentCategory().getName())));
 
-        auditService.readObject("Category", categoryList.getId(), principal.getName());
-
-        return categoryDTOList;
     }
 
 
@@ -230,7 +234,6 @@ public class CategoryService {
                 Category category1 = categoryRepository.findById(id).get();
                 category1.setName(categoryName);
                 categoryRepository.save(category1);
-
                 auditService.updateObject("Category", category1.getId(), principal.getName());
             }
         }
@@ -367,24 +370,22 @@ public class CategoryService {
         List<CategoryDTO> categoryDTOList = new ArrayList<>();
 
         if (categoryId != null) {
-
-            if (!categoryRepository.findById(categoryId).isPresent())
+            Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
+            if (optionalCategory.isPresent()) {
+                Category category = optionalCategory.get();
+                List<Category> subCategories = category.getSubCategory();
+                if (subCategories.isEmpty())
+                    throw new ResourceNotFoundException("Since mentioned categoryId is leaf category so no subcategories.");
+                subCategories.forEach(category1 -> categoryDTOList
+                        .add(new CategoryDTO(category1.getName(), category1.getId(), categoryId, category1.getParentCategory().getName())));
+                return categoryDTOList;
+            } else
                 throw new ResourceNotFoundException("Category does not exist with Mentioned categoryId. ");
-
-            Category category = categoryRepository.findById(categoryId).get();
-            List<Category> subCategories = category.getSubCategory();
-            if (subCategories.isEmpty())
-                throw new ResourceNotFoundException("Since mentioned categoryId is leaf category so no subcategories.");
-            subCategories.forEach(category1 -> categoryDTOList
-                    .add(new CategoryDTO(category1.getName(), category1.getId(), categoryId, category1.getParentCategory().getName())));
-            return categoryDTOList;
         }
         List<Category> parentCategories = categoryRepository.findByRootCategory();
         parentCategories.forEach(category -> categoryDTOList.add(new CategoryDTO(category.getName(), category.getId())));
-
         auditService.readAllObjects("Category", principal.getName());
         return categoryDTOList;
-
     }
 
 }

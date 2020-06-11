@@ -161,8 +161,8 @@ public class AdminController {
     @Secured("ROLE_ADMIN")
     @ApiOperation(value = "Get specific category by Admin")
     @GetMapping("/category/{categoryId}")
-    public List<CategoryDTO> getCategory(@PathVariable(name = "categoryId") Long categoryId, Principal principal) {
-        return categoryService.getCategory(categoryId, principal);
+    public List<CategoryDTO> getCategoryByAdmin(@PathVariable(name = "categoryId") Long categoryId, Principal principal) {
+        return categoryService.getCategoryByAdmin(categoryId, principal);
     }
 
     //==========================================Update specific category by Admin===========================================================
