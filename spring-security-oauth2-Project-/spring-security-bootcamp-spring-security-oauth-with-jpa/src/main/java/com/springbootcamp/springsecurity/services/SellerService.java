@@ -2,7 +2,7 @@ package com.springbootcamp.springsecurity.services;
 
 import com.springbootcamp.springsecurity.repositories.AuditHistoryRepository;
 import com.springbootcamp.springsecurity.co.*;
-import com.springbootcamp.springsecurity.ConfirmationToken;
+import com.springbootcamp.springsecurity.entities.ConfirmationToken;
 import com.springbootcamp.springsecurity.dtos.AddressDto;
 import com.springbootcamp.springsecurity.dtos.SellerDto;
 import com.springbootcamp.springsecurity.entities.users.Address;

@@ -1,83 +1,108 @@
-//package com.springbootcamp.springsecurity;
-//
-//import com.springbootcamp.springsecurity.entities.users.Address;
-//import com.springbootcamp.springsecurity.entities.product.Category;
-//import com.springbootcamp.springsecurity.entities.Role;
-//import com.springbootcamp.springsecurity.entities.users.Customer;
-//import com.springbootcamp.springsecurity.entities.users.Seller;
-//import com.springbootcamp.springsecurity.repositories.*;
-//import org.junit.jupiter.api.Test;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-//import org.springframework.security.crypto.password.PasswordEncoder;
-//
-//import java.util.ArrayList;
-//import java.util.List;
-//
-//@SpringBootTest
-//class SpringSecurityApplicationTests {
-//
-//
-//	@Autowired
-//	UserRepository userRepository;
-//	@Autowired
-//	AddressRepository addressRepository;
-//	@Autowired
-//	SellerRepository sellerRepository;
-//	@Autowired
-//	ProductRepository productRepository;
-//	@Autowired
-//	ProductVariationRepository productVariationRepository;
-//	@Autowired
-//	ProductReviewRepository productReviewRepository;
-//	@Autowired
-//	CartRepository cartRepository;
-//	@Autowired
-//	CategoryRepository categoryRepository;
+package com.springbootcamp.springsecurity;
+
+import com.springbootcamp.springsecurity.co.CustomerCO;
+import com.springbootcamp.springsecurity.entities.ConfirmationToken;
+import com.springbootcamp.springsecurity.entities.users.Customer;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+
+import com.springbootcamp.springsecurity.entities.users.Customer;
+import com.springbootcamp.springsecurity.repositories.*;
+import com.springbootcamp.springsecurity.services.AuditLogsMongoDBService;
+import com.springbootcamp.springsecurity.services.CustomerService;
+import com.springbootcamp.springsecurity.services.EmailService;
+import com.springbootcamp.springsecurity.services.RegistrationService;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest
+public class SpringSecurityApplicationTests {
+
+
+	@Autowired
+	AddressRepository addressRepository;
+	@Autowired
+	SellerRepository sellerRepository;
+	@Autowired
+	ProductRepository productRepository;
+	@Autowired
+	ProductVariationRepository productVariationRepository;
+	@Autowired
+	ProductReviewRepository productReviewRepository;
+	@Autowired
+	CartRepository cartRepository;
+	@Autowired
+	CategoryRepository categoryRepository;
+
+	@Mock
+	CustomerRepository customerRepository;
+
+	@Mock
+	EmailService emailService;
+
+	@Mock
+	ConfirmationTokenRepository confirmationTokenRepository;
+
+	@Mock
+	AuditLogsMongoDBService auditLogsMongoDBService;
+
+	@Autowired
+	CustomerService customerService;
+
+	@Autowired
+	RegistrationService registrationService;
+
+	@Mock
+	ConfirmationToken  confirmationToken;
+	@Mock
+	UserRepository userRepository;
+
+	@Test
+	public void contextLoads() {
+	}
+
+
 //	@Test
-//	void contextLoads() {
+//	void test(){
+//		//addressRepository.deleteById(2L);
+//		//System.out.println("=========================="+addressRepository.findById(2L).get().getCity());
+//		userRepository.findById(3L);
+//		userRepository.deleteById(3L);
+//		Customer customer=userRepository.findById()
 //	}
-////	@Test
-////	void test(){
-////		//addressRepository.deleteById(2L);
-////		//System.out.println("=========================="+addressRepository.findById(2L).get().getCity());
-////		userRepository.findById(3L);
-////		userRepository.deleteById(3L);
-////		Customer customer=userRepository.findById()
-////	}
 //
 //    @Test
 //	void addCustomer(){
 //
-//		Customer user =new Customer();
-//		Address address=new Address();
-//		Role role=new Role();
-//		List<Address> addressList=new ArrayList<>();
-//		List<Role> roleList=new ArrayList<>();
-//        PasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
+//		CustomerCO user =new CustomerCO();
 //		user.setFirstName("Aryan");
 //		user.setLastName("ajay");
-//		user.setIsDeleted(false);
-//		user.setIsActive(true);
 //		user.setContact("9845632341");
 //		user.setEmail("aaryanajay@gmail.com");
-//		user.setPassword(passwordEncoder.encode("anshul@1234"));
-//		role.setAuthority("ROLE_USER");
-//		roleList.add(role);
-//		address.setAddressLine("Shakti vihar");
-//		address.setCity("Alwar");
-//		address.setCountry("India");
-//		address.setLable("Home");
-//		address.setState("Rajasthan");
-//		address.setZipcode("301701");
-//		address.setUser(user);
-//		addressList.add(address);
-//		user.setRoleList(roleList);
-//		user.setAddressList(addressList);
-//		userRepository.save(user);
-//	}
+//		user.setPassword("anshul@1234");
+//		user.setConfirmPassword("anshul@1234");
 //
+//		Mockito.when(customerRepository.save(Mockito.any())).thenReturn(new Customer());
+//		Mockito.doNothing().when(auditLogsMongoDBService).registerUser(Mockito.anyString(),Mockito.anyLong(),Mockito.anyString(),Mockito.any());
+//		Mockito.doNothing().when(emailService).sendEmailToCustomer(Mockito.anyString(),Mockito.anyString());
+////		Mockito.when(confirmationTokenRepository.save()).thenReturn(null);
+////		Mockito.when(confirmationTokenRepository.save(Mockito.any())).thenReturn(new ConfirmationToken());
+//
+//
+//		ResponseEntity responseEntity=registrationService.registerCustomer(user);
+//
+//
+//		assertEquals("Verification mail is send to registered mail id.",responseEntity.getBody().toString());
+//
+//	}
+
 //	@Test
 //	void addSeller(){
 //
@@ -223,6 +248,6 @@
 ////		cart.setWishListItem(true);
 ////		cartRepository.save(cart);
 ////	}
-//
-//
-//}
+
+
+}

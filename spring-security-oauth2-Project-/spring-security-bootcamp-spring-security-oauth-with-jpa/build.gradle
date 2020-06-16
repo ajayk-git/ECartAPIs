@@ -56,8 +56,18 @@ dependencies {
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+	implementation 'junit:junit:4.12'
 }
 
+sonarqube {
+	properties {
+		property "sonar.exclusions",
+				"**com/springbootcamp/springsecurity/security/Bootstrap.java,"+
+				"**com/springbootcamp/springsecurity/security/AuthorizationServerConfiguration.java,"+
+				"**com/springbootcamp/springsecurity/annotations/PasswordValidator.java,"+
+				"**/com/springbootcamp/springsecurity/services/AdminPanelService.java"
+	}
+}
 test {
 	useJUnitPlatform()
 }

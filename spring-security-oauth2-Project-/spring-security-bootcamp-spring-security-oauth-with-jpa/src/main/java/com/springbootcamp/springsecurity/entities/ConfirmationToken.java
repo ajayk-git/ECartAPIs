@@ -1,4 +1,4 @@
-package com.springbootcamp.springsecurity;
+package com.springbootcamp.springsecurity.entities;
 
 import com.springbootcamp.springsecurity.entities.users.User;
 import lombok.Getter;

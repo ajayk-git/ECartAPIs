@@ -245,7 +245,11 @@ public class Bootstrap {
             product.setName("One Plus 7");
             product.setSeller( sellerRepository.findByEmail("aasharma246@gmail.com"));
             product.setDescription("India's smartest mobile phone....");
-            product.setCategory(categoryRepository.findByName("Mobile Phones").get());
+            Optional<Category>optionalCategory=categoryRepository.findByName("Mobile Phones");
+            if (optionalCategory.isPresent()){
+                Category category=optionalCategory.get();
+                product.setCategory(category);
+            }
             product.setIsReturnable(false);
             product.setIsCancelable(false);
             product.setIsDeleted(false);
@@ -257,7 +261,12 @@ public class Bootstrap {
             product1.setName("Dri-Fit TShirts");
             product1.setSeller( sellerRepository.findByEmail("aasharma246@gmail.com"));
             product1.setDescription("First choice of every Sportsman.");
-            product1.setCategory(categoryRepository.findByName("T-Shirt").get());
+
+            Optional<Category>optionalCategory1=categoryRepository.findByName("T-Shirt");
+            if (optionalCategory1.isPresent()){
+                Category category=optionalCategory.get();
+                product.setCategory(category);
+            }
             product1.setIsCancelable(false);
             product1.setIsReturnable(false);
             product1.setIsDeleted(false);
@@ -344,8 +353,6 @@ public class Bootstrap {
             order.setAddresscopy(addresscopy);
             orderRepository.save(order);
         }
-
-
 
     }
 }

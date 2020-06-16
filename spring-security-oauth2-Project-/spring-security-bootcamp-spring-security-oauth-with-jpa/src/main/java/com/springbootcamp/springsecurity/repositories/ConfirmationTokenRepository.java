@@ -1,6 +1,6 @@
 package com.springbootcamp.springsecurity.repositories;
 
-import com.springbootcamp.springsecurity.ConfirmationToken;
+import com.springbootcamp.springsecurity.entities.ConfirmationToken;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

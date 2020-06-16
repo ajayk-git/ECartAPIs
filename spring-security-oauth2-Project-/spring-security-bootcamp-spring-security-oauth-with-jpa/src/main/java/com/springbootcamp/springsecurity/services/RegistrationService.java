@@ -1,9 +1,9 @@
 package com.springbootcamp.springsecurity.services;
 
-import com.springbootcamp.springsecurity.*;
 import com.springbootcamp.springsecurity.co.CustomerCO;
 import com.springbootcamp.springsecurity.co.PasswordUpdateCO;
 import com.springbootcamp.springsecurity.co.SellerCO;
+import com.springbootcamp.springsecurity.entities.ConfirmationToken;
 import com.springbootcamp.springsecurity.entities.users.Address;
 import com.springbootcamp.springsecurity.entities.Role;
 import com.springbootcamp.springsecurity.entities.users.Customer;
@@ -42,6 +42,7 @@ public class RegistrationService {
 
     @Autowired
     AuditLogsMongoDBService auditService;
+
     @Autowired
     JavaMailSender javaMailSender;
 
@@ -50,7 +51,7 @@ public class RegistrationService {
 
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    private boolean isEmailExists(String Email) {
+    public boolean isEmailExists(String Email) {
         return userRepository.findByEmail(Email) != null;
     }
 
@@ -70,8 +71,10 @@ public class RegistrationService {
         role.setAuthority("ROLE_USER");
         List<Role> roleList = new ArrayList<>();
         roleList.add(role);
+        customer.setRoleList(roleList);
         customerRepository.save(customer);
         ConfirmationToken confirmationToken = new ConfirmationToken(customer);
+        confirmationToken.setUser(customer);
         confirmationTokenRepository.save(confirmationToken);
         emailService.sendEmailToCustomer(customer.getEmail(), confirmationToken.getToken());
         auditService.registerUser("User", customer.getId(), customer.getEmail(),customer);

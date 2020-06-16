@@ -3,7 +3,7 @@ package com.springbootcamp.springsecurity.services;
 import com.springbootcamp.springsecurity.co.AddressCO;
 import com.springbootcamp.springsecurity.co.CustomerProfileUpdateCo;
 import com.springbootcamp.springsecurity.co.PasswordUpdateCO;
-import com.springbootcamp.springsecurity.ConfirmationToken;
+import com.springbootcamp.springsecurity.entities.ConfirmationToken;
 import com.springbootcamp.springsecurity.dtos.AddressDto;
 import com.springbootcamp.springsecurity.dtos.CustomerDto;
 import com.springbootcamp.springsecurity.entities.users.Address;
@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
