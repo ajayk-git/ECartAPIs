@@ -22,6 +22,7 @@ import com.springbootcamp.springsecurity.entities.ConfirmationToken;
 import com.springbootcamp.springsecurity.entities.product.Category;
 import com.springbootcamp.springsecurity.entities.product.Product;
 import com.springbootcamp.springsecurity.entities.product.ProductVariation;
+import com.springbootcamp.springsecurity.entities.users.Address;
 import com.springbootcamp.springsecurity.entities.users.Customer;
 import com.springbootcamp.springsecurity.entities.users.Seller;
 import com.springbootcamp.springsecurity.entities.users.User;
@@ -61,6 +62,8 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 public class SpringSecurityApplicationTests {
 
+    @Mock
+    SellerRepository sellerRepository;
 
     @Mock
     ProductRepository productRepository;
@@ -80,18 +83,20 @@ public class SpringSecurityApplicationTests {
     @Mock
     AuditLogsMongoDBService auditLogsMongoDBService;
 
+    @Mock
+    UserRepository userRepository;
+
     @InjectMocks
     CustomerService customerService;
 
     @InjectMocks
     RegistrationService registrationService;
+
     @InjectMocks
     ProductService productService;
 
-    @Mock
-    ConfirmationToken confirmationToken;
-    @Mock
-    UserRepository userRepository;
+    @InjectMocks
+    SellerService sellerService;
 
     @Test
     public void contextLoads() {
@@ -276,6 +281,45 @@ public class SpringSecurityApplicationTests {
         });
 
         assertEquals("customer@gmail.com", customerDto.getEmail());
+
+    }
+
+
+    @WithMockUser
+    @Test
+    public void viewSellerProfile() {
+
+        Address address = new Address();
+        address.setId(1L);
+        address.setAddressLine("testAddressLine");
+        address.setCity("testCity");
+        address.setState("testState");
+        address.setCountry("testCountry");
+        address.setZipcode("123456");
+        address.setLable("testLable");
+
+        Seller seller = new Seller();
+        seller.setEmail("seller@gmail.com");
+        seller.setId(1L);
+        seller.setCompanyName("testCompanyName");
+        seller.setFirstName("testSellerFirstName");
+        seller.setLastName("testSellerLastName");
+        seller.setCompanyContact("1234567890");
+        seller.setIsActive(true);
+        seller.setGst("testGST");
+        seller.setAddress(address);
+
+        Mockito.when(sellerRepository.findByEmail(Mockito.anyString())).thenReturn(seller);
+        Mockito.doNothing().when(auditLogsMongoDBService).readObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
+
+        SellerDto sellerDto = sellerService.viewSellerProfile("seller@gmail.com", new Principal() {
+            @Override
+            public String getName() {
+                return "seller@gmail.com";
+            }
+        });
+
+        assertEquals("seller@gmail.com", sellerDto.getEmail());
 
     }
 
