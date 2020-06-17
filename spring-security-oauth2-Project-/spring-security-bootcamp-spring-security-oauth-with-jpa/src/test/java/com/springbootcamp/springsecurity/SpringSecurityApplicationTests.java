@@ -17,14 +17,16 @@ package com.springbootcamp.springsecurity;
 //import org.junit.Test;
 
 import com.springbootcamp.springsecurity.co.CustomerCO;
+import com.springbootcamp.springsecurity.dtos.ProductAdminDto;
+import com.springbootcamp.springsecurity.dtos.ProductSellerDto;
 import com.springbootcamp.springsecurity.entities.ConfirmationToken;
+import com.springbootcamp.springsecurity.entities.product.Category;
+import com.springbootcamp.springsecurity.entities.product.Product;
 import com.springbootcamp.springsecurity.entities.users.Customer;
+import com.springbootcamp.springsecurity.entities.users.Seller;
 import com.springbootcamp.springsecurity.entities.users.User;
 import com.springbootcamp.springsecurity.repositories.*;
-import com.springbootcamp.springsecurity.services.AuditLogsMongoDBService;
-import com.springbootcamp.springsecurity.services.CustomerService;
-import com.springbootcamp.springsecurity.services.EmailService;
-import com.springbootcamp.springsecurity.services.RegistrationService;
+import com.springbootcamp.springsecurity.services.*;
 //import org.junit.Test;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -41,9 +43,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 //import org.springframework.http.ResponseEntity;
 //import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.security.Principal;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 //import static org.junit.Assert.assertFalse;
@@ -58,7 +64,7 @@ public class SpringSecurityApplicationTests {
     AddressRepository addressRepository;
     @Autowired
     SellerRepository sellerRepository;
-    @Autowired
+    @Mock
     ProductRepository productRepository;
     @Autowired
     ProductVariationRepository productVariationRepository;
@@ -86,6 +92,8 @@ public class SpringSecurityApplicationTests {
 
     @InjectMocks
     RegistrationService registrationService;
+    @InjectMocks
+    ProductService productService;
 
     @Mock
     ConfirmationToken confirmationToken;
@@ -116,7 +124,7 @@ public class SpringSecurityApplicationTests {
 
 
     @Test
-    void addCustomer() {
+    public void addCustomer() {
 
         CustomerCO user = new CustomerCO();
         user.setFirstName("Aryan");
@@ -132,6 +140,64 @@ public class SpringSecurityApplicationTests {
         Mockito.when(confirmationTokenRepository.save(Mockito.any())).thenReturn(null);
         ResponseEntity responseEntity = registrationService.registerCustomer(user);
         assertEquals("Verification mail is send to registered mail id.", responseEntity.getBody().toString());
+
+    }
+
+
+    @Test
+    @WithMockUser
+    public void viewProductByAdmin() {
+        Category category=new Category();
+        category.setId(1L);
+        Product product=new Product();
+        product.setCategory(category);
+        product.setId(1L);
+        product.setName("6S");
+        product.setBrand("IPhone");
+
+        Mockito.when(productRepository.findById(Mockito.anyLong())).thenReturn(java.util.Optional.of(product));
+        doNothing().when(auditLogsMongoDBService).readObject(Mockito.anyString(),Mockito.anyLong(),Mockito.anyString());
+
+        ProductAdminDto productAdminDto=productService.viewProductByAdmin(1L, new Principal() {
+            @Override
+            public String getName() {
+                return "Ajay";
+            }
+        });
+        assertEquals("6S",productAdminDto.getName());
+
+    }
+
+    @WithMockUser
+    @Test
+    public void viewProductBySeller() {
+        Category category=new Category();
+        category.setId(1L);
+        Seller seller=new Seller();
+        seller.setId(1L);
+        seller.setEmail("seller@gmail.com");
+        Product product=new Product();
+        product.setCategory(category);
+        product.setId(1L);
+        product.setName("6S");
+        product.setBrand("IPhone");
+        product.setSeller(seller);
+        product.setIsDeleted(false);
+        product.setIsActive(true);
+        product.setIsCancelable(false);
+        product.setIsReturnable(false);
+
+        Mockito.when(productRepository.findById(Mockito.anyLong())).thenReturn(java.util.Optional.of(product));
+        doNothing().when(auditLogsMongoDBService).readObject(Mockito.anyString(),Mockito.anyLong(),Mockito.anyString());
+//        Mockito.when(product.getSeller().getEmail()).thenReturn("seller@gmail.com");
+
+        ProductSellerDto productSellerDto=productService.viewProductBySeller(2L, new Principal() {
+            @Override
+            public String getName() {
+                return "seller@gmail.com";
+            }
+        });
+        assertEquals("6S",productSellerDto.getName());
 
     }
 
