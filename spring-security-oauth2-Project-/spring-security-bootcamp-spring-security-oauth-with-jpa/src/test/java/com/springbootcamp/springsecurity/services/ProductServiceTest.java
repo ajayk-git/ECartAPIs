@@ -1,14 +1,18 @@
 package com.springbootcamp.springsecurity.services;
 
 //import org.junit.jupiter.api.Test;
+
 import com.springbootcamp.springsecurity.dtos.ProductAdminDto;
 import com.springbootcamp.springsecurity.dtos.ProductCustomerDto;
 import com.springbootcamp.springsecurity.dtos.ProductSellerDto;
+import com.springbootcamp.springsecurity.dtos.ProductVariantDto;
 import com.springbootcamp.springsecurity.entities.product.Category;
 import com.springbootcamp.springsecurity.entities.product.Product;
+import com.springbootcamp.springsecurity.entities.product.ProductVariation;
 import com.springbootcamp.springsecurity.entities.users.Customer;
 import com.springbootcamp.springsecurity.entities.users.Seller;
 import com.springbootcamp.springsecurity.repositories.ProductRepository;
+import com.springbootcamp.springsecurity.repositories.ProductVariationRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -27,26 +31,30 @@ public class ProductServiceTest {
 
     @Mock
     ProductRepository productRepository;
+    @Mock
+    ProductVariationRepository productVariationRepository;
 
-           @Mock
+    @Mock
     AuditLogsMongoDBService auditLogsMongoDBService;
+
 
     @InjectMocks
     ProductService productService;
-//
+
+    //
 //    @Mock
 //    Product product;
 //
 //    @Test
 //    void viewProductBySeller() {
 //    }
-@WithMockUser
+    @WithMockUser
     @Test
     public void viewProductByAdmin() {
-        Category category=new Category();
+        Category category = new Category();
         category.setId(1L);
 
-        Product product=new Product();
+        Product product = new Product();
         product.setCategory(category);
         product.setId(1L);
         product.setName("6S");
@@ -54,27 +62,27 @@ public class ProductServiceTest {
 
 
         Mockito.when(productRepository.findById(Mockito.anyLong())).thenReturn(java.util.Optional.of(product));
-        doNothing().when(auditLogsMongoDBService).readObject(Mockito.anyString(),Mockito.anyLong(),Mockito.anyString());
+        doNothing().when(auditLogsMongoDBService).readObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
 
-        ProductAdminDto productAdminDto=productService.viewProductByAdmin(1L, new Principal() {
+        ProductAdminDto productAdminDto = productService.viewProductByAdmin(1L, new Principal() {
             @Override
             public String getName() {
                 return "Ajay";
             }
         });
-        assertEquals("6S",productAdminDto.getName());
+        assertEquals("6S", productAdminDto.getName());
 
     }
 
     @WithMockUser
     @Test
     public void viewProductBySeller() {
-        Category category=new Category();
+        Category category = new Category();
         category.setId(1L);
-        Seller seller=new Seller();
+        Seller seller = new Seller();
         seller.setId(1L);
         seller.setEmail("seller@gmail.com");
-        Product product=new Product();
+        Product product = new Product();
         product.setCategory(category);
         product.setId(1L);
         product.setName("6S");
@@ -86,15 +94,15 @@ public class ProductServiceTest {
         product.setIsReturnable(false);
 
         Mockito.when(productRepository.findById(Mockito.anyLong())).thenReturn(java.util.Optional.of(product));
-        doNothing().when(auditLogsMongoDBService).readObject(Mockito.anyString(),Mockito.anyLong(),Mockito.anyString());
+        doNothing().when(auditLogsMongoDBService).readObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
 
-        ProductSellerDto productSellerDto=productService.viewProductBySeller(2L, new Principal() {
+        ProductSellerDto productSellerDto = productService.viewProductBySeller(2L, new Principal() {
             @Override
             public String getName() {
                 return "seller@gmail.com";
             }
         });
-        assertEquals("6S",productSellerDto.getName());
+        assertEquals("6S", productSellerDto.getName());
 
     }
 
@@ -103,10 +111,10 @@ public class ProductServiceTest {
     @Test
     public void getProductByCustomer() {
 
-        Customer customer=new Customer();
+        Customer customer = new Customer();
         customer.setEmail("customer@gmail.com");
-        Product product=new Product();
-        product.setId(1L);
+        Product product = new Product();
+        product.setId(2L);
         product.setName("6S");
         product.setBrand("IPhone");
         product.setIsDeleted(false);
@@ -115,15 +123,41 @@ public class ProductServiceTest {
         product.setIsReturnable(false);
 
         Mockito.when(productRepository.findById(Mockito.anyLong())).thenReturn(java.util.Optional.of(product));
-        doNothing().when(auditLogsMongoDBService).readObject(Mockito.anyString(),Mockito.anyLong(),Mockito.anyString());
+        doNothing().when(auditLogsMongoDBService).readObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
 
-        ProductCustomerDto productCustomerDto=productService.getProductByCustomer(2L, new Principal() {
+        ProductCustomerDto productCustomerDto = productService.getProductByCustomer(2L, new Principal() {
             @Override
             public String getName() {
                 return "customer@gmail.com";
             }
         });
-        assertEquals("6S",productCustomerDto.getName());
+        assertEquals("6S", productCustomerDto.getName());
 
+    }
+
+    @WithMockUser
+    @Test
+    public void getProductVariantBySeller() {
+
+        ProductVariation productVariation = new ProductVariation();
+        Product product=new Product();
+        product.setId(1L);
+        product.setBrand("Nokia");
+        productVariation.setIsActive(true);
+        productVariation.setId(2L);
+        productVariation.setProduct(product);
+        productVariation.setPrice(234F);
+        productVariation.setQuantityAvailable(10);
+
+        Mockito.when(productVariationRepository.findById(Mockito.anyLong())).thenReturn(java.util.Optional.of(productVariation));
+        doNothing().when(auditLogsMongoDBService).readObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
+
+        ProductVariantDto productVariantDto = productService.getProductVariantBySeller(2l, new Principal() {
+            @Override
+            public String getName() {
+                return "Seller@gmail.com";
+            }
+        });
+        assertEquals(2L, productVariantDto.getProductVariantId());
     }
 }
