@@ -130,8 +130,11 @@ public class CategoryService {
 
 
         Category subCategory = new Category();
-        Category parentCategory = categoryRepository.findById(categoryCO.getParentId()).get();
-
+        Optional<Category> optionalParentCategory = categoryRepository.findById(categoryCO.getParentId());
+        if (!optionalParentCategory.isPresent()){
+            throw  new ResourceNotFoundException("Parent category not found.");
+        }
+        Category parentCategory=optionalParentCategory.get();
         subCategory.setName(categoryCO.getCategoryName());
         subCategory.setParentCategory(parentCategory);
         parentCategory.addCategory(subCategory);
@@ -231,7 +234,11 @@ public class CategoryService {
             if (category.isPresent()) {
                 throw new ResourceAlreadyExistException("Category with given name is already exist kindly retry with another category name.");
             } else {
-                Category category1 = categoryRepository.findById(id).get();
+                Optional<Category> optionalCategory = categoryRepository.findById(id);
+                if (!optionalCategory.isPresent()){
+                    throw new ResourceNotFoundException("Category not found.");
+                }
+                Category category1=optionalCategory.get();
                 category1.setName(categoryName);
                 categoryRepository.save(category1);
                 auditService.updateObject("Category", category1.getId(), principal.getName());
@@ -252,9 +259,18 @@ public class CategoryService {
         Long metaDataFieldId = metaDataFieldValueCo.getFieldId();
         if (categoryRepository.findById(categoryId).isPresent() && categoryMetaDataFieldRepository.findById(metaDataFieldId).isPresent()) {
 
-            Category category = categoryRepository.findById(categoryId).get();
+            Optional<Category> optionalCategory= categoryRepository.findById(categoryId);
+            if (!optionalCategory.isPresent()){
+                throw new ResourceNotFoundException("Category not found.");
+            }
 
-            CategoryMetaDataField metaDataField = categoryMetaDataFieldRepository.findById(metaDataFieldId).get();
+            Category category=optionalCategory.get();
+
+           Optional <CategoryMetaDataField> optionalCategoryMetaDataField = categoryMetaDataFieldRepository.findById(metaDataFieldId);
+           if (!optionalCategoryMetaDataField.isPresent()){
+               throw new ResourceNotFoundException("Category MetaData field not found.");
+           }
+            CategoryMetaDataField metaDataField=optionalCategoryMetaDataField.get();
             CategoryMetadataCompositeKey compositeKey = new CategoryMetadataCompositeKey(categoryId, metaDataFieldId);
             CategoryMetadataFieldValues metadataFieldValues = new CategoryMetadataFieldValues();
 
@@ -298,8 +314,11 @@ public class CategoryService {
             throw new ResourceNotFoundException("Please enter a valid Combination of CategoryId and MetaData FieldId.");
 
         else {
-            CategoryMetadataFieldValues categoryMetaDataFieldValues = metaDataFieldValuesRepository.findById(compositeKey).get();
-
+            Optional<CategoryMetadataFieldValues> optionalCategoryMetaDataFieldValues = metaDataFieldValuesRepository.findById(compositeKey);
+            if(!optionalCategoryMetaDataFieldValues.isPresent()){
+                throw new ResourceNotFoundException("Metadata fields value not present");
+            }
+            CategoryMetadataFieldValues categoryMetaDataFieldValues= optionalCategoryMetaDataFieldValues.get();
             String metaDataFieldValueCO = metaDataFieldValueCo.getFieldValues();
             String fieldValues = categoryMetaDataFieldValues.getFieldValues();
             String appendResult = metaDataFieldValueCO.concat(fieldValues);

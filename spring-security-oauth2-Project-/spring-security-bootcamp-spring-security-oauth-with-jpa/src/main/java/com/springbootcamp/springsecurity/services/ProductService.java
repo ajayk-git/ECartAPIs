@@ -9,10 +9,7 @@ import com.springbootcamp.springsecurity.entities.product.Category;
 import com.springbootcamp.springsecurity.entities.product.Product;
 import com.springbootcamp.springsecurity.entities.product.ProductVariation;
 import com.springbootcamp.springsecurity.entities.users.Seller;
-import com.springbootcamp.springsecurity.exceptions.ProductDoesNotExistException;
-import com.springbootcamp.springsecurity.exceptions.ResourceAlreadyExistException;
-import com.springbootcamp.springsecurity.exceptions.ResourceNotAccessibleException;
-import com.springbootcamp.springsecurity.exceptions.ResourceNotFoundException;
+import com.springbootcamp.springsecurity.exceptions.*;
 import com.springbootcamp.springsecurity.repositories.CategoryRepository;
 import com.springbootcamp.springsecurity.repositories.ProductRepository;
 import com.springbootcamp.springsecurity.repositories.ProductVariationRepository;
@@ -469,9 +466,25 @@ public class ProductService {
     public List<ProductSellerDto> viewAllProductsBySeller(Optional<Integer> page, Optional<Integer> contentSize, Optional<String> sortProperty, Optional<String> sortDirection, Principal principal) {
 
         log.info("inside viewAllProductsBySeller method");
+        if (!sortDirection.isPresent()) {
+            throw new DuplicateValueException("Sorting value is required.");
+        }
+
+        if (!page.isPresent()) {
+            throw new DuplicateValueException("Page value is required.");
+        }
+
+        if (!sortProperty.isPresent()) {
+            throw new DuplicateValueException("Sort property value is required.");
+        }
+
+        if (!contentSize.isPresent()) {
+            throw new DuplicateValueException("Content size value is required.");
+        }
 
         Sort.Direction sortingDirection = sortDirection.get().equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         String loggedInSeller = principal.getName();
+
 
         Page<Product> products = productRepository.findAll(PageRequest.of(page.get(), contentSize.get(), sortingDirection, sortProperty.get()));
 
@@ -585,6 +598,21 @@ public class ProductService {
 
         Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
 
+        if (!sortDirection.isPresent()) {
+            throw new DuplicateValueException("Sorting value is required.");
+        }
+
+        if (!page.isPresent()) {
+            throw new DuplicateValueException("Page value is required.");
+        }
+
+        if (!sortProperty.isPresent()) {
+            throw new DuplicateValueException("Sort property value is required.");
+        }
+
+        if (!contentSize.isPresent()) {
+            throw new DuplicateValueException("Content size value is required.");
+        }
         if (optionalCategory.isPresent()) {
             Category category = optionalCategory.get();
             if (!category.getSubCategory().isEmpty())
@@ -627,6 +655,21 @@ public class ProductService {
 
         log.info("inside getAllProductsByAdmin method");
 
+        if (!sortDirection.isPresent()) {
+            throw new DuplicateValueException("Sorting value is required.");
+        }
+
+        if (!page.isPresent()) {
+            throw new DuplicateValueException("Page value is required.");
+        }
+
+        if (!sortProperty.isPresent()) {
+            throw new DuplicateValueException("Sort property value is required.");
+        }
+
+        if (!contentSize.isPresent()) {
+            throw new DuplicateValueException("Content size value is required.");
+        }
 
         Sort.Direction sortingDirection = sortDirection.get().equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Page<Product> productList = productRepository.findAll(PageRequest.of(page.get(), contentSize.get(), sortingDirection, sortProperty.get()));
@@ -655,13 +698,33 @@ public class ProductService {
 
         log.info("inside getSimilarProductsByCustomer method");
 
+        if (!sortDirection.isPresent()) {
+            throw new DuplicateValueException("Sorting value is required.");
+        }
+
+        if (!page.isPresent()) {
+            throw new DuplicateValueException("Page value is required.");
+        }
+
+        if (!sortProperty.isPresent()) {
+            throw new DuplicateValueException("Sort property value is required.");
+        }
+
+        if (!contentSize.isPresent()) {
+            throw new DuplicateValueException("Content size value is required.");
+        }
 
         if (!productRepository.findById(productId).isPresent())
             throw new ResourceNotFoundException("Product with mentioned productId is not exist.");
 
         Sort.Direction sortingDirection = sortDirection.get().equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
 
-        Product product = productRepository.findById(productId).get();
+        Optional<Product> optionalProduct = productRepository.findById(productId);
+        if (!optionalProduct.isPresent()) {
+            throw new ResourceNotFoundException("Product not found.");
+        }
+
+        Product product = optionalProduct.get();
         List<Product> similarProducts = productRepository.findByCategory(product.getCategory().getId(), PageRequest.of(page.get(), contentSize.get(), sortingDirection, sortProperty.get()));
 
         Type listType = new TypeToken<List<ProductCustomerDto>>() {
