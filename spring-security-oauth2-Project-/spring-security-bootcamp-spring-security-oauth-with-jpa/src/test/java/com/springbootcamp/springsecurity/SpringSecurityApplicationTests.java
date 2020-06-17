@@ -17,10 +17,7 @@ package com.springbootcamp.springsecurity;
 //import org.junit.Test;
 
 import com.springbootcamp.springsecurity.co.CustomerCO;
-import com.springbootcamp.springsecurity.dtos.ProductAdminDto;
-import com.springbootcamp.springsecurity.dtos.ProductCustomerDto;
-import com.springbootcamp.springsecurity.dtos.ProductSellerDto;
-import com.springbootcamp.springsecurity.dtos.ProductVariantDto;
+import com.springbootcamp.springsecurity.dtos.*;
 import com.springbootcamp.springsecurity.entities.ConfirmationToken;
 import com.springbootcamp.springsecurity.entities.product.Category;
 import com.springbootcamp.springsecurity.entities.product.Product;
@@ -83,7 +80,7 @@ public class SpringSecurityApplicationTests {
     @Mock
     AuditLogsMongoDBService auditLogsMongoDBService;
 
-    @Autowired
+    @InjectMocks
     CustomerService customerService;
 
     @InjectMocks
@@ -254,6 +251,32 @@ public class SpringSecurityApplicationTests {
             }
         });
         assertEquals(2L, productVariantDto.getProductVariantId());
+    }
+
+    @Test
+    @WithMockUser
+    public void viewCustomerProfile() {
+
+        Customer customer = new Customer();
+        customer.setEmail("customer@gmail.com");
+        customer.setId(1L);
+        customer.setFirstName("testFirstName");
+        customer.setLastName("testLastName");
+        customer.setContact("1234567890");
+        customer.setIsActive(false);
+
+        Mockito.when(customerRepository.findByEmail(Mockito.anyString())).thenReturn(customer);
+        Mockito.doNothing().when(auditLogsMongoDBService).readObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
+
+        CustomerDto customerDto = customerService.viewCustomerProfile("customer@gmail.com", new Principal() {
+            @Override
+            public String getName() {
+                return "customer@gmail.com";
+            }
+        });
+
+        assertEquals("customer@gmail.com", customerDto.getEmail());
+
     }
 
 //	@Test

@@ -41,13 +41,6 @@ public class ProductServiceTest {
     @InjectMocks
     ProductService productService;
 
-    //
-//    @Mock
-//    Product product;
-//
-//    @Test
-//    void viewProductBySeller() {
-//    }
     @WithMockUser
     @Test
     public void viewProductByAdmin() {
