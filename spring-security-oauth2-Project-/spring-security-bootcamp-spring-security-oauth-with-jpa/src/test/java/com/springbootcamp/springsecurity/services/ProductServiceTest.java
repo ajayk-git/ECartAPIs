@@ -2,9 +2,11 @@ package com.springbootcamp.springsecurity.services;
 
 //import org.junit.jupiter.api.Test;
 import com.springbootcamp.springsecurity.dtos.ProductAdminDto;
+import com.springbootcamp.springsecurity.dtos.ProductCustomerDto;
 import com.springbootcamp.springsecurity.dtos.ProductSellerDto;
 import com.springbootcamp.springsecurity.entities.product.Category;
 import com.springbootcamp.springsecurity.entities.product.Product;
+import com.springbootcamp.springsecurity.entities.users.Customer;
 import com.springbootcamp.springsecurity.entities.users.Seller;
 import com.springbootcamp.springsecurity.repositories.ProductRepository;
 import org.junit.Test;
@@ -85,7 +87,6 @@ public class ProductServiceTest {
 
         Mockito.when(productRepository.findById(Mockito.anyLong())).thenReturn(java.util.Optional.of(product));
         doNothing().when(auditLogsMongoDBService).readObject(Mockito.anyString(),Mockito.anyLong(),Mockito.anyString());
-//        Mockito.when(product.getSeller().getEmail()).thenReturn("seller@gmail.com");
 
         ProductSellerDto productSellerDto=productService.viewProductBySeller(2L, new Principal() {
             @Override
@@ -94,6 +95,35 @@ public class ProductServiceTest {
             }
         });
         assertEquals("6S",productSellerDto.getName());
+
+    }
+
+
+    @WithMockUser
+    @Test
+    public void getProductByCustomer() {
+
+        Customer customer=new Customer();
+        customer.setEmail("customer@gmail.com");
+        Product product=new Product();
+        product.setId(1L);
+        product.setName("6S");
+        product.setBrand("IPhone");
+        product.setIsDeleted(false);
+        product.setIsActive(true);
+        product.setIsCancelable(false);
+        product.setIsReturnable(false);
+
+        Mockito.when(productRepository.findById(Mockito.anyLong())).thenReturn(java.util.Optional.of(product));
+        doNothing().when(auditLogsMongoDBService).readObject(Mockito.anyString(),Mockito.anyLong(),Mockito.anyString());
+
+        ProductCustomerDto productCustomerDto=productService.getProductByCustomer(2L, new Principal() {
+            @Override
+            public String getName() {
+                return "customer@gmail.com";
+            }
+        });
+        assertEquals("6S",productCustomerDto.getName());
 
     }
 }
