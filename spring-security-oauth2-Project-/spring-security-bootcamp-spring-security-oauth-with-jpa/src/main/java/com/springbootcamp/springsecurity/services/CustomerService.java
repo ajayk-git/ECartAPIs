@@ -50,7 +50,7 @@ public class CustomerService {
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
 
-    private boolean isEmailExists(String Email) {
+    public boolean isEmailExists(String Email) {
         return userRepository.findByEmail(Email) != null;
     }
 
