@@ -1,5 +1,6 @@
 package com.springbootcamp.springsecurity.services;
 
+import com.springbootcamp.springsecurity.co.AddressCO;
 import com.springbootcamp.springsecurity.dtos.AddressDto;
 import com.springbootcamp.springsecurity.dtos.CustomerDto;
 import com.springbootcamp.springsecurity.entities.users.Address;
@@ -14,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import java.security.Principal;
@@ -67,7 +69,7 @@ public class CustomerServiceTest {
     @WithMockUser
     public void getAddressListCustomerSuccessFullTest() {
 
-        Address address=new Address();
+        Address address = new Address();
         address.setId(1L);
         address.setAddressLine("testAddressLine");
         address.setCity("testCity");
@@ -76,7 +78,7 @@ public class CustomerServiceTest {
         address.setZipcode("123456");
         address.setLable("testLable");
 
-        Address address1=new Address();
+        Address address1 = new Address();
         address1.setId(2L);
         address1.setAddressLine("testAddressLine");
         address1.setCity("testCity");
@@ -85,29 +87,31 @@ public class CustomerServiceTest {
         address1.setZipcode("123456");
         address1.setLable("testLable");
 
-        List<Address>addressList=new ArrayList<>();
+        List<Address> addressList = new ArrayList<>();
         addressList.add(address);
         addressList.add(address1);
-        Customer customer=new Customer();
+        Customer customer = new Customer();
         customer.setId(1L);
         customer.setEmail("customer@gmail.com");
         customer.setAddressList(addressList);
-        User user=new User();
+        User user = new User();
         user.setId(1L);
         user.setEmail("xyz");
 
 
         Mockito.when(customerRepository.findByEmail(Mockito.anyString())).thenReturn(customer);
         Mockito.when(userRepository.findByEmail(Mockito.anyString())).thenReturn(user);
+        Mockito.doNothing().when(auditLogsMongoDBService).readObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
 
-        List<AddressDto> addressesResult=customerService.getAddressListCustomer("customer@gmail.com", new Principal() {
+
+        List<AddressDto> addressesResult = customerService.getAddressListCustomer("customer@gmail.com", new Principal() {
             @Override
             public String getName() {
                 return "customer@gmail.com";
             }
         });
 
-        assertEquals(2,addressesResult.size());
+        assertEquals(2, addressesResult.size());
 
     }
 
@@ -116,7 +120,7 @@ public class CustomerServiceTest {
     @WithMockUser
     public void getAddressListCustomerFailTest() {
 
-        Address address=new Address();
+        Address address = new Address();
         address.setId(1L);
         address.setAddressLine("testAddressLine");
         address.setCity("testCity");
@@ -125,7 +129,7 @@ public class CustomerServiceTest {
         address.setZipcode("123456");
         address.setLable("testLable");
 
-        Address address1=new Address();
+        Address address1 = new Address();
         address1.setId(2L);
         address1.setAddressLine("testAddressLine");
         address1.setCity("testCity");
@@ -134,27 +138,89 @@ public class CustomerServiceTest {
         address1.setZipcode("123456");
         address1.setLable("testLable");
 
-        List<Address>addressList=new ArrayList<>();
+        List<Address> addressList = new ArrayList<>();
         addressList.add(address);
         addressList.add(address1);
-        Customer customer=new Customer();
+        Customer customer = new Customer();
         customer.setId(1L);
         customer.setEmail("customer@gmail.com");
         customer.setAddressList(addressList);
-        User user=new User();
+        User user = new User();
         user.setId(1L);
         user.setEmail("xyz");
 
 
         Mockito.when(customerRepository.findByEmail(Mockito.anyString())).thenReturn(customer);
         Mockito.when(userRepository.findByEmail(Mockito.anyString())).thenReturn(user);
+        Mockito.doNothing().when(auditLogsMongoDBService).readObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
 
-        List<AddressDto> addressesResult=customerService.getAddressListCustomer("customer@gmail.com", new Principal() {
+
+        List<AddressDto> addressesResult = customerService.getAddressListCustomer("customer@gmail.com", new Principal() {
             @Override
             public String getName() {
                 return "customer@gmail.com";
             }
         });
         assertNotEquals(1, addressesResult.size());
+    }
+
+
+    @Test
+    @WithMockUser
+    public void addCustomerAddressSuccessFullTest() {
+        AddressCO addressCo = new AddressCO();
+        addressCo.setAddressLine("testAddressLine");
+        addressCo.setCity("testCity");
+        addressCo.setState("testState");
+        addressCo.setCountry("testCountry");
+        addressCo.setZipcode("123456");
+        addressCo.setLable("testLable");
+
+        Customer customer = new Customer();
+        customer.setId(1L);
+        customer.setEmail("customer@gmail.com");
+
+        Mockito.when(customerRepository.findByEmail(Mockito.anyString())).thenReturn(customer);
+        Mockito.doNothing().when(auditLogsMongoDBService).saveNewObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
+
+        ResponseEntity responseEntity = customerService.addCustomerAddress(addressCo, "customer@gmail.com", new Principal() {
+            @Override
+            public String getName() {
+                return "customer@gmail.com";
+            }
+        });
+
+        assertEquals("Address is successfully added to customers address list", responseEntity.getBody().toString());
+
+    }
+
+
+    @Test
+    @WithMockUser
+    public void addCustomerAddressFailTest() {
+        AddressCO addressCo = new AddressCO();
+        addressCo.setAddressLine("testAddressLine");
+        addressCo.setCity("testCity");
+        addressCo.setState("testState");
+        addressCo.setCountry("testCountry");
+        addressCo.setZipcode("123456");
+        addressCo.setLable("testLabel");
+
+        Customer customer = new Customer();
+        customer.setId(1L);
+        customer.setEmail("customerTest@gmail.com");
+
+        Mockito.when(customerRepository.findByEmail("customerTest@gmail.com")).thenReturn(customer);
+        Mockito.doNothing().when(auditLogsMongoDBService).saveNewObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
+
+        ResponseEntity responseEntity = customerService.addCustomerAddress(addressCo, "customer@gmail.com", new Principal() {
+            @Override
+            public String getName() {
+                return "customer@gmail.com";
+            }
+        });
+
+        assertNotEquals("Address is successfully added to customers address list", responseEntity.getBody().toString());
+
     }
 }
