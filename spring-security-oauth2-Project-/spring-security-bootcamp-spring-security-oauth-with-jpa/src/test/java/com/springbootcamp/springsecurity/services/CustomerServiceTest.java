@@ -223,4 +223,95 @@ public class CustomerServiceTest {
         assertNotEquals("Address is successfully added to customers address list", responseEntity.getBody().toString());
 
     }
+
+
+    @Test
+    @WithMockUser
+    public void deleteAddressByIdSuccessFullTest() {
+
+
+        Address address = new Address();
+        address.setId(1L);
+        address.setAddressLine("testAddressLine");
+        address.setCity("testCity");
+        address.setState("testState");
+        address.setCountry("testCountry");
+        address.setZipcode("123456");
+        address.setLable("testLable");
+
+        Address address1 = new Address();
+        address1.setId(2L);
+        address1.setAddressLine("testAddressLine");
+        address1.setCity("testCity");
+        address1.setState("testState");
+        address1.setCountry("testCountry");
+        address1.setZipcode("123456");
+        address1.setLable("testLable");
+
+        List<Address> addressList = new ArrayList<>();
+        addressList.add(address);
+        addressList.add(address1);
+
+        Customer customer = new Customer();
+        customer.setId(1L);
+        customer.setEmail("customer@gmail.com");
+        customer.setAddressList(addressList);
+
+        Mockito.when(customerRepository.findByEmail("customer@gmail.com")).thenReturn(customer);
+        Mockito.doNothing().when(auditLogsMongoDBService).deleteObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
+
+
+        ResponseEntity responseEntity = customerService.deleteAddressById(2L, "customer@gmail.com", new Principal() {
+            @Override
+            public String getName() {
+                return "customer@gmail.com";
+            }
+        });
+        assertEquals("Deleted Address with id " + address1.getId(), responseEntity.getBody().toString());
+    }
+
+
+    @Test
+    @WithMockUser
+    public void deleteAddressByIdFailTest() {
+
+        Address address = new Address();
+        address.setId(1L);
+        address.setAddressLine("testAddressLine");
+        address.setCity("testCity");
+        address.setState("testState");
+        address.setCountry("testCountry");
+        address.setZipcode("123456");
+        address.setLable("testLable");
+
+        Address address1 = new Address();
+        address1.setId(2L);
+        address1.setAddressLine("testAddressLine");
+        address1.setCity("testCity");
+        address1.setState("testState");
+        address1.setCountry("testCountry");
+        address1.setZipcode("123456");
+        address1.setLable("testLable");
+
+        List<Address> addressList = new ArrayList<>();
+        addressList.add(address);
+        addressList.add(address1);
+
+        Customer customer = new Customer();
+        customer.setId(1L);
+        customer.setEmail("customer@gmail.com");
+        customer.setAddressList(addressList);
+
+        Mockito.when(customerRepository.findByEmail("customer@gmail.com")).thenReturn(customer);
+        Mockito.doNothing().when(auditLogsMongoDBService).deleteObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
+
+
+        ResponseEntity responseEntity = customerService.deleteAddressById(3L, "customer@gmail.com", new Principal() {
+            @Override
+            public String getName() {
+                return "customer@gmail.com";
+            }
+        });
+        assertNotEquals("Deleted Address with id " + address1.getId(), responseEntity.getBody().toString());
+    }
 }
