@@ -181,6 +181,7 @@ public class CustomerServiceTest {
         customer.setEmail("customer@gmail.com");
 
         Mockito.when(customerRepository.findByEmail(Mockito.anyString())).thenReturn(customer);
+        Mockito.when(customerRepository.save(customer)).thenReturn(customer);
         Mockito.doNothing().when(auditLogsMongoDBService).saveNewObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
 
         ResponseEntity responseEntity = customerService.addCustomerAddress(addressCo, "customer@gmail.com", new Principal() {
@@ -211,6 +212,7 @@ public class CustomerServiceTest {
         customer.setEmail("customerTest@gmail.com");
 
         Mockito.when(customerRepository.findByEmail("customerTest@gmail.com")).thenReturn(customer);
+        Mockito.when(customerRepository.save(customer)).thenReturn(customer);
         Mockito.doNothing().when(auditLogsMongoDBService).saveNewObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
 
         ResponseEntity responseEntity = customerService.addCustomerAddress(addressCo, "customer@gmail.com", new Principal() {
@@ -228,7 +230,6 @@ public class CustomerServiceTest {
     @Test
     @WithMockUser
     public void deleteAddressByIdSuccessFullTest() {
-
 
         Address address = new Address();
         address.setId(1L);
@@ -258,6 +259,7 @@ public class CustomerServiceTest {
         customer.setAddressList(addressList);
 
         Mockito.when(customerRepository.findByEmail("customer@gmail.com")).thenReturn(customer);
+        Mockito.when(customerRepository.save(customer)).thenReturn(customer);
         Mockito.doNothing().when(auditLogsMongoDBService).deleteObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
 
 
@@ -303,6 +305,7 @@ public class CustomerServiceTest {
         customer.setAddressList(addressList);
 
         Mockito.when(customerRepository.findByEmail("customer@gmail.com")).thenReturn(customer);
+        Mockito.when(customerRepository.save(customer)).thenReturn(customer);
         Mockito.doNothing().when(auditLogsMongoDBService).deleteObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
 
 
@@ -314,4 +317,46 @@ public class CustomerServiceTest {
         });
         assertNotEquals("Deleted Address with id " + address1.getId(), responseEntity.getBody().toString());
     }
+
+
+    @Test
+    @WithMockUser
+    public void updateCustomerAddressSuccessFullTest() {
+
+        AddressCO addressCo = new AddressCO();
+        addressCo.setAddressLine("testUpdateAddressLine");
+        addressCo.setCity("testUpdateCity");
+        addressCo.setState("testUpdateState");
+        addressCo.setCountry("testUpdateCountry");
+        addressCo.setZipcode("123456");
+        addressCo.setLable("testUpdateLabel");
+
+        Address address = new Address();
+        address.setId(2L);
+        address.setAddressLine("testAddressLine");
+        address.setCity("testCity");
+        address.setState("testState");
+        address.setCountry("testCountry");
+        address.setZipcode("123456");
+        address.setLable("testLable");
+
+        List<Address> addressList = new ArrayList<>();
+        addressList.add(address);
+        Customer customer = new Customer();
+        customer.setId(1L);
+        customer.setEmail("customer@gmail.com");
+        customer.setAddressList(addressList);
+
+        Mockito.when(customerRepository.findByEmail("customer@gmail.com")).thenReturn(customer);
+        Mockito.doNothing().when(auditLogsMongoDBService).updateObject(Mockito.anyString(),Mockito.anyLong(),Mockito.anyString());
+
+        ResponseEntity responseEntity=customerService.updateCustomerAddress(addressCo,2L,"customer@gmail.com", new Principal() {
+            @Override
+            public String getName() {
+                return "customer@gmail.com";
+            }
+        });
+        assertEquals(addressCo.getAddressLine(),address.getAddressLine());
+    }
+
 }
