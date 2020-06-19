@@ -713,6 +713,46 @@ public class SpringSecurityApplicationTests {
         assertEquals("Profile Updated.", responseEntity.getBody().toString());
     }
 
+    @Test
+    @WithMockUser
+    public void updateSellerAddressSuccessFullTest() {
+
+        AddressCO addressCo = new AddressCO();
+        addressCo.setAddressLine("testUpdateAddressLine");
+        addressCo.setCity("testUpdateCity");
+        addressCo.setState("testUpdateState");
+        addressCo.setCountry("testUpdateCountry");
+        addressCo.setZipcode("123456");
+        addressCo.setLable("testUpdateLabel");
+
+        Address address = new Address();
+        address.setId(2L);
+        address.setAddressLine("testAddressLine");
+        address.setCity("testCity");
+        address.setState("testState");
+        address.setCountry("testCountry");
+        address.setZipcode("123456");
+        address.setLable("testLabel");
+
+        Seller seller = new Seller();
+        seller.setId(1L);
+        seller.setEmail("seller@gmail.com");
+        seller.setAddress(address);
+
+        Mockito.when(sellerRepository.findByEmail(seller.getEmail())).thenReturn(seller);
+        Mockito.when(sellerRepository.save(seller)).thenReturn(seller);
+        Mockito.doNothing().when(auditLogsMongoDBService).updateObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
+
+        ResponseEntity responseEntity = sellerService.updateSellerAddress(addressCo, 2L, seller.getEmail(), new Principal() {
+            @Override
+            public String getName() {
+                return seller.getEmail();
+            }
+        });
+
+        assertEquals("Seller Address has been updated successfully.", responseEntity.getBody().toString());
+    }
+
 //	@Test
 //	void addSeller(){
 //
