@@ -55,7 +55,7 @@ public class SellerService {
 
 
 
-    private boolean isEmailExists(String Email) {
+    public boolean isEmailExists(String Email) {
         return sellerRepository.findByEmail(Email) != null;
     }
 
