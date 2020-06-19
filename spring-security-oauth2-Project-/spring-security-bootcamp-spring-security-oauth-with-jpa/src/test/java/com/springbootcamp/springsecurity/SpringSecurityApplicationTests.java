@@ -19,6 +19,7 @@ package com.springbootcamp.springsecurity;
 import com.springbootcamp.springsecurity.co.AddressCO;
 import com.springbootcamp.springsecurity.co.CustomerCO;
 import com.springbootcamp.springsecurity.co.CustomerProfileUpdateCo;
+import com.springbootcamp.springsecurity.co.SellerProfileUpdateCO;
 import com.springbootcamp.springsecurity.dtos.*;
 import com.springbootcamp.springsecurity.entities.ConfirmationToken;
 import com.springbootcamp.springsecurity.entities.product.Category;
@@ -623,12 +624,12 @@ public class SpringSecurityApplicationTests {
     @Test
     @WithMockUser
     public void updateCustomerProfileSuccessFullTest() {
-        CustomerProfileUpdateCo customerProfileUpdateCo=new CustomerProfileUpdateCo();
+        CustomerProfileUpdateCo customerProfileUpdateCo = new CustomerProfileUpdateCo();
         customerProfileUpdateCo.setContact("09876543211");
         customerProfileUpdateCo.setFirstName("TestUpdateFirstName");
         customerProfileUpdateCo.setLastName("testUpdateLastName");
 
-        Customer customer=new Customer();
+        Customer customer = new Customer();
         customer.setId(1L);
         customer.setFirstName("TestFirstName");
         customer.setLastName("testLastName");
@@ -637,16 +638,16 @@ public class SpringSecurityApplicationTests {
 
         Mockito.when(customerRepository.findByEmail(Mockito.anyString())).thenReturn(customer);
         Mockito.when(customerRepository.save(customer)).thenReturn(customer);
-        Mockito.doNothing().when(auditLogsMongoDBService).updateObject(Mockito.anyString(),Mockito.anyLong(),Mockito.anyString());
+        Mockito.doNothing().when(auditLogsMongoDBService).updateObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
 
-        ResponseEntity responseEntity=customerService.updateCustomerProfile(customer.getEmail(),customerProfileUpdateCo, new Principal() {
+        ResponseEntity responseEntity = customerService.updateCustomerProfile(customer.getEmail(), customerProfileUpdateCo, new Principal() {
             @Override
             public String getName() {
                 return customer.getEmail();
             }
         });
 
-        assertEquals(responseEntity.getBody().toString(),"Profile has been updated.");
+        assertEquals(responseEntity.getBody().toString(), "Profile has been updated.");
 
     }
 
@@ -679,6 +680,37 @@ public class SpringSecurityApplicationTests {
         });
 
         assertEquals(addressDto.getAddressLine(), seller.getAddress().getAddressLine());
+    }
+
+
+    @Test
+    @WithMockUser
+    public void updateSellerProfileSuccessFullTest() {
+        SellerProfileUpdateCO sellerProfileUpdateCO = new SellerProfileUpdateCO();
+
+        sellerProfileUpdateCO.setContact("1234567889");
+        sellerProfileUpdateCO.setFirstName("testUpdateFirstName");
+        sellerProfileUpdateCO.setLastName("testUpdateLastName");
+
+        Seller seller = new Seller();
+        seller.setId(1L);
+        seller.setEmail("seller@gmail.com");
+        seller.setFirstName("testFirstName");
+        seller.setLastName("testLastName");
+        seller.setCompanyContact("9876554321");
+
+        Mockito.when(sellerRepository.findByEmail(Mockito.anyString())).thenReturn(seller);
+        Mockito.when(sellerRepository.save(seller)).thenReturn(seller);
+        Mockito.doNothing().when(auditLogsMongoDBService).updateObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
+
+        ResponseEntity responseEntity = sellerService.upadteSellerProfile(seller.getEmail(), sellerProfileUpdateCO, new Principal() {
+            @Override
+            public String getName() {
+                return seller.getEmail();
+            }
+        });
+
+        assertEquals("Profile Updated.", responseEntity.getBody().toString());
     }
 
 //	@Test

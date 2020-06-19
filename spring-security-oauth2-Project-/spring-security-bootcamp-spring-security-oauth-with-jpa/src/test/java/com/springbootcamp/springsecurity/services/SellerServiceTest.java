@@ -1,5 +1,6 @@
 package com.springbootcamp.springsecurity.services;
 
+import com.springbootcamp.springsecurity.co.SellerProfileUpdateCO;
 import com.springbootcamp.springsecurity.dtos.AddressDto;
 import com.springbootcamp.springsecurity.dtos.SellerDto;
 import com.springbootcamp.springsecurity.entities.users.Address;
@@ -11,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import java.security.Principal;
@@ -32,7 +34,7 @@ public class SellerServiceTest {
 
     @WithMockUser
     @Test
-    public void viewSellerProfile() {
+    public void viewSellerProfileSuccessFullTest() {
 
         Address address = new Address();
         address.setId(1L);
@@ -94,7 +96,37 @@ public class SellerServiceTest {
                 return seller.getEmail();
             }
         });
-
         assertEquals(addressDto.getAddressLine(), seller.getAddress().getAddressLine());
+    }
+
+
+    @Test
+    @WithMockUser
+    public void updateSellerProfileSuccessFullTest() {
+        SellerProfileUpdateCO sellerProfileUpdateCO = new SellerProfileUpdateCO();
+
+        sellerProfileUpdateCO.setContact("1234567889");
+        sellerProfileUpdateCO.setFirstName("testUpdateFirstName");
+        sellerProfileUpdateCO.setLastName("testUpdateLastName");
+
+        Seller seller = new Seller();
+        seller.setId(1L);
+        seller.setEmail("seller@gmail.com");
+        seller.setFirstName("testFirstName");
+        seller.setLastName("testLastName");
+        seller.setCompanyContact("9876554321");
+
+        Mockito.when(sellerRepository.findByEmail(Mockito.anyString())).thenReturn(seller);
+        Mockito.when(sellerRepository.save(seller)).thenReturn(seller);
+        Mockito.doNothing().when(auditLogsMongoDBService).updateObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
+
+        ResponseEntity responseEntity = sellerService.upadteSellerProfile(seller.getEmail(), sellerProfileUpdateCO, new Principal() {
+            @Override
+            public String getName() {
+                return seller.getEmail();
+            }
+        });
+
+        assertEquals("Profile Updated.", responseEntity.getBody().toString());
     }
 }
