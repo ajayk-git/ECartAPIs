@@ -4,12 +4,14 @@ package com.springbootcamp.springsecurity.services;
 
 import com.springbootcamp.springsecurity.co.ProductCo;
 import com.springbootcamp.springsecurity.co.ProductVariationCo;
+import com.springbootcamp.springsecurity.co.ProductVariationUpdateCo;
 import com.springbootcamp.springsecurity.dtos.*;
 import com.springbootcamp.springsecurity.entities.product.Category;
 import com.springbootcamp.springsecurity.entities.product.Product;
 import com.springbootcamp.springsecurity.entities.product.ProductVariation;
 import com.springbootcamp.springsecurity.entities.users.Customer;
 import com.springbootcamp.springsecurity.entities.users.Seller;
+import com.springbootcamp.springsecurity.exceptions.ResourceNotFoundException;
 import com.springbootcamp.springsecurity.repositories.CategoryRepository;
 import com.springbootcamp.springsecurity.repositories.ProductRepository;
 import com.springbootcamp.springsecurity.repositories.ProductVariationRepository;
@@ -31,6 +33,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
 @RunWith(value = MockitoJUnitRunner.class)
 public class ProductServiceTest {
@@ -285,5 +288,61 @@ public class ProductServiceTest {
         });
 
         assertEquals("Product variation added successfully.", responseEntity.getBody().toString());
+    }
+
+    @Test
+    @WithMockUser
+   public void updateProductVariantBySellerSuccessFullTest() {
+        ProductVariationUpdateCo productVariationUpdateCo = new ProductVariationUpdateCo();
+        Map<String, String> metaDataTestProductVariationUpdateCO = new HashMap<>();
+        metaDataTestProductVariationUpdateCO.put("testKeyCO", "testValueCO");
+        productVariationUpdateCo.setIsActive(true);
+        productVariationUpdateCo.setPrice(12F);
+        productVariationUpdateCo.setQuantityAvailable(1);
+        productVariationUpdateCo.setMetaData(metaDataTestProductVariationUpdateCO);
+
+        List<ProductVariation> productVariationList = new ArrayList<>();
+
+        Map<String, String> metaDataTestProductVariation = new HashMap<>();
+        metaDataTestProductVariation.put("variationMetaDataKey", "variationMetaDataValue");
+
+        ProductVariation productVariation = new ProductVariation();
+        productVariation.setId(1L);
+        productVariation.setPrice(123F);
+        productVariation.setQuantityAvailable(12);
+        productVariation.setIsActive(true);
+        productVariation.setMetaData(metaDataTestProductVariation);
+        productVariationList.add(productVariation);
+
+        Seller seller = new Seller();
+        seller.setId(1L);
+        seller.setFirstName("sellerTestFirstName");
+        seller.setEmail("sellerTest@gmail.com");
+
+        Product product = new Product();
+        product.setId(1L);
+        product.setBrand("testBrandName");
+        product.setName("testProductName");
+        product.setDescription("testDescriptionProduct");
+        product.setIsReturnable(false);
+        product.setIsCancelable(false);
+        product.setIsActive(true);
+        product.setIsDeleted(false);
+        product.setSeller(seller);
+        product.setProductVariationList(productVariationList);
+        productVariation.setProduct(product);
+
+        Mockito.when(productVariationRepository.findById(Mockito.anyLong())).thenReturn(java.util.Optional.of(productVariation));
+        Mockito.doNothing().when(auditLogsMongoDBService).updateObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
+        Mockito.when(productVariationRepository.save(productVariation)).thenReturn(productVariation);
+
+        ResponseEntity responseEntity = productService.updateProductVariantBySeller(productVariation.getId(), new Principal() {
+            @Override
+            public String getName() {
+                return product.getSeller().getEmail();
+            }
+        }, productVariationUpdateCo);
+
+        assertEquals("Product with productVariantId : " + productVariation.getId() + " is updated successfully.", responseEntity.getBody().toString());
     }
 }
