@@ -12,6 +12,7 @@ import com.springbootcamp.springsecurity.entities.product.Product;
 import com.springbootcamp.springsecurity.entities.product.ProductVariation;
 import com.springbootcamp.springsecurity.entities.users.Customer;
 import com.springbootcamp.springsecurity.entities.users.Seller;
+import com.springbootcamp.springsecurity.exceptions.ResourceAlreadyExistException;
 import com.springbootcamp.springsecurity.exceptions.ResourceNotFoundException;
 import com.springbootcamp.springsecurity.repositories.CategoryRepository;
 import com.springbootcamp.springsecurity.repositories.ProductRepository;
@@ -33,8 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(value = MockitoJUnitRunner.class)
 public class ProductServiceTest {
@@ -386,5 +386,39 @@ public class ProductServiceTest {
         });
 
         assertEquals("Product with productId : " + product.getId() + " is updated successfully.", responseEntity.getBody().toString());
+    }
+
+    @Test
+    @WithMockUser
+    public void activateProductByAdminSuccessFullTest() {
+        Seller seller = new Seller();
+        seller.setId(1L);
+        seller.setFirstName("sellerTestFirstName");
+        seller.setEmail("sellerTest@gmail.com");
+
+        Product product = new Product();
+        product.setId(1L);
+        product.setBrand("testBrandName");
+        product.setName("testProductName");
+        product.setDescription("testDescriptionProduct");
+        product.setIsReturnable(false);
+        product.setIsCancelable(false);
+        product.setIsActive(false);
+        product.setIsDeleted(false);
+        product.setSeller(seller);
+
+        Mockito.when(productRepository.findById(Mockito.anyLong())).thenReturn(java.util.Optional.of(product));
+        Mockito.when(productRepository.save(product)).thenReturn(product);
+        Mockito.doNothing().when(emailService).mailNotificationSellerProductActivate(Mockito.anyString(),Mockito.any());
+        Mockito.doNothing().when(auditLogsMongoDBService).activateObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
+
+        ResponseEntity responseEntity=productService.activateProduct(product.getId(), new Principal() {
+            @Override
+            public String getName() {
+                return "admin@gmail.com";
+            }
+        });
+
+        assertEquals("Product is activated successfully.Email is triggered to seller.",responseEntity.getBody().toString());
     }
 }

@@ -164,7 +164,7 @@ public class ProductService {
             emailService.mailNotificationSellerProductActivate(email, product);
             productRepository.save(product);
 
-            log.info("Product activated successfully by seller");
+            log.info("Product activated successfully by admin.");
 
             auditService.activateObject("Product", product.getId(), principal.getName());
             return new ResponseEntity("Product is activated successfully.Email is triggered to seller.", HttpStatus.OK);
