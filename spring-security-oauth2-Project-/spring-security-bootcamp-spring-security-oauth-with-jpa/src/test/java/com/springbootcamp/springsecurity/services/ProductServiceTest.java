@@ -2,26 +2,29 @@ package com.springbootcamp.springsecurity.services;
 
 //import org.junit.jupiter.api.Test;
 
-import com.springbootcamp.springsecurity.dtos.ProductAdminDto;
-import com.springbootcamp.springsecurity.dtos.ProductCustomerDto;
-import com.springbootcamp.springsecurity.dtos.ProductSellerDto;
-import com.springbootcamp.springsecurity.dtos.ProductVariantDto;
+import com.springbootcamp.springsecurity.co.ProductCo;
+import com.springbootcamp.springsecurity.dtos.*;
 import com.springbootcamp.springsecurity.entities.product.Category;
 import com.springbootcamp.springsecurity.entities.product.Product;
 import com.springbootcamp.springsecurity.entities.product.ProductVariation;
 import com.springbootcamp.springsecurity.entities.users.Customer;
 import com.springbootcamp.springsecurity.entities.users.Seller;
+import com.springbootcamp.springsecurity.repositories.CategoryRepository;
 import com.springbootcamp.springsecurity.repositories.ProductRepository;
 import com.springbootcamp.springsecurity.repositories.ProductVariationRepository;
+import com.springbootcamp.springsecurity.repositories.SellerRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doNothing;
@@ -32,8 +35,13 @@ public class ProductServiceTest {
     @Mock
     ProductRepository productRepository;
     @Mock
+    SellerRepository sellerRepository;
+    @Mock
     ProductVariationRepository productVariationRepository;
-
+    @Mock
+    CategoryRepository categoryRepository;
+    @Mock
+    EmailService emailService;
     @Mock
     AuditLogsMongoDBService auditLogsMongoDBService;
 
@@ -133,7 +141,7 @@ public class ProductServiceTest {
     public void getProductVariantBySeller() {
 
         ProductVariation productVariation = new ProductVariation();
-        Product product=new Product();
+        Product product = new Product();
         product.setId(1L);
         product.setBrand("Nokia");
         productVariation.setIsActive(true);
@@ -152,5 +160,62 @@ public class ProductServiceTest {
             }
         });
         assertEquals(2L, productVariantDto.getProductVariantId());
+    }
+
+    @Test
+    @WithMockUser
+    public void addNewProductBySellerSuccessFullTest() {
+
+        ProductCo productCo = new ProductCo();
+        productCo.setBrandName("TestBrandNameProductCO");
+        productCo.setCancellable(false);
+        productCo.setDescription("testDescriptionProductCO");
+        productCo.setReturnable(false);
+        productCo.setProductName("testProductNameProductCO");
+        productCo.setCategoryId(1L);
+
+        Product product = new Product();
+        Category category = new Category();
+        Category subCategory = new Category();
+        subCategory.setId(2L);
+        subCategory.setParentCategory(category);
+        List<Category> categoryList = new ArrayList<>();
+        category.addCategory(subCategory);
+        category.setId(1L);
+        category.setName("testCategoryNameProduct");
+        category.setSubCategory(categoryList);
+
+
+        Seller seller = new Seller();
+        seller.setId(1L);
+        seller.setFirstName("sellerTestFirstName");
+        seller.setEmail("sellerTest@gmail.com");
+
+        product.setId(1L);
+        product.setBrand("testBrandName");
+        product.setName("testProductName");
+        product.setCategory(category);
+        product.setDescription("testDescriptionProduct");
+        product.setIsReturnable(false);
+        product.setIsCancelable(false);
+        product.setIsActive(false);
+        product.setIsDeleted(false);
+        product.setSeller(seller);
+
+
+        Mockito.when(categoryRepository.findById(category.getId())).thenReturn(java.util.Optional.of(category));
+        Mockito.when(sellerRepository.findByEmail(Mockito.anyString())).thenReturn(seller);
+        Mockito.when(productRepository.save(product)).thenReturn(product);
+        Mockito.doNothing().when(emailService).mailNotificationAdminNewProductAdd();
+        Mockito.doNothing().when(auditLogsMongoDBService).saveNewObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
+
+        ResponseEntity responseEntity = productService.addNewProduct(productCo, new Principal() {
+            @Override
+            public String getName() {
+                return seller.getEmail();
+            }
+        });
+
+        assertEquals("Product added successfully.Product will  be activated  soon by admin,", responseEntity.getBody().toString());
     }
 }

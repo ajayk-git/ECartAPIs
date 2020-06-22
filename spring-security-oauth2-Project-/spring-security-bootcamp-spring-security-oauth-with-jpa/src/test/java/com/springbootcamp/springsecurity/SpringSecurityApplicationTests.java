@@ -16,10 +16,7 @@ package com.springbootcamp.springsecurity;
 //import com.springbootcamp.springsecurity.services.RegistrationService;
 //import org.junit.Test;
 
-import com.springbootcamp.springsecurity.co.AddressCO;
-import com.springbootcamp.springsecurity.co.CustomerCO;
-import com.springbootcamp.springsecurity.co.CustomerProfileUpdateCo;
-import com.springbootcamp.springsecurity.co.SellerProfileUpdateCO;
+import com.springbootcamp.springsecurity.co.*;
 import com.springbootcamp.springsecurity.dtos.*;
 import com.springbootcamp.springsecurity.entities.ConfirmationToken;
 import com.springbootcamp.springsecurity.entities.product.Category;
@@ -90,6 +87,9 @@ public class SpringSecurityApplicationTests {
 
     @Mock
     UserRepository userRepository;
+
+    @Mock
+    CategoryRepository categoryRepository;
 
     @InjectMocks
     CustomerService customerService;
@@ -751,6 +751,61 @@ public class SpringSecurityApplicationTests {
         });
 
         assertEquals("Seller Address has been updated successfully.", responseEntity.getBody().toString());
+    }
+
+    @Test
+    @WithMockUser
+    public void addNewProductBySellerSuccessFullTest() {
+
+        ProductCo productCo = new ProductCo();
+        productCo.setBrandName("TestBrandNameProductCO");
+        productCo.setCancellable(false);
+        productCo.setDescription("testDescriptionProductCO");
+        productCo.setReturnable(false);
+        productCo.setProductName("testProductNameProductCO");
+        productCo.setCategoryId(1L);
+
+        Product product = new Product();
+        Category category = new Category();
+        Category subCategory = new Category();
+        subCategory.setId(2L);
+        subCategory.setParentCategory(category);
+        List<Category> categoryList = new ArrayList<>();
+        category.addCategory(subCategory);
+        category.setId(1L);
+        category.setName("testCategoryNameProduct");
+        category.setSubCategory(categoryList);
+
+        Seller seller = new Seller();
+        seller.setId(1L);
+        seller.setFirstName("sellerTestFirstName");
+        seller.setEmail("sellerTest@gmail.com");
+
+        product.setId(1L);
+        product.setBrand("testBrandName");
+        product.setName("testProductName");
+        product.setCategory(category);
+        product.setDescription("testDescriptionProduct");
+        product.setIsReturnable(false);
+        product.setIsCancelable(false);
+        product.setIsActive(false);
+        product.setIsDeleted(false);
+        product.setSeller(seller);
+
+        Mockito.when(categoryRepository.findById(category.getId())).thenReturn(java.util.Optional.of(category));
+        Mockito.when(sellerRepository.findByEmail(Mockito.anyString())).thenReturn(seller);
+        Mockito.when(productRepository.save(product)).thenReturn(product);
+        Mockito.doNothing().when(emailService).mailNotificationAdminNewProductAdd();
+        Mockito.doNothing().when(auditLogsMongoDBService).saveNewObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
+
+        ResponseEntity responseEntity = productService.addNewProduct(productCo, new Principal() {
+            @Override
+            public String getName() {
+                return seller.getEmail();
+            }
+        });
+
+        assertEquals("Product added successfully.Product will  be activated  soon by admin,", responseEntity.getBody().toString());
     }
 
 //	@Test
