@@ -3,6 +3,7 @@ package com.springbootcamp.springsecurity.services;
 //import org.junit.jupiter.api.Test;
 
 import com.springbootcamp.springsecurity.co.ProductCo;
+import com.springbootcamp.springsecurity.co.ProductVariationCo;
 import com.springbootcamp.springsecurity.dtos.*;
 import com.springbootcamp.springsecurity.entities.product.Category;
 import com.springbootcamp.springsecurity.entities.product.Product;
@@ -24,7 +25,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doNothing;
@@ -51,7 +54,7 @@ public class ProductServiceTest {
 
     @WithMockUser
     @Test
-    public void viewProductByAdmin() {
+    public void viewProductByAdminSuccessFullTest() {
         Category category = new Category();
         category.setId(1L);
 
@@ -77,7 +80,7 @@ public class ProductServiceTest {
 
     @WithMockUser
     @Test
-    public void viewProductBySeller() {
+    public void viewProductBySellerSuccessFullTest() {
         Category category = new Category();
         category.setId(1L);
         Seller seller = new Seller();
@@ -110,7 +113,7 @@ public class ProductServiceTest {
 
     @WithMockUser
     @Test
-    public void getProductByCustomer() {
+    public void getProductByCustomerSuccessFullTest() {
 
         Customer customer = new Customer();
         customer.setEmail("customer@gmail.com");
@@ -138,7 +141,7 @@ public class ProductServiceTest {
 
     @WithMockUser
     @Test
-    public void getProductVariantBySeller() {
+    public void getProductVariantBySellerSuccessFullTest() {
 
         ProductVariation productVariation = new ProductVariation();
         Product product = new Product();
@@ -217,5 +220,70 @@ public class ProductServiceTest {
         });
 
         assertEquals("Product added successfully.Product will  be activated  soon by admin,", responseEntity.getBody().toString());
+    }
+
+    @Test
+    @WithMockUser
+    public void addNewProductVariantSuccessFullTest() {
+
+        List<ProductVariation> productVariationList = new ArrayList<>();
+        Map<String, String> metaDataTestProduct = new HashMap<>();
+        Map<String, String> metaDataTestProductCO = new HashMap<>();
+
+        metaDataTestProduct.put("TestKey", "testValue");
+        metaDataTestProductCO.put("testKeyCO", "testValueCO");
+
+        ProductVariation productVariation = new ProductVariation();
+        productVariation.setId(1L);
+        productVariation.setPrice(123F);
+        productVariation.setQuantityAvailable(12);
+        productVariation.setIsActive(true);
+        productVariation.setMetaData(metaDataTestProduct);
+
+        ProductVariation productVariation1 = new ProductVariation();
+        productVariation1.setId(2L);
+        productVariation1.setPrice(133F);
+        productVariation1.setQuantityAvailable(10);
+        productVariation1.setIsActive(true);
+        productVariation1.setMetaData(metaDataTestProduct);
+
+        productVariationList.add(productVariation);
+        productVariationList.add(productVariation1);
+
+        ProductVariationCo productVariationCo = new ProductVariationCo();
+        productVariationCo.setPrice(123F);
+        productVariationCo.setQuantityAvailable(1);
+        productVariationCo.setMetaData(metaDataTestProductCO);
+
+        Seller seller = new Seller();
+        seller.setId(1L);
+        seller.setFirstName("sellerTestFirstName");
+        seller.setEmail("sellerTest@gmail.com");
+
+        Product product = new Product();
+        product.setId(1L);
+        product.setBrand("testBrandName");
+        product.setName("testProductName");
+        product.setDescription("testDescriptionProduct");
+        product.setIsReturnable(false);
+        product.setIsCancelable(false);
+        product.setIsActive(true);
+        product.setIsDeleted(false);
+        product.setSeller(seller);
+        product.setProductVariationList(productVariationList);
+        productVariation.setProduct(product);
+
+        Mockito.when(productRepository.findById(Mockito.anyLong())).thenReturn(java.util.Optional.of(product));
+        Mockito.doNothing().when(auditLogsMongoDBService).saveNewObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
+        Mockito.when(productRepository.save(product)).thenReturn(product);
+
+        ResponseEntity responseEntity = productService.addNewProductVariant(product.getId(), productVariationCo, new Principal() {
+            @Override
+            public String getName() {
+                return seller.getEmail();
+            }
+        });
+
+        assertEquals("Product variation added successfully.", responseEntity.getBody().toString());
     }
 }
