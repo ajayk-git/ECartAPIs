@@ -927,6 +927,47 @@ public class SpringSecurityApplicationTests {
 
         assertEquals("Product with productVariantId : " + productVariation.getId() + " is updated successfully.", responseEntity.getBody().toString());
     }
+
+    @Test
+    @WithMockUser
+    public void updateProductBySellerSuccessFullTest() {
+
+        ProductUpdateBySellerCo productUpdateBySellerCo = new ProductUpdateBySellerCo();
+        productUpdateBySellerCo.setBrandName("TestBrandNameProductCO");
+        productUpdateBySellerCo.setDescription("testDescriptionProductCO");
+        productUpdateBySellerCo.setProductName("testProductNameProductCO");
+        productUpdateBySellerCo.setIsReturnable(false);
+        productUpdateBySellerCo.setIsCancellable(false);
+
+        Seller seller = new Seller();
+        seller.setId(1L);
+        seller.setFirstName("sellerTestFirstName");
+        seller.setEmail("sellerTest@gmail.com");
+
+        Product product = new Product();
+        product.setId(1L);
+        product.setBrand("testBrandName");
+        product.setName("testProductName");
+        product.setDescription("testDescriptionProduct");
+        product.setIsReturnable(false);
+        product.setIsCancelable(false);
+        product.setIsActive(true);
+        product.setIsDeleted(false);
+        product.setSeller(seller);
+
+        Mockito.when(productRepository.findById(Mockito.anyLong())).thenReturn(java.util.Optional.of(product));
+        Mockito.when(productRepository.save(product)).thenReturn(product);
+        Mockito.doNothing().when(auditLogsMongoDBService).updateObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
+
+        ResponseEntity responseEntity = productService.updateProductBySeller(productUpdateBySellerCo, product.getId(), new Principal() {
+            @Override
+            public String getName() {
+                return product.getSeller().getEmail();
+            }
+        });
+
+        assertEquals("Product with productId : " + product.getId() + " is updated successfully.", responseEntity.getBody().toString());
+    }
 //	@Test
 //	void addSeller(){
 //
