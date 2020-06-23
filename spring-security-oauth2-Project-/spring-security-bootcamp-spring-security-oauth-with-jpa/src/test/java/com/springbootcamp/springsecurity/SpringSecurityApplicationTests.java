@@ -1131,6 +1131,36 @@ public class SpringSecurityApplicationTests {
         assertEquals("User is deactivated",responseEntity.getBody().toString());
     }
 
+    @Test
+    @WithMockUser
+    public void activateAccountByIdByAdminSuccessFullTest() {
+        User user=new User();
+        user.setId(1L);
+        user.setEmail("userTest@gmail.com");
+        user.setIsActive(false);
+        user.setIsEnabled(false);
+
+        SimpleMailMessage simpleMailMessage=new SimpleMailMessage();
+        simpleMailMessage.setText("testMessage");
+        simpleMailMessage.setTo("testMail@gmail.com");
+
+
+        Mockito.when(userRepository.findById(Mockito.anyLong())).thenReturn(java.util.Optional.of(user));
+        Mockito.when(userRepository.save(user)).thenReturn(user);
+        Mockito.doNothing().when(javaMailSender).send(simpleMailMessage);
+        Mockito.doNothing().when(auditLogsMongoDBService).activateObject(Mockito.anyString(),Mockito.anyLong(),Mockito.anyString());
+
+        ResponseEntity responseEntity=adminService.activateAccountById(1L, new Principal() {
+            @Override
+            public String getName() {
+                return "admin@gmail.com";
+            }
+        });
+
+        assertEquals("User's Account associated email id : " + user.getEmail() + "is activated.",responseEntity.getBody().toString());
+
+    }
+
 //	@Test
 //	void addSeller(){
 //
