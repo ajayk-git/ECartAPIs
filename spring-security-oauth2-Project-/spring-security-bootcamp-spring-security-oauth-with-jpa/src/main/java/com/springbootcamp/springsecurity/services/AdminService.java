@@ -54,7 +54,7 @@ public class AdminService {
     EmailService emailService;
 
     @Autowired
-    AuditLogsMongoDBService auditRepository;
+    AuditLogsMongoDBService auditLogsMongoDBService;
 
     @Autowired
     ProductRepository productRepository;
@@ -94,7 +94,7 @@ public class AdminService {
                     userRepository.save(user);
 
                     log.info("Account deactivated by Admin.");
-                    auditService.deactivateObject("User", user.getId(), principal.getName());
+                    auditLogsMongoDBService.deactivateObject("User", user.getId(), principal.getName());
 
                     return new ResponseEntity<String>("User is deactivated", HttpStatus.OK);
 
@@ -134,7 +134,7 @@ public class AdminService {
                     mailMessage.setSubject("Alert : Account Activated by admin.");
                     javaMailSender.send(mailMessage);
                     log.info("Account activated by Admin.");
-                    auditService.activateObject("User", user.getId(), principal.getName());
+                    auditLogsMongoDBService.activateObject("User", user.getId(), principal.getName());
                     return new ResponseEntity<String>("User's Account associated email id : " + user.getEmail() + "is activated.", HttpStatus.CREATED);
                 }
                 return new ResponseEntity<String>("User's Account associated with email id  " + user.getEmail() + "is already Activated", HttpStatus.BAD_REQUEST);
@@ -163,7 +163,7 @@ public class AdminService {
             customerDTO.setFirstName(customer.getFirstName());
             customerDTO.setEmail(customer.getEmail());
             customerDTO.setLastName(customer.getLastName());
-            auditService.readObject("User", customer.getId(), principal.getName());
+            auditLogsMongoDBService.readObject("User", customer.getId(), principal.getName());
             return customerDTO;
         } else
             throw new AccountDoesNotExistException("Customer does not exist having Customer Id : " + id);
@@ -181,7 +181,7 @@ public class AdminService {
                 customer.getLastName(),
                 customer.getContact(),
                 customer.getEmail(), customer.getIsActive())));
-        auditService.readAllObjects("User", principal.getName());
+        auditLogsMongoDBService.readAllObjects("User", principal.getName());
         return customerDtoList;
     }
 
@@ -213,7 +213,7 @@ public class AdminService {
             sellerDto.setCountry(seller.getAddress().getCountry());
             sellerDto.setZipcode(seller.getAddress().getZipcode());
 
-            auditService.readObject("Seller", seller.getId(), principal.getName());
+            auditLogsMongoDBService.readObject("Seller", seller.getId(), principal.getName());
             return sellerDto;
         } else
             throw new ResourceNotFoundException("Seller with mentioned SellerId is not exist.");
@@ -233,7 +233,7 @@ public class AdminService {
                 seller.getAddress().getCountry(), seller.getAddress().getLable(),
                 seller.getAddress().getZipcode(), seller.getAddress().getState(), seller.getIsActive())));
 
-        auditService.readAllObjects("Seller", principal.getName());
+        auditLogsMongoDBService.readAllObjects("Seller", principal.getName());
 
         return sellerDtoList;
     }

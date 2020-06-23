@@ -44,6 +44,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 //import org.springframework.http.ResponseEntity;
 //import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -89,6 +91,9 @@ public class SpringSecurityApplicationTests {
     @Mock
     CategoryRepository categoryRepository;
 
+    @Mock
+    JavaMailSender javaMailSender;
+
     @InjectMocks
     CustomerService customerService;
 
@@ -100,6 +105,9 @@ public class SpringSecurityApplicationTests {
 
     @InjectMocks
     SellerService sellerService;
+
+    @InjectMocks
+    AdminService adminService;
 
     @Test
     public void contextLoads() {
@@ -1092,9 +1100,37 @@ public class SpringSecurityApplicationTests {
         });
 
         assertEquals("Product deleted with mentioned productId.", responseEntity.getBody().toString());
-
-
     }
+
+    @Test
+    @WithMockUser
+    public void deactivateAccountByIdByAdminSuccessFullTest() {
+        User user=new User();
+        user.setId(1L);
+        user.setEmail("userTest@gmail.com");
+        user.setIsActive(true);
+        user.setIsEnabled(true);
+
+        SimpleMailMessage simpleMailMessage=new SimpleMailMessage();
+        simpleMailMessage.setText("testMessage");
+        simpleMailMessage.setTo("testMail@gmail.com");
+
+
+        Mockito.when(userRepository.findById(Mockito.anyLong())).thenReturn(java.util.Optional.of(user));
+        Mockito.when(userRepository.save(user)).thenReturn(user);
+        Mockito.doNothing().when(javaMailSender).send(simpleMailMessage);
+        Mockito.doNothing().when(auditLogsMongoDBService).deactivateObject(Mockito.anyString(),Mockito.anyLong(),Mockito.anyString());
+
+        ResponseEntity responseEntity=adminService.deactivateAccountById(1L, new Principal() {
+            @Override
+            public String getName() {
+                return "admin@gmail.com";
+            }
+        });
+
+        assertEquals("User is deactivated",responseEntity.getBody().toString());
+    }
+
 //	@Test
 //	void addSeller(){
 //
