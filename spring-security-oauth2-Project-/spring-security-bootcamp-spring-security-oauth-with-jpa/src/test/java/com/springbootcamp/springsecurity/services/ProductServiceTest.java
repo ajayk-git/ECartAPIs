@@ -421,4 +421,38 @@ public class ProductServiceTest {
 
         assertEquals("Product is activated successfully.Email is triggered to seller.",responseEntity.getBody().toString());
     }
+
+    @Test
+    @WithMockUser
+    public void deactivateProductByAdminSuccessFullTest() {
+        Seller seller = new Seller();
+        seller.setId(1L);
+        seller.setFirstName("sellerTestFirstName");
+        seller.setEmail("sellerTest@gmail.com");
+
+        Product product = new Product();
+        product.setId(1L);
+        product.setBrand("testBrandName");
+        product.setName("testProductName");
+        product.setDescription("testDescriptionProduct");
+        product.setIsReturnable(false);
+        product.setIsCancelable(false);
+        product.setIsActive(true);
+        product.setIsDeleted(false);
+        product.setSeller(seller);
+
+        Mockito.when(productRepository.findById(Mockito.anyLong())).thenReturn(java.util.Optional.of(product));
+        Mockito.when(productRepository.save(product)).thenReturn(product);
+        Mockito.doNothing().when(emailService).mailNotificationSellerProductDeactivate(Mockito.anyString(),Mockito.any());
+        Mockito.doNothing().when(auditLogsMongoDBService).deactivateObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
+
+        ResponseEntity responseEntity=productService.deactivateProduct(product.getId(), new Principal() {
+            @Override
+            public String getName() {
+                return "admin@gmail.com";
+            }
+        });
+
+        assertEquals("Product is deactivated successfully.Email is triggered to seller.",responseEntity.getBody().toString());
+    }
 }
