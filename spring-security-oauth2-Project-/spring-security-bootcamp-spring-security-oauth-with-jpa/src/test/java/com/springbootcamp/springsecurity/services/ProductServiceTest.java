@@ -409,17 +409,17 @@ public class ProductServiceTest {
 
         Mockito.when(productRepository.findById(Mockito.anyLong())).thenReturn(java.util.Optional.of(product));
         Mockito.when(productRepository.save(product)).thenReturn(product);
-        Mockito.doNothing().when(emailService).mailNotificationSellerProductActivate(Mockito.anyString(),Mockito.any());
+        Mockito.doNothing().when(emailService).mailNotificationSellerProductActivate(Mockito.anyString(), Mockito.any());
         Mockito.doNothing().when(auditLogsMongoDBService).activateObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
 
-        ResponseEntity responseEntity=productService.activateProduct(product.getId(), new Principal() {
+        ResponseEntity responseEntity = productService.activateProduct(product.getId(), new Principal() {
             @Override
             public String getName() {
                 return "admin@gmail.com";
             }
         });
 
-        assertEquals("Product is activated successfully.Email is triggered to seller.",responseEntity.getBody().toString());
+        assertEquals("Product is activated successfully.Email is triggered to seller.", responseEntity.getBody().toString());
     }
 
     @Test
@@ -443,16 +443,73 @@ public class ProductServiceTest {
 
         Mockito.when(productRepository.findById(Mockito.anyLong())).thenReturn(java.util.Optional.of(product));
         Mockito.when(productRepository.save(product)).thenReturn(product);
-        Mockito.doNothing().when(emailService).mailNotificationSellerProductDeactivate(Mockito.anyString(),Mockito.any());
+        Mockito.doNothing().when(emailService).mailNotificationSellerProductDeactivate(Mockito.anyString(), Mockito.any());
         Mockito.doNothing().when(auditLogsMongoDBService).deactivateObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
 
-        ResponseEntity responseEntity=productService.deactivateProduct(product.getId(), new Principal() {
+        ResponseEntity responseEntity = productService.deactivateProduct(product.getId(), new Principal() {
             @Override
             public String getName() {
                 return "admin@gmail.com";
             }
         });
 
-        assertEquals("Product is deactivated successfully.Email is triggered to seller.",responseEntity.getBody().toString());
+        assertEquals("Product is deactivated successfully.Email is triggered to seller.", responseEntity.getBody().toString());
+    }
+
+    @Test
+    @WithMockUser
+    public void deleteProductBySellerSuccessFullTest() {
+
+        Category category = new Category();
+        Category subCategory = new Category();
+        subCategory.setId(2L);
+        subCategory.setParentCategory(category);
+        List<Category> categoryList = new ArrayList<>();
+        category.addCategory(subCategory);
+        category.setId(1L);
+        category.setName("testCategoryNameProduct");
+        category.setSubCategory(categoryList);
+
+        Seller seller = new Seller();
+        seller.setId(1L);
+        seller.setFirstName("sellerTestFirstName");
+        seller.setEmail("sellerTest@gmail.com");
+
+        Product product = new Product();
+        product.setId(1L);
+        product.setBrand("testBrandName");
+        product.setName("testProductName");
+        product.setCategory(category);
+        product.setDescription("testDescriptionProduct");
+        product.setIsReturnable(false);
+        product.setIsCancelable(false);
+        product.setIsActive(true);
+        product.setIsDeleted(false);
+        product.setSeller(seller);
+
+        Product product1 = new Product();
+        product1.setId(2L);
+        product1.setBrand("testBrandNameProduct1");
+        product1.setName("testProductNameProduct1");
+        product1.setCategory(category);
+        product1.setDescription("testDescriptionProduct1");
+        product1.setIsReturnable(false);
+        product1.setIsCancelable(false);
+        product1.setIsActive(true);
+        product1.setIsDeleted(false);
+        product1.setSeller(seller);
+
+        Mockito.when(productRepository.findById(Mockito.anyLong())).thenReturn(java.util.Optional.of(product));
+        Mockito.when(productRepository.save(product)).thenReturn(product);
+        Mockito.doNothing().when(emailService).mailNotificationSellerProductDeactivate(Mockito.anyString(), Mockito.any());
+
+        ResponseEntity responseEntity = productService.deleteProductBySeller(2L, new Principal() {
+            @Override
+            public String getName() {
+                return seller.getEmail();
+            }
+        });
+
+        assertEquals("Product deleted with mentioned productId.", responseEntity.getBody().toString());
     }
 }
