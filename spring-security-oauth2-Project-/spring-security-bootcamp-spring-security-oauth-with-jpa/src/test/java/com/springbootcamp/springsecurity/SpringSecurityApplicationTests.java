@@ -1184,6 +1184,40 @@ public class SpringSecurityApplicationTests {
         assertEquals(customerDto.getEmail(), customer.getEmail());
     }
 
+    @Test
+    @WithMockUser
+    public void getSellerByIdByAdminSuccessFullTest() {
+
+        Address address = new Address();
+        address.setId(1L);
+        address.setAddressLine("testAddressLine");
+        address.setCity("testCity");
+        address.setState("testState");
+        address.setCountry("testCountry");
+        address.setZipcode("123456");
+        address.setLable("testLable");
+
+        Seller seller = new Seller();
+        seller.setEmail("seller@gmail.com");
+        seller.setId(1L);
+        seller.setCompanyName("testCompanyName");
+        seller.setFirstName("testSellerFirstName");
+        seller.setLastName("testSellerLastName");
+        seller.setCompanyContact("1234567890");
+        seller.setIsActive(true);
+        seller.setGst("testGST");
+        seller.setAddress(address);
+
+        Mockito.when(sellerRepository.findById(Mockito.anyLong())).thenReturn(java.util.Optional.of(seller));
+        Mockito.doNothing().when(auditLogsMongoDBService).readObject(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString());
+        SellerDto sellerDto = adminService.getSellerByid(1L, new Principal() {
+            @Override
+            public String getName() {
+                return "admin@gmail.com";
+            }
+        });
+        assertEquals(sellerDto.getEmail(), seller.getEmail());
+    }
 //	@Test
 //	void addSeller(){
 //
