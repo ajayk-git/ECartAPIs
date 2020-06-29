@@ -18,6 +18,8 @@ package com.springbootcamp.springsecurity;
 
 import com.springbootcamp.springsecurity.co.*;
 import com.springbootcamp.springsecurity.dtos.*;
+import com.springbootcamp.springsecurity.entities.Cart;
+import com.springbootcamp.springsecurity.entities.CartProductVariation;
 import com.springbootcamp.springsecurity.entities.ConfirmationToken;
 import com.springbootcamp.springsecurity.entities.product.Category;
 import com.springbootcamp.springsecurity.entities.product.Product;
@@ -43,6 +45,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 //import org.springframework.http.ResponseEntity;
 //import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -77,6 +80,12 @@ public class SpringSecurityApplicationTests {
     CustomerRepository customerRepository;
 
     @Mock
+    CartRepository cartRepository;
+
+    @Mock
+    CartProductVariationRepository cartProductVariationRepository;
+
+    @Mock
     EmailService emailService;
 
     @Mock
@@ -108,6 +117,9 @@ public class SpringSecurityApplicationTests {
 
     @InjectMocks
     AdminService adminService;
+
+    @InjectMocks
+    CartService cartService;
 
     @Test
     public void contextLoads() {
@@ -1217,6 +1229,51 @@ public class SpringSecurityApplicationTests {
             }
         });
         assertEquals(sellerDto.getEmail(), seller.getEmail());
+    }
+
+
+    @Test
+    @WithMockUser
+    public void getCartDetailsByCustomerSuccessFullTest() {
+
+        Customer customer = new Customer();
+        customer.setId(1L);
+        customer.setEmail("customer@gmail.com");
+
+        Map<String, String> metaDataTestProduct = new HashMap<>();
+        metaDataTestProduct.put("TestKey", "testValue");
+        ProductVariation productVariation = new ProductVariation();
+        productVariation.setId(1L);
+        productVariation.setPrice(123F);
+        productVariation.setQuantityAvailable(12);
+        productVariation.setIsActive(true);
+        productVariation.setMetaData(metaDataTestProduct);
+
+
+        Cart cart = new Cart();
+        cart.setId(1L);
+        cart.setCustomer(customer);
+
+        List<CartProductVariation> cartProductVariationList = new ArrayList<>();
+        CartProductVariation cartProductVariation = new CartProductVariation();
+        cartProductVariation.setCart(cart);
+        cartProductVariation.setProductVariation(productVariation);
+        cartProductVariation.setIsWishListItem(true);
+        cartProductVariation.setQuantity(1);
+        cartProductVariationList.add(cartProductVariation);
+
+        Mockito.when(customerRepository.findByEmail(Mockito.anyString())).thenReturn(customer);
+        Mockito.when(cartRepository.findByCustomer(Mockito.any())).thenReturn(cart);
+        Mockito.when(cartProductVariationRepository.findByCart(cart)).thenReturn(cartProductVariationList);
+
+        ResponseEntity<CartDetailsDto> cartDetailsDtoResponseEntity = cartService.getCartDetailsByCustomer(new Principal() {
+            @Override
+            public String getName() {
+                return customer.getEmail();
+            }
+        });
+
+        assertEquals(HttpStatus.OK, cartDetailsDtoResponseEntity.getStatusCode());
     }
 //	@Test
 //	void addSeller(){
