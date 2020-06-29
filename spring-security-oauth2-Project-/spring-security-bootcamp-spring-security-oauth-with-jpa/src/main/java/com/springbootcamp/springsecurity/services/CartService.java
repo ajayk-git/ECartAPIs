@@ -119,14 +119,14 @@ public class CartService {
         Customer customer = customerRepository.findByEmail(principal.getName());
         Cart cart = cartRepository.findByCustomer(customer);
 
-        CartProductVariation cartProductVariationFromDataBase = cartProductVariationRepository.findByProductVariantAndCart(productVariationId, customer.getCart().getId());
+        CartProductVariation cartProductVariationFromDataBase = cartProductVariationRepository.findByProductVariantAndCart(productVariationId, cart.getId());
 
         if (cartProductVariationFromDataBase == null) {
             throw new ResourceNotFoundException("Product variation is not available in cart");
         }
 
         log.warn("deleting the object");
-        cartProductVariationRepository.deleteByCartIdAndProductVariationId(customer.getCart().getId(), productVariationId);
+        cartProductVariationRepository.deleteByCartIdAndProductVariationId(cart.getId(), productVariationId);
         return new ResponseEntity("Product removed from cart.", null, HttpStatus.OK);
     }
 

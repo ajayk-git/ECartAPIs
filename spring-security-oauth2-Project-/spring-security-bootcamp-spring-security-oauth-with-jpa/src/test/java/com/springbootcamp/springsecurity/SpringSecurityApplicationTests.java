@@ -1275,6 +1275,51 @@ public class SpringSecurityApplicationTests {
 
         assertEquals(HttpStatus.OK, cartDetailsDtoResponseEntity.getStatusCode());
     }
+
+    @Test
+    @WithMockUser
+    public void removeProductFromCartByCustomerSuccessFullTest() {
+
+        Customer customer = new Customer();
+        customer.setId(1L);
+        customer.setEmail("customer@gmail.com");
+
+        Map<String, String> metaDataTestProduct = new HashMap<>();
+        metaDataTestProduct.put("TestKey", "testValue");
+        ProductVariation productVariation = new ProductVariation();
+        productVariation.setId(1L);
+        productVariation.setPrice(123F);
+        productVariation.setQuantityAvailable(12);
+        productVariation.setIsActive(true);
+        productVariation.setMetaData(metaDataTestProduct);
+
+
+        Cart cart = new Cart();
+        cart.setId(1L);
+        cart.setCustomer(customer);
+
+        CartProductVariation cartProductVariation = new CartProductVariation();
+        cartProductVariation.setCart(cart);
+        cartProductVariation.setProductVariation(productVariation);
+        cartProductVariation.setIsWishListItem(true);
+        cartProductVariation.setQuantity(1);
+        cartProductVariation.setId(1L);
+
+        Mockito.when(customerRepository.findByEmail(Mockito.anyString())).thenReturn(customer);
+        Mockito.when(cartRepository.findByCustomer(Mockito.any())).thenReturn(cart);
+        Mockito.when(cartProductVariationRepository.findByProductVariantAndCart(1L,1L)).thenReturn(cartProductVariation);
+        Mockito.doNothing().when(cartProductVariationRepository).deleteByCartIdAndProductVariationId(Mockito.anyLong(), Mockito.anyLong());
+
+        ResponseEntity responseEntity = cartService.removeProductFromCartByCustomer(new Principal() {
+            @Override
+            public String getName() {
+                return customer.getEmail();
+            }
+        }, 1L);
+
+        assertEquals("Product removed from cart.", responseEntity.getBody().toString());
+
+    }
 //	@Test
 //	void addSeller(){
 //
